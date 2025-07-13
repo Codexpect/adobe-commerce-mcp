@@ -20,6 +20,38 @@ export interface RequestData {
   body?: unknown;
 }
 
+export enum ConditionType {
+  EQ = "eq",
+  FINSET = "finset",
+  FROM = "from",
+  GT = "gt",
+  GTEQ = "gteq",
+  IN = "in",
+  LIKE = "like",
+  LT = "lt",
+  LTEQ = "lteq",
+  MOREQ = "moreq",
+  NEQ = "neq",
+  NFINSET = "nfinset",
+  NIN = "nin",
+  NLIKE = "nlike",
+  NOTNULL = "notnull",
+  NULL = "null",
+  TO = "to",
+}
+
+export type SearchCriteriaFilter = {
+  field: string;
+  value: string | number;
+  conditionType?: ConditionType;
+};
+
+export interface SearchCriteria {
+  page?: number;
+  pageSize?: number;
+  filters?: SearchCriteriaFilter[];
+}
+
 export interface Product {
   sku: string;
   name?: string;

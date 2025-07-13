@@ -1,4 +1,4 @@
-import { AdobeImsParams, CommerceParams } from "../types/commerce.js";
+import { AdobeImsParams, CommerceParams } from "./types/commerce.js";
 import { AdobeCommerceClient } from "./adobe-commerce-client.js";
 
 /**
