@@ -21,7 +21,6 @@ export interface ImsConfig {
 export interface AdobeCommerceClientOptions {
   url: string;
   version?: string;
-  storeCode?: string;
   auth:
     | {
         type: "oauth1a";
@@ -38,7 +37,6 @@ export class AdobeCommerceClient {
   private apiVersion: string;
   private oauth?: Oauth1a;
   private token?: { key: string; secret: string };
-  private storeCode?: string;
   private authConfig: AdobeCommerceClientOptions["auth"];
   private imsToken?: string;
   private imsTokenExpiry?: Date;
@@ -46,7 +44,6 @@ export class AdobeCommerceClient {
   constructor(options: AdobeCommerceClientOptions) {
     this.serverUrl = options.url;
     this.apiVersion = options.version || "V1";
-    this.storeCode = options.storeCode;
     this.authConfig = options.auth;
 
     if (this.authConfig.type === "oauth1a") {
@@ -77,27 +74,25 @@ export class AdobeCommerceClient {
    * Creates an AdobeCommerceClient instance with automatic authentication method detection
    *
    * @param params - CommerceParams (for OAuth 1.0a) or AdobeImsParams (for IMS)
-   * @param storeCode - Optional store code
    * @returns AdobeCommerceClient instance
    */
-  public static create(params: CommerceParams | AdobeImsParams, storeCode?: string): AdobeCommerceClient {
+  public static create(params: CommerceParams | AdobeImsParams): AdobeCommerceClient {
     // Detect authentication type based on parameter structure
     if ("COMMERCE_CONSUMER_KEY" in params) {
       // OAuth 1.0a authentication (has Commerce-specific fields)
       const commerceParams = params as CommerceParams;
-      return this.createWithOAuth1a(commerceParams, storeCode);
+      return this.createWithOAuth1a(commerceParams);
     } else {
       // IMS authentication (has OAUTH_CLIENT_ID but not Commerce fields)
       const adobeImsParams = params as AdobeImsParams;
-      return this.createWithIms(adobeImsParams, storeCode);
+      return this.createWithIms(adobeImsParams);
     }
   }
 
-  private static createWithIms(adobeImsParams: AdobeImsParams, storeCode?: string): AdobeCommerceClient {
+  private static createWithIms(adobeImsParams: AdobeImsParams): AdobeCommerceClient {
     const clientOptions: AdobeCommerceClientOptions = {
       url: `${adobeImsParams.COMMERCE_BASE_URL}rest/`,
       version: "V1",
-      storeCode,
       auth: {
         type: "ims",
         ims: {
@@ -112,11 +107,10 @@ export class AdobeCommerceClient {
     return new AdobeCommerceClient(clientOptions);
   }
 
-  private static createWithOAuth1a(commerceParams: CommerceParams, storeCode?: string): AdobeCommerceClient {
+  private static createWithOAuth1a(commerceParams: CommerceParams): AdobeCommerceClient {
     const clientOptions: AdobeCommerceClientOptions = {
       url: `${commerceParams.COMMERCE_BASE_URL}rest/`,
       version: "V1",
-      storeCode,
       auth: {
         type: "oauth1a",
         oauth1a: {
@@ -165,9 +159,9 @@ export class AdobeCommerceClient {
     }
   }
 
-  public async get<T = unknown>(resourceUrl: string, requestToken = ""): Promise<T> {
+  public async get<T = unknown>(resourceUrl: string, requestToken = "", storeCode?: string): Promise<T> {
     const requestData: RequestData = {
-      url: this.createUrl(resourceUrl),
+      url: this.createUrl(resourceUrl, storeCode),
       method: "GET",
     };
     return this.apiCall(requestData, requestToken) as Promise<T>;
@@ -177,10 +171,11 @@ export class AdobeCommerceClient {
     resourceUrl: string,
     data: unknown,
     requestToken = "",
-    customHeaders: Record<string, string> = {}
+    customHeaders: Record<string, string> = {},
+    storeCode?: string
   ): Promise<unknown> {
     const requestData: RequestData = {
-      url: this.createUrl(resourceUrl),
+      url: this.createUrl(resourceUrl, storeCode),
       method: "POST",
       body: data,
     };
@@ -191,19 +186,20 @@ export class AdobeCommerceClient {
     resourceUrl: string,
     data: Record<string, unknown>,
     requestToken = "",
-    customHeaders: Record<string, string> = {}
+    customHeaders: Record<string, string> = {},
+    storeCode?: string
   ): Promise<unknown> {
     const requestData: RequestData = {
-      url: this.createUrl(resourceUrl),
+      url: this.createUrl(resourceUrl, storeCode),
       method: "PUT",
       body: data,
     };
     return this.apiCall(requestData, requestToken, customHeaders);
   }
 
-  public async delete(resourceUrl: string, requestToken = ""): Promise<unknown> {
+  public async delete(resourceUrl: string, requestToken = "", storeCode?: string): Promise<unknown> {
     const requestData: RequestData = {
-      url: this.createUrl(resourceUrl),
+      url: this.createUrl(resourceUrl, storeCode),
       method: "DELETE",
     };
     return this.apiCall(requestData, requestToken);
@@ -213,18 +209,14 @@ export class AdobeCommerceClient {
     return crypto.createHmac("sha256", key).update(baseString).digest("base64");
   }
 
-  private createUrl(resourceUrl: string): string {
-    if (this.storeCode) {
-      return `${this.serverUrl}${this.storeCode}/${this.apiVersion}${resourceUrl}`;
+  private createUrl(resourceUrl: string, storeCode?: string): string {
+    if (storeCode) {
+      return `${this.serverUrl}${storeCode}/${this.apiVersion}${resourceUrl}`;
     }
     return `${this.serverUrl}${this.apiVersion}${resourceUrl}`;
   }
 
-  private async apiCall(
-    requestData: RequestData,
-    requestToken = "",
-    customHeaders: Record<string, string> = {}
-  ): Promise<unknown> {
+  private async apiCall(requestData: RequestData, requestToken = "", customHeaders: Record<string, string> = {}): Promise<unknown> {
     try {
       let authHeaders: Record<string, string> = {};
 
@@ -261,14 +253,8 @@ export class AdobeCommerceClient {
       return response.data;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      if (
-        error instanceof Error &&
-        "response" in error &&
-        (error as { response?: { data?: unknown } }).response?.data
-      ) {
-        console.error(
-          `Error body ${requestData.url}: ${JSON.stringify((error as { response: { data: unknown } }).response.data)}`
-        );
+      if (error instanceof Error && "response" in error && (error as { response?: { data?: unknown } }).response?.data) {
+        console.error(`Error body ${requestData.url}: ${JSON.stringify((error as { response: { data: unknown } }).response.data)}`);
       }
       throw error;
     }

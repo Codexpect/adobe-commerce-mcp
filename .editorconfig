@@ -1,0 +1,29 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 150
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{yml, yaml}]
+indent_size = 2
+
+[*.json]
+indent_size = 2
+
+[{*.cjs,*.es6,*.js,*.mjs}]
+ij_javascript_spaces_within_imports = true
+
+[{*.ats,*.cts,*.mts,*.ts}]
+ij_typescript_blank_lines_after_imports = 1
+ij_typescript_align_imports = false
+ij_typescript_imports_wrap = on_every_item
+ij_typescript_spaces_within_imports = true
+
