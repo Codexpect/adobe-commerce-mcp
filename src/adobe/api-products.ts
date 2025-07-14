@@ -1,5 +1,6 @@
 import { AdobeCommerceClient } from "./adobe-commerce-client.js";
-import type { Product, SearchCriteria } from "./types/commerce.js";
+import type { Product } from "./types/product.js";
+import type { SearchCriteria } from "./types/search-criteria.js";
 
 export async function getProducts(client: AdobeCommerceClient, options: SearchCriteria = {}): Promise<{ items: Product[]; endpoint: string } | null> {
   const { page = 1, pageSize = 20, filters = [] } = options;

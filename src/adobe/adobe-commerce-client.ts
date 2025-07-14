@@ -2,7 +2,7 @@ import { getImsAccessToken, ImsAuthParams } from "@adobe/commerce-sdk-auth";
 import axios, { AxiosResponse } from "axios";
 import crypto from "crypto";
 import Oauth1a from "oauth-1.0a";
-import { RequestData, AdobeImsParams, CommerceParams } from "./types/commerce.js";
+import { RequestData, AdobeImsParams, CommerceParams } from "./types/params.js";
 
 export interface OAuth1aConfig {
   consumerKey: string;
