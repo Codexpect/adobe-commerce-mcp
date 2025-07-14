@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { initAdobeCommerceClient } from "./adobe/adobe-commerce-client.js";
-import { registerProductTools } from "./tool/tool-search-products.js";
+import { registerProductsTools } from "./tool/tool-for-products.js";
 
 const server = new McpServer({
   name: "adobe-commerce",
@@ -14,7 +14,7 @@ const server = new McpServer({
 
 async function main() {
   const client = initAdobeCommerceClient();
-  registerProductTools(server, client);
+  registerProductsTools(server, client);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
