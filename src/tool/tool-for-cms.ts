@@ -1,22 +1,19 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
-import { getProducts, getProductsAttributes } from "../adobe/products/api-products.js";
-import { Product, ProductAttribute } from "../adobe/products/types/product.js";
+import { getCmsBlocks } from "../adobe/cms/api-cms-blocks.js";
+import { getCmsPages } from "../adobe/cms/api-cms-pages.js";
+import { CmsBlock } from "../adobe/cms/types/cms-block.js";
+import { CmsPage } from "../adobe/cms/types/cms-page.js";
 import { mapFiltersToConditionType } from "../adobe/search-criteria/index.js";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
 import { toolTextResponse } from "./tool-response.js";
 
-export function registerProductTools(server: McpServer, client: AdobeCommerceClient) {
-  registerSearchProductAttributesTool(server, client);
-  registerSearchProductTool(server, client);
-}
-
-function registerSearchProductAttributesTool(server: McpServer, client: AdobeCommerceClient) {
+export function registerCmsBlockTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "search-products-attributes",
+    "search-cms-blocks",
     {
-      title: "Search Products Attributes",
-      description: "Search for products attributes in Adobe Commerce with flexible search filters.",
+      title: "Search CMS Blocks",
+      description: "Search for CMS blocks in Adobe Commerce with flexible search filters.",
       inputSchema: searchCriteriaInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -30,20 +27,20 @@ function registerSearchProductAttributesTool(server: McpServer, client: AdobeCom
     }) => {
       const { page, pageSize, filters = [], sortOrders = [] } = args;
       const searchCriteria = { page, pageSize, filters: mapFiltersToConditionType(filters), sortOrders };
-      const result = await getProductsAttributes(client, searchCriteria);
+      const result = await getCmsBlocks(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
         const { items, endpoint } = resp;
         return `
-         <meta>
-          <name>Products Attributes</name>
+        <meta>
+          <name>CMS Blocks</name>
           <page>${page}</page>
           <pageSize>${pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
         <data>
-          ${items.map((item: ProductAttribute) => JSON.stringify(item)).join("\n")}
+          ${items.map((item: CmsBlock) => JSON.stringify(item)).join("\n")}
         <data>
       `;
       });
@@ -51,12 +48,12 @@ function registerSearchProductAttributesTool(server: McpServer, client: AdobeCom
   );
 }
 
-function registerSearchProductTool(server: McpServer, client: AdobeCommerceClient) {
+export function registerCmsPageTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "search-products",
+    "search-cms-pages",
     {
-      title: "Search Products",
-      description: "Search for products in Adobe Commerce with flexible search filters.",
+      title: "Search CMS Pages",
+      description: "Search for CMS pages in Adobe Commerce with flexible search filters.",
       inputSchema: searchCriteriaInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -70,23 +67,23 @@ function registerSearchProductTool(server: McpServer, client: AdobeCommerceClien
     }) => {
       const { page, pageSize, filters = [], sortOrders = [] } = args;
       const searchCriteria = { page, pageSize, filters: mapFiltersToConditionType(filters), sortOrders };
-      const result = await getProducts(client, searchCriteria);
+      const result = await getCmsPages(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
         const { items, endpoint } = resp;
         return `
         <meta>
-          <name>Products</name>
+          <name>CMS Pages</name>
           <page>${page}</page>
           <pageSize>${pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
         <data>
-          ${items.map((item: Product) => JSON.stringify(item)).join("\n")}
+          ${items.map((item: CmsPage) => JSON.stringify(item)).join("\n")}
         <data>
       `;
       });
     }
   );
-}
+} 
