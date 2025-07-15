@@ -1,0 +1,17 @@
+# MCP Tools Directory Rule
+
+The [src/tools](mdc:src/tools) directory contains the main entry points for registering MCP tools that interact with Adobe Commerce domains. Each file in this directory exposes a set of tools for a specific domain:
+
+- [tool-for-products.ts](mdc:src/tools/tool-for-products.ts): Product search and management tools
+- [tool-for-products-attributes.ts](mdc:src/tools/tool-for-products-attributes.ts): Product attribute search and creation tools
+- [tool-for-categories.ts](mdc:src/tools/tool-for-categories.ts): Category management tools
+- [tool-for-customers.ts](mdc:src/tools/tool-for-customers.ts): Customer management tools
+- [tool-for-orders.ts](mdc:src/tools/tool-for-orders.ts): Order management tools
+- [tool-for-cms.ts](mdc:src/tools/tool-for-cms.ts): CMS block and page tools
+
+All tools use [tool-response.ts](mdc:src/tools/tool-response.ts) as a shared utility for formatting responses. This directory is the primary integration point for exposing Adobe Commerce capabilities to the MCP server.
+description:
+globs:
+alwaysApply: false
+
+---
