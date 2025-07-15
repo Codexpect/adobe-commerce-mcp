@@ -1,10 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
 import { getCmsBlocks } from "../adobe/cms/api-cms-blocks.js";
 import { getCmsPages } from "../adobe/cms/api-cms-pages.js";
 import { CmsBlock } from "../adobe/cms/types/cms-block.js";
 import { CmsPage } from "../adobe/cms/types/cms-page.js";
-import { mapFiltersToConditionType } from "../adobe/search-criteria/index.js";
+import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
 import { toolTextResponse } from "./tool-response.js";
 
@@ -19,14 +20,9 @@ export function registerCmsBlockTool(server: McpServer, client: AdobeCommerceCli
         readOnlyHint: true,
       },
     },
-    async (args: {
-      page: number;
-      pageSize: number;
-      filters?: { field: string; value: string | number; conditionType?: string }[];
-      sortOrders?: { field: string; direction: "ASC" | "DESC" }[];
-    }) => {
-      const { page, pageSize, filters = [], sortOrders = [] } = args;
-      const searchCriteria = { page, pageSize, filters: mapFiltersToConditionType(filters), sortOrders };
+    async (args) => {
+      const parsed = z.object(searchCriteriaInputSchema).parse(args);
+      const searchCriteria = buildSearchCriteriaFromInput(parsed);
       const result = await getCmsBlocks(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
@@ -34,8 +30,8 @@ export function registerCmsBlockTool(server: McpServer, client: AdobeCommerceCli
         return `
         <meta>
           <name>CMS Blocks</name>
-          <page>${page}</page>
-          <pageSize>${pageSize}</pageSize>
+          <page>${searchCriteria.page}</page>
+          <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
@@ -59,14 +55,9 @@ export function registerCmsPageTool(server: McpServer, client: AdobeCommerceClie
         readOnlyHint: true,
       },
     },
-    async (args: {
-      page: number;
-      pageSize: number;
-      filters?: { field: string; value: string | number; conditionType?: string }[];
-      sortOrders?: { field: string; direction: "ASC" | "DESC" }[];
-    }) => {
-      const { page, pageSize, filters = [], sortOrders = [] } = args;
-      const searchCriteria = { page, pageSize, filters: mapFiltersToConditionType(filters), sortOrders };
+    async (args) => {
+      const parsed = z.object(searchCriteriaInputSchema).parse(args);
+      const searchCriteria = buildSearchCriteriaFromInput(parsed);
       const result = await getCmsPages(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
@@ -74,8 +65,8 @@ export function registerCmsPageTool(server: McpServer, client: AdobeCommerceClie
         return `
         <meta>
           <name>CMS Pages</name>
-          <page>${page}</page>
-          <pageSize>${pageSize}</pageSize>
+          <page>${searchCriteria.page}</page>
+          <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
@@ -86,4 +77,4 @@ export function registerCmsPageTool(server: McpServer, client: AdobeCommerceClie
       });
     }
   );
-} 
+}

@@ -1,54 +1,14 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import z from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
-import { getProducts, getProductsAttributes } from "../adobe/products/api-products.js";
-import { Product, ProductAttribute } from "../adobe/products/types/product.js";
-import { mapFiltersToConditionType } from "../adobe/search-criteria/index.js";
+import { getProducts } from "../adobe/products/api-products.js";
+import { Product } from "../adobe/products/types/product.js";
+import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
 import { toolTextResponse } from "./tool-response.js";
 
 export function registerProductTools(server: McpServer, client: AdobeCommerceClient) {
-  registerSearchProductAttributesTool(server, client);
   registerSearchProductTool(server, client);
-}
-
-function registerSearchProductAttributesTool(server: McpServer, client: AdobeCommerceClient) {
-  server.registerTool(
-    "search-products-attributes",
-    {
-      title: "Search Products Attributes",
-      description: "Search for products attributes in Adobe Commerce with flexible search filters.",
-      inputSchema: searchCriteriaInputSchema,
-      annotations: {
-        readOnlyHint: true,
-      },
-    },
-    async (args: {
-      page: number;
-      pageSize: number;
-      filters?: { field: string; value: string | number; conditionType?: string }[];
-      sortOrders?: { field: string; direction: "ASC" | "DESC" }[];
-    }) => {
-      const { page, pageSize, filters = [], sortOrders = [] } = args;
-      const searchCriteria = { page, pageSize, filters: mapFiltersToConditionType(filters), sortOrders };
-      const result = await getProductsAttributes(client, searchCriteria);
-
-      return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
-        return `
-         <meta>
-          <name>Products Attributes</name>
-          <page>${page}</page>
-          <pageSize>${pageSize}</pageSize>
-          <endpoint>${endpoint}</endpoint>
-        <meta>
-
-        <data>
-          ${items.map((item: ProductAttribute) => JSON.stringify(item)).join("\n")}
-        <data>
-      `;
-      });
-    }
-  );
 }
 
 function registerSearchProductTool(server: McpServer, client: AdobeCommerceClient) {
@@ -62,14 +22,9 @@ function registerSearchProductTool(server: McpServer, client: AdobeCommerceClien
         readOnlyHint: true,
       },
     },
-    async (args: {
-      page: number;
-      pageSize: number;
-      filters?: { field: string; value: string | number; conditionType?: string }[];
-      sortOrders?: { field: string; direction: "ASC" | "DESC" }[];
-    }) => {
-      const { page, pageSize, filters = [], sortOrders = [] } = args;
-      const searchCriteria = { page, pageSize, filters: mapFiltersToConditionType(filters), sortOrders };
+    async (args: unknown) => {
+      const parsed = z.object(searchCriteriaInputSchema).parse(args);
+      const searchCriteria = buildSearchCriteriaFromInput(parsed);
       const result = await getProducts(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
@@ -77,8 +32,8 @@ function registerSearchProductTool(server: McpServer, client: AdobeCommerceClien
         return `
         <meta>
           <name>Products</name>
-          <page>${page}</page>
-          <pageSize>${pageSize}</pageSize>
+          <page>${searchCriteria.page}</page>
+          <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
