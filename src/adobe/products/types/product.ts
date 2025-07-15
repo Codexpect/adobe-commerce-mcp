@@ -6,6 +6,7 @@ export interface Product {
 }
 
 export interface ProductAttribute {
+  attribute_id?: number;
   attribute_code: string;
   entity_type_id: string;
   default_frontend_label: string;
@@ -41,6 +42,12 @@ export interface ProductAttribute {
   is_unique?: boolean;
   frontend_class?: string;
   validation_rules?: unknown[];
-  // attribute_id is returned by the API, not required for creation
-  attribute_id?: number;
+}
+
+export interface AttributeSet {
+  attribute_set_id?: number;
+  attribute_set_name?: string;
+  entity_type_id: string;
+  sort_order?: number;
+  skeleton_id?: number;
 }

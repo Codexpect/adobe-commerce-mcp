@@ -1,18 +1,18 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
-import { getOrders } from "../adobe/orders/api-orders.js";
-import { Order } from "../adobe/orders/types/order.js";
+import { getCustomers } from "../adobe/customers/api-customers.js";
+import { Customer } from "../adobe/customers/types/customer.js";
 import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
 import { toolTextResponse } from "./tool-response.js";
 
-export function registerOrderTool(server: McpServer, client: AdobeCommerceClient) {
+export function registerCustomerTools(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "search-orders",
+    "search-customers",
     {
-      title: "Search Orders",
-      description: "Search for orders in Adobe Commerce with flexible search filters.",
+      title: "Search Customers",
+      description: "Search for customers in Adobe Commerce with flexible search filters.",
       inputSchema: searchCriteriaInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -21,20 +21,20 @@ export function registerOrderTool(server: McpServer, client: AdobeCommerceClient
     async (args) => {
       const parsed = z.object(searchCriteriaInputSchema).parse(args);
       const searchCriteria = buildSearchCriteriaFromInput(parsed);
-      const result = await getOrders(client, searchCriteria);
+      const result = await getCustomers(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
         const { items, endpoint } = resp;
         return `
         <meta>
-          <name>Orders</name>
+          <name>Customers</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
         <data>
-          ${items.map((item: Order) => JSON.stringify(item)).join("\n")}
+          ${items.map((item: Customer) => JSON.stringify(item)).join("\n")}
         <data>
       `;
       });

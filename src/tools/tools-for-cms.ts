@@ -9,7 +9,7 @@ import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js"
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
 import { toolTextResponse } from "./tool-response.js";
 
-export function registerCmsBlockTool(server: McpServer, client: AdobeCommerceClient) {
+export function registerCmsBlockTools(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
     "search-cms-blocks",
     {

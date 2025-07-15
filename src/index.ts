@@ -1,12 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { initAdobeCommerceClient } from "./adobe/adobe-commerce-client.js";
-import { registerCategoriesTools } from "./tools/tool-for-categories.js";
-import { registerCmsBlockTool as registerCmsBlockTools, registerCmsPageTool as registerCmsPageTools } from "./tools/tool-for-cms.js";
-import { registerCustomerTool as registerCustomerTools } from "./tools/tool-for-customers.js";
-import { registerOrderTool as registerOrderTools } from "./tools/tool-for-orders.js";
-import { registerProductAttributesTools } from "./tools/tool-for-products-attributes.js";
-import { registerProductTools } from "./tools/tool-for-products.js";
+import { registerCategoriesTools } from "./tools/tools-for-categories.js";
+import { registerCmsBlockTools, registerCmsPageTool } from "./tools/tools-for-cms.js";
+import { registerCustomerTools } from "./tools/tools-for-customers.js";
+import { registerOrderTools } from "./tools/tools-for-orders.js";
+import { registerProductAttributeSetsTools } from "./tools/tools-for-products-attribute-sets.js";
+import { registerProductAttributesTools } from "./tools/tools-for-products-attributes.js";
+import { registerProductTools } from "./tools/tools-for-products.js";
 
 const server = new McpServer({
   name: "adobe-commerce",
@@ -23,8 +24,9 @@ async function main() {
   registerOrderTools(server, client);
   registerCustomerTools(server, client);
   registerCmsBlockTools(server, client);
-  registerCmsPageTools(server, client);
+  registerCmsPageTool(server, client);
   registerProductAttributesTools(server, client);
+  registerProductAttributeSetsTools(server, client);
   registerProductTools(server, client);
 
   const transport = new StdioServerTransport();
