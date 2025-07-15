@@ -1,11 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
-import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
-import { getProducts } from "../adobe/products/api-products.js";
-import { Product } from "../adobe/products/types/product.js";
-import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
-import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
-import { toolTextResponse } from "./tool-response.js";
+import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
+import { getProducts } from "../adobe/products/api-products";
+import { Product } from "../adobe/products/types/product";
+import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
+import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
+import { toolTextResponse } from "./tool-response";
 
 export function registerProductTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchProductTool(server, client);

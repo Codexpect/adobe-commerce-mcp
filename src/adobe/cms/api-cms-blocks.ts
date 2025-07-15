@@ -1,9 +1,9 @@
-import { AdobeCommerceClient } from "../adobe-commerce-client.js";
-import { buildSearchCriteriaQuery } from "../search-criteria/index.js";
-import type { SearchCriteria } from "../search-criteria/types/search-criteria.js";
-import type { ApiResponse } from "../types/api-response.js";
-import { apiErrorResponse, apiSuccessResponse } from "../types/api-response.js";
-import type { CmsBlock } from "./types/cms-block.js";
+import { AdobeCommerceClient } from "../adobe-commerce-client";
+import { buildSearchCriteriaQuery } from "../search-criteria/index";
+import type { SearchCriteria } from "../search-criteria/types/search-criteria";
+import type { ApiResponse } from "../types/api-response";
+import { apiErrorResponse, apiSuccessResponse } from "../types/api-response";
+import type { CmsBlock } from "./types/cms-block";
 
 export async function getCmsBlocks(client: AdobeCommerceClient, options: SearchCriteria = {}): Promise<ApiResponse<CmsBlock>> {
   const searchCriteria = buildSearchCriteriaQuery(options);

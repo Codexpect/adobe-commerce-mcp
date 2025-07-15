@@ -1,6 +1,6 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { z } from "zod";
-import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
+import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
 import {
   createAttributeSet,
   deleteAttributeFromSet,
@@ -8,18 +8,18 @@ import {
   getAttributeSetById,
   getAttributeSetsList,
   updateAttributeSet,
-} from "../adobe/products/api-products-attribute-sets.js";
-import { mapCreateAttributeSetInputToApiPayload, mapUpdateAttributeSetInputToApiPayload } from "../adobe/products/mapping/attribute-mapping.js";
+} from "../adobe/products/api-products-attribute-sets";
+import { mapCreateAttributeSetInputToApiPayload, mapUpdateAttributeSetInputToApiPayload } from "../adobe/products/mapping/attribute-mapping";
 import {
   createAttributeSetInputSchema,
   deleteAttributeFromSetInputSchema,
   deleteAttributeSetInputSchema,
   getAttributeSetByIdInputSchema,
   updateAttributeSetInputSchema,
-} from "../adobe/products/schema.js";
-import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
-import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
-import { toolTextResponse } from "./tool-response.js";
+} from "../adobe/products/schema";
+import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
+import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
+import { toolTextResponse } from "./tool-response";
 
 export function registerProductAttributeSetsTools(server: McpServer, client: AdobeCommerceClient) {
   registerCreateAttributeSetTool(server, client);

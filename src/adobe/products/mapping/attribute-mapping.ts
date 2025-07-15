@@ -1,5 +1,5 @@
-import { CreateAttributeSetInput, CreateProductAttributeInput, UpdateAttributeSetInput } from "../schema.js";
-import { AttributeSet, ProductAttribute } from "../types/product.js";
+import { CreateAttributeSetInput, CreateProductAttributeInput, UpdateAttributeSetInput } from "../schema";
+import { AttributeSet, ProductAttribute } from "../types/product";
 
 const attributeTypeMap = {
   text: { backend_type: "varchar", frontend_input: "text" },

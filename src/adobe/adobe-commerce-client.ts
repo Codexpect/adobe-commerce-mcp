@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import crypto from "crypto";
 import https from "https";
 import Oauth1a from "oauth-1.0a";
-import { AdobeImsParams, CommerceParams, RequestData } from "./types/params.js";
+import { AdobeImsParams, CommerceParams, RequestData } from "./types/params";
 
 export interface OAuth1aConfig {
   consumerKey: string;

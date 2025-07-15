@@ -1,9 +1,9 @@
-import { AdobeCommerceClient } from "../adobe-commerce-client.js";
-import { buildSearchCriteriaQuery } from "../search-criteria/index.js";
-import type { SearchCriteria } from "../search-criteria/types/search-criteria.js";
-import type { ApiResponse } from "../types/api-response.js";
-import { apiErrorResponse, apiSuccessResponse } from "../types/api-response.js";
-import type { Category } from "./types/category.js";
+import { AdobeCommerceClient } from "../adobe-commerce-client";
+import { buildSearchCriteriaQuery } from "../search-criteria/index";
+import type { SearchCriteria } from "../search-criteria/types/search-criteria";
+import type { ApiResponse } from "../types/api-response";
+import { apiErrorResponse, apiSuccessResponse } from "../types/api-response";
+import type { Category } from "./types/category";
 
 export async function getCategories(client: AdobeCommerceClient, options: SearchCriteria = {}): Promise<ApiResponse<Category>> {
   const searchCriteria = buildSearchCriteriaQuery(options);
