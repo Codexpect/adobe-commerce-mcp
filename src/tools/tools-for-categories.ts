@@ -28,18 +28,19 @@ function registerSearchCategoryTool(server: McpServer, client: AdobeCommerceClie
       const result = await getCategories(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>Categories</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: Category) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: Category) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }

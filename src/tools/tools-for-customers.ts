@@ -24,18 +24,19 @@ export function registerCustomerTools(server: McpServer, client: AdobeCommerceCl
       const result = await getCustomers(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>Customers</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: Customer) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: Customer) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }

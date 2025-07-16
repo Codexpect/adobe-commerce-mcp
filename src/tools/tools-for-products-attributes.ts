@@ -31,18 +31,19 @@ function registerSearchProductAttributesTool(server: McpServer, client: AdobeCom
       const result = await getProductsAttributes(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Products Attributes</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: ProductAttribute) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: ProductAttribute) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }
@@ -67,7 +68,7 @@ function registerCreateProductAttributeTool(server: McpServer, client: AdobeComm
       const result = await createProductAttribute(client, attribute);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>Product Attribute</name>
@@ -75,8 +76,8 @@ function registerCreateProductAttributeTool(server: McpServer, client: AdobeComm
         <meta>
 
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${JSON.stringify(data)}
+        </data>
       `;
       });
     }

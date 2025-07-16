@@ -1,5 +1,5 @@
 import { CreateAttributeSetInput, CreateProductAttributeInput, UpdateAttributeSetInput } from "../schema";
-import { AttributeSet, ProductAttribute } from "../types/product";
+import { AttributeSet, PRODUCT_ENTITY_TYPE_ID, ProductAttribute } from "../types/product";
 
 const attributeTypeMap = {
   text: { backend_type: "varchar", frontend_input: "text" },
@@ -21,7 +21,7 @@ export function mapCreateProductAttributeInputToApiPayload(input: CreateProductA
 
   return {
     attribute_code: attributeCode,
-    entity_type_id: "4",
+    entity_type_id: PRODUCT_ENTITY_TYPE_ID,
     default_frontend_label: defaultFrontendLabel,
     scope,
     backend_type: typeMapping.backend_type,
@@ -38,8 +38,7 @@ export function mapCreateAttributeSetInputToApiPayload(input: CreateAttributeSet
   return {
     attribute_set_name: input.attributeSetName,
     sort_order: input.sortOrder,
-    entity_type_id: "4",
-    skeleton_id: 4,
+    entity_type_id: PRODUCT_ENTITY_TYPE_ID,
   };
 }
 
@@ -50,6 +49,6 @@ export function mapUpdateAttributeSetInputToApiPayload(input: UpdateAttributeSet
     attribute_set_id: attributeSetId,
     ...(attributeSetName && { attribute_set_name: attributeSetName }),
     ...(sortOrder !== undefined && { sort_order: sortOrder }),
-    entity_type_id: "4",
+    entity_type_id: PRODUCT_ENTITY_TYPE_ID,
   };
 }

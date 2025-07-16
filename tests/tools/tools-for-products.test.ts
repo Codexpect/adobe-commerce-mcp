@@ -1,14 +1,3 @@
-/**
- * Comprehensive Functional Tests for Products Search Tool
- * Tests the actual MCP tool implementation against real Magento/Adobe Commerce instance with sample data
- *
- * Setup Instructions:
- * 1. Copy tests/env.test.example to .env.test
- * 2. Add your Magento credentials to .env.test
- * 3. Run: npm run build
- * 4. Run: npm run test:integration
- */
-
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
 import { registerProductTools } from "../../src/tools/tools-for-products";

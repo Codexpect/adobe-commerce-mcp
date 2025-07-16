@@ -91,7 +91,7 @@ export function parseToolResponse(responseText: string): {
   data: string[];
 } {
   const metaMatch = responseText.match(/<meta>(.*?)<meta>/s);
-  const dataMatch = responseText.match(/<data>(.*?)<data>/s);
+  const dataMatch = responseText.match(/<data>(.*?)<\/data>/s);
   
   const meta: Record<string, string> = {};
   const data: string[] = [];

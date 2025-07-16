@@ -48,7 +48,7 @@ function registerCreateAttributeSetTool(server: McpServer, client: AdobeCommerce
       const result = await createAttributeSet(client, attributeSet);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>Attribute Set</name>
@@ -56,8 +56,8 @@ function registerCreateAttributeSetTool(server: McpServer, client: AdobeCommerce
         <meta>
 
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${JSON.stringify(data)}
+        </data>
       `;
       });
     }
@@ -78,17 +78,18 @@ function registerSearchAttributeSetsTool(server: McpServer, client: AdobeCommerc
       const searchCriteria = buildSearchCriteriaFromInput(parsed);
       const result = await getAttributeSetsList(client, searchCriteria);
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Attribute Sets</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }
@@ -111,15 +112,15 @@ function registerGetAttributeSetByIdTool(server: McpServer, client: AdobeCommerc
 
       const result = await getAttributeSetById(client, attributeSetId);
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Attribute Set Details</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${JSON.stringify(data)}
+        </data>
       `;
       });
     }
@@ -142,13 +143,15 @@ function registerDeleteAttributeSetTool(server: McpServer, client: AdobeCommerce
 
       const result = await deleteAttributeSet(client, attributeSetId);
       return toolTextResponse(result, (resp) => {
-        const { endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Delete Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
-        <data>Deleted</data>
+        <data>
+          ${data ? "Deleted" : "Failed to delete attribute set"}
+        </data>
       `;
       });
     }
@@ -171,15 +174,15 @@ function registerUpdateAttributeSetTool(server: McpServer, client: AdobeCommerce
 
       const result = await updateAttributeSet(client, attributeSet.attribute_set_id, attributeSet);
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Update Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${JSON.stringify(data)}
+        </data>
       `;
       });
     }
@@ -202,13 +205,15 @@ function registerDeleteAttributeFromSetTool(server: McpServer, client: AdobeComm
 
       const result = await deleteAttributeFromSet(client, attributeSetId, attributeCode);
       return toolTextResponse(result, (resp) => {
-        const { endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Delete Attribute From Set</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
-        <data>Deleted</data>
+        <data>
+          ${data ? "Deleted" : "Failed to delete attribute from set"}
+        </data>
       `;
       });
     }

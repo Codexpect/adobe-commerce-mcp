@@ -5,13 +5,13 @@ import type { ApiResponse } from "../types/api-response";
 import { apiErrorResponse, apiSuccessResponse } from "../types/api-response";
 import type { Product } from "./types/product";
 
-export async function getProducts(client: AdobeCommerceClient, options: SearchCriteria = {}): Promise<ApiResponse<Product>> {
+export async function getProducts(client: AdobeCommerceClient, options: SearchCriteria = {}): Promise<ApiResponse<Product[]>> {
   const searchCriteria = buildSearchCriteriaQuery(options);
   const endpoint = `/products?${searchCriteria}`;
   try {
     const data = await client.get<{ items: Product[] }>(endpoint);
-    return apiSuccessResponse<Product>(endpoint, data.items ?? []);
+    return apiSuccessResponse<Product[]>(endpoint, data.items ?? []);
   } catch (error) {
-    return apiErrorResponse<Product>(endpoint, error);
+    return apiErrorResponse<Product[]>(endpoint, error);
   }
 }

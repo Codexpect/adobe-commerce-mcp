@@ -26,18 +26,19 @@ export function registerCmsBlockTools(server: McpServer, client: AdobeCommerceCl
       const result = await getCmsBlocks(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>CMS Blocks</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: CmsBlock) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: CmsBlock) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }
@@ -61,18 +62,19 @@ export function registerCmsPageTool(server: McpServer, client: AdobeCommerceClie
       const result = await getCmsPages(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>CMS Pages</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: CmsPage) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: CmsPage) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }

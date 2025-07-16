@@ -24,18 +24,19 @@ export function registerOrderTools(server: McpServer, client: AdobeCommerceClien
       const result = await getOrders(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>Orders</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: Order) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: Order) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }
