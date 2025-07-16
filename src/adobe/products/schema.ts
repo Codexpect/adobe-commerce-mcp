@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const createProductAttributeInputSchema = {
   type: z
-    .enum(["text", "textarea", "boolean", "date", "integer", "decimal", "singleselect", "multiselect"])
-    .describe("Logical type of the attribute (e.g., 'text', 'textarea', 'boolean', 'date', 'integer', 'decimal', 'singleselect', 'multiselect')."),
+    .enum(["text", "textarea", "boolean", "date", "integer", "decimal", "price", "weight", "singleselect", "multiselect"])
+    .describe("Logical type of the attribute (e.g., 'text', 'textarea', 'boolean', 'date', 'integer', 'decimal', 'price', 'weight', 'singleselect', 'multiselect')."),
   attributeCode: z.string().describe("Unique code for the attribute (e.g., 'color', 'size')."),
   defaultFrontendLabel: z.string().describe("Default frontend label for the attribute (e.g., 'Color')."),
   scope: z.enum(["store", "website", "global"]).describe("Scope of the attribute: 'store', 'website', or 'global'."),

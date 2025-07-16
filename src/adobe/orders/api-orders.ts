@@ -12,7 +12,6 @@ export async function getOrders(client: AdobeCommerceClient, options: SearchCrit
     const data = await client.get<{ items: Order[] }>(endpoint);
     return apiSuccessResponse<Order>(endpoint, data.items ?? []);
   } catch (error) {
-    console.error("Error fetching orders:", error);
     return apiErrorResponse<Order>(endpoint, error);
   }
 }

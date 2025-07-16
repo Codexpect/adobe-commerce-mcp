@@ -12,7 +12,6 @@ export async function getCmsPages(client: AdobeCommerceClient, options: SearchCr
     const data = await client.get<{ items: CmsPage[] }>(endpoint);
     return apiSuccessResponse<CmsPage>(endpoint, data.items ?? []);
   } catch (error) {
-    console.error("Error fetching CMS pages:", error);
     return apiErrorResponse<CmsPage>(endpoint, error);
   }
 } 

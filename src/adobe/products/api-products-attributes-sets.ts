@@ -11,7 +11,6 @@ export async function createAttributeSet(client: AdobeCommerceClient, attributeS
     const data = await client.post(endpoint, { attributeSet });
     return apiSuccessResponse<AttributeSet>(endpoint, [data as AttributeSet]);
   } catch (error) {
-    console.error("Error creating attribute set:", error);
     return apiErrorResponse<AttributeSet>(endpoint, error);
   }
 }
@@ -23,7 +22,6 @@ export async function getAttributeSetsList(client: AdobeCommerceClient, options:
     const data = await client.get<{ items: AttributeSet[] }>(endpoint);
     return apiSuccessResponse<AttributeSet>(endpoint, data.items ?? []);
   } catch (error) {
-    console.error("Error fetching attribute sets list:", error);
     return apiErrorResponse<AttributeSet>(endpoint, error);
   }
 }
@@ -34,7 +32,6 @@ export async function getAttributeSetById(client: AdobeCommerceClient, attribute
     const data = await client.get<AttributeSet>(endpoint);
     return apiSuccessResponse<AttributeSet>(endpoint, [data]);
   } catch (error) {
-    console.error("Error fetching attribute set by ID:", error);
     return apiErrorResponse<AttributeSet>(endpoint, error);
   }
 }
@@ -45,7 +42,6 @@ export async function deleteAttributeSet(client: AdobeCommerceClient, attributeS
     await client.delete(endpoint);
     return apiSuccessResponse<AttributeSet>(endpoint, []);
   } catch (error) {
-    console.error("Error deleting attribute set:", error);
     return apiErrorResponse<AttributeSet>(endpoint, error);
   }
 }
@@ -56,7 +52,6 @@ export async function updateAttributeSet(client: AdobeCommerceClient, attributeS
     const data = await client.put(endpoint, { attributeSet });
     return apiSuccessResponse<AttributeSet>(endpoint, [data as AttributeSet]);
   } catch (error) {
-    console.error("Error updating attribute set:", error);
     return apiErrorResponse<AttributeSet>(endpoint, error);
   }
 }
@@ -67,7 +62,6 @@ export async function deleteAttributeFromSet(client: AdobeCommerceClient, attrib
     await client.delete(endpoint);
     return apiSuccessResponse<AttributeSet>(endpoint, []);
   } catch (error) {
-    console.error("Error deleting attribute from set:", error);
     return apiErrorResponse<AttributeSet>(endpoint, error);
   }
 } 

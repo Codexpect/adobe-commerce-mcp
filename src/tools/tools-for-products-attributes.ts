@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { z } from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
-import { createProductAttribute, getProductsAttributes } from "../adobe/products/api-products";
+import { createProductAttribute, getProductsAttributes } from "../adobe/products/api-products-attributes";
 import { mapCreateProductAttributeInputToApiPayload } from "../adobe/products/mapping/attribute-mapping";
 import { createProductAttributeInputSchema } from "../adobe/products/schema";
 import { ProductAttribute } from "../adobe/products/types/product";

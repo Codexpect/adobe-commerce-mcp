@@ -12,7 +12,6 @@ export async function getCmsBlocks(client: AdobeCommerceClient, options: SearchC
     const data = await client.get<{ items: CmsBlock[] }>(endpoint);
     return apiSuccessResponse<CmsBlock>(endpoint, data.items ?? []);
   } catch (error) {
-    console.error("Error fetching CMS blocks:", error);
     return apiErrorResponse<CmsBlock>(endpoint, error);
   }
 } 

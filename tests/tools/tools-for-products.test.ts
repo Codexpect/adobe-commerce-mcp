@@ -86,6 +86,7 @@ describe("Products Search Tool - Functional Tests", () => {
       expect(parsed.meta.page).toBe("2");
       expect(parsed.meta.pageSize).toBe("5");
       expect(parsed.data.length).toBeLessThanOrEqual(5);
+      expect(parsed.data.length).toBeGreaterThan(0);
     }, 30000);
   });
 
@@ -118,11 +119,23 @@ describe("Products Search Tool - Functional Tests", () => {
     }, 30000);
 
     test("should filter products by name using LIKE condition", async () => {
+      // First, let's see what products are available to find a good search term
+      const initialResult = await mockServer.callTool("search-products", { pageSize: 3 });
+      const initialText = extractToolResponseText(initialResult);
+      const initialParsed = parseToolResponse(initialText);
+
+      // Get a word from the first product's name to use as search term
+      const firstProduct = JSON.parse(initialParsed.data[0]);
+      const productName = firstProduct.name.toLowerCase();
+      const searchTerm = productName.split(" ")[0]; // Use first word of product name
+
+      console.log(`🔍 Searching for products with "${searchTerm}" in name`);
+
       const result = await mockServer.callTool("search-products", {
         filters: [
           {
             field: "name",
-            value: "bag",
+            value: "%" + searchTerm + "%",
             conditionType: "like",
           },
         ],
@@ -132,12 +145,13 @@ describe("Products Search Tool - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      // Should find products with "bag" in the name
-      expect(parsed.data.length).toBeGreaterThanOrEqual(0);
+      console.log(parsed);
+      // Should find products with the search term in the name
+      expect(parsed.data.length).toBeGreaterThan(0);
 
       const products = parsed.data.map((item) => JSON.parse(item));
       products.forEach((product) => {
-        expect(product.name.toLowerCase()).toContain("bag");
+        expect(product.name.toLowerCase()).toContain(searchTerm);
       });
     }, 30000);
 
@@ -161,17 +175,14 @@ describe("Products Search Tool - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      expect(parsed.data.length).toBeGreaterThanOrEqual(0);
+      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.meta.name).toBe("Products");
+      expect(parsed.meta.endpoint).toContain("/products");
 
       const products = parsed.data.map((item) => JSON.parse(item));
       const productsWithPrice = products.filter((product) => product.price !== undefined && product.price > 0);
-      
-      // Skip validation if no products with valid price data found
-      if (productsWithPrice.length === 0) {
-        console.log("No products with valid price data found - skipping price range validation");
-        return;
-      }
-      
+
+      // Validate that all products with price data are within the specified range
       productsWithPrice.forEach((product) => {
         expect(product.price).toBeGreaterThanOrEqual(50);
         expect(product.price).toBeLessThanOrEqual(200);
@@ -193,7 +204,7 @@ describe("Products Search Tool - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      expect(parsed.data.length).toBeGreaterThanOrEqual(0);
+      expect(parsed.data.length).toBeGreaterThan(0);
 
       const products = parsed.data.map((item) => JSON.parse(item));
       products.forEach((product) => {
@@ -217,14 +228,11 @@ describe("Products Search Tool - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      expect(parsed.data.length).toBeGreaterThanOrEqual(0);
+      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.meta.name).toBe("Products");
+      expect(parsed.meta.endpoint).toContain("/products");
 
-      // Skip sort validation if we don't have enough data
-      if (parsed.data.length < 2) {
-        console.log("Skipping sort validation - insufficient data");
-        return;
-      }
-
+      // Validate sorting if we have multiple products
       const products = parsed.data.map((item) => JSON.parse(item));
       const names = products.map((p) => p.name);
       const sortedNames = [...names].sort();
@@ -245,20 +253,15 @@ describe("Products Search Tool - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      // Skip price sort validation if we don't have enough data
-      if (parsed.data.length < 2) {
-        console.log("Skipping price sort validation - insufficient data");
-        return;
-      }
+      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.meta.name).toBe("Products");
+      expect(parsed.meta.endpoint).toContain("/products");
 
+      // Validate price sorting if we have products with price data
       const products = parsed.data.map((item) => JSON.parse(item));
       const prices = products.map((p) => p.price).filter((p) => p !== undefined);
 
-      if (prices.length < 2) {
-        console.log("Skipping price sort validation - insufficient price data");
-        return;
-      }
-
+      // Check that prices are in descending order
       for (let i = 0; i < prices.length - 1; i++) {
         expect(prices[i]).toBeGreaterThanOrEqual(prices[i + 1]);
       }
@@ -296,15 +299,11 @@ describe("Products Search Tool - Functional Tests", () => {
       expect(parsed.meta.page).toBe("1");
       expect(parsed.meta.pageSize).toBe("3");
       expect(parsed.data.length).toBeLessThanOrEqual(3);
+      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.meta.name).toBe("Products");
+      expect(parsed.meta.endpoint).toContain("/products");
 
-      expect(parsed.data.length).toBeGreaterThanOrEqual(0);
-
-      // Skip validation if no data returned
-      if (parsed.data.length === 0) {
-        console.log("No products returned for complex search - skipping validation");
-        return;
-      }
-
+      // Validate filters on returned products
       const products = parsed.data.map((item) => JSON.parse(item));
       products.forEach((product) => {
         expect(product.status).toBe(1);
@@ -327,37 +326,15 @@ describe("Products Search Tool - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      expect(parsed.data.length).toBeGreaterThanOrEqual(0);
+      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.meta.name).toBe("Products");
+      expect(parsed.meta.endpoint).toContain("/products");
 
-      // Skip validation if no configurable products found
-      if (parsed.data.length === 0) {
-        console.log("No configurable products found - skipping validation");
-        return;
-      }
-
+      // Validate that returned products are configurable
       const products = parsed.data.map((item) => JSON.parse(item));
       products.forEach((product) => {
         expect(product.type_id).toBe("configurable");
       });
-    }, 30000);
-
-    test("should search products by category", async () => {
-      const result = await mockServer.callTool("search-products", {
-        filters: [
-          {
-            field: "category_ids",
-            value: "2", // Default category in Magento sample data
-            conditionType: "finset",
-          },
-        ],
-        pageSize: 5,
-      });
-
-      const responseText = extractToolResponseText(result);
-      const parsed = parseToolResponse(responseText);
-
-      // Should return products that belong to category 2
-      expect(parsed.data.length).toBeGreaterThanOrEqual(0);
     }, 30000);
   });
 
@@ -442,12 +419,5 @@ describe("Products Search Tool - Functional Tests", () => {
         expect(product).toHaveProperty("name");
       });
     }, 30000);
-  });
-
-  afterAll(() => {
-    console.log("\n🎉 Comprehensive functional tests completed!");
-    console.log("📊 All products search tool functionality verified against Adobe Commerce");
-    console.log("🔍 Tested: Basic search, filtering, sorting, pagination, edge cases, and response format");
-    console.log("🛠️ Tool implementation verified through actual MCP server calls");
   });
 });

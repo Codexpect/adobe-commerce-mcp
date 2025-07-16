@@ -12,7 +12,6 @@ export async function getCategories(client: AdobeCommerceClient, options: Search
     const data = await client.get<{ items: Category[] }>(endpoint);
     return apiSuccessResponse<Category>(endpoint, data.items ?? []);
   } catch (error) {
-    console.error("Error fetching categories:", error);
     return apiErrorResponse<Category>(endpoint, error);
   }
 }

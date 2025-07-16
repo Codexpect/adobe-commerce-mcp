@@ -12,7 +12,6 @@ export async function getCustomers(client: AdobeCommerceClient, options: SearchC
     const data = await client.get<{ items: Customer[] }>(endpoint);
     return apiSuccessResponse<Customer>(endpoint, data.items ?? []);
   } catch (error) {
-    console.error("Error fetching customers:", error);
     return apiErrorResponse<Customer>(endpoint, error);
   }
 } 

@@ -6,8 +6,10 @@ const attributeTypeMap = {
   textarea: { backend_type: "text", frontend_input: "textarea" },
   boolean: { backend_type: "int", frontend_input: "boolean" },
   date: { backend_type: "datetime", frontend_input: "date" },
-  integer: { backend_type: "int", frontend_input: "text" },
-  decimal: { backend_type: "decimal", frontend_input: "text" },
+  integer: { backend_type: "varchar", frontend_input: "text" },
+  decimal: { backend_type: "varchar", frontend_input: "text" },
+  weight: { backend_type: "varchar", frontend_input: "text" },
+  price: { backend_type: "decimal", frontend_input: "price" },
   singleselect: { backend_type: "int", frontend_input: "select" },
   multiselect: { backend_type: "text", frontend_input: "multiselect" },
 };

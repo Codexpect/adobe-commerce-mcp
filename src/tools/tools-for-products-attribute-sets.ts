@@ -8,7 +8,7 @@ import {
   getAttributeSetById,
   getAttributeSetsList,
   updateAttributeSet,
-} from "../adobe/products/api-products-attribute-sets";
+} from "../adobe/products/api-products-attributes-sets";
 import { mapCreateAttributeSetInputToApiPayload, mapUpdateAttributeSetInputToApiPayload } from "../adobe/products/mapping/attribute-mapping";
 import {
   createAttributeSetInputSchema,
