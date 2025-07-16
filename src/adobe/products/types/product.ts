@@ -54,3 +54,9 @@ export interface AttributeSet {
   sort_order?: number;
   skeleton_id?: number;
 }
+
+export interface AttributeGroup {
+  attribute_group_id?: number;
+  attribute_group_name: string;
+  attribute_set_id: number;
+}

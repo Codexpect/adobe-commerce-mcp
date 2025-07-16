@@ -489,12 +489,21 @@ describe("Products Attributes Tools - Functional Tests", () => {
       const duplicateCode = `duplicate_test_attr_${Date.now()}`;
 
       // Create first attribute
-      await mockServer.callTool("create-product-attribute", {
+      const firstResult = await mockServer.callTool("create-product-attribute", {
         type: "text",
         attributeCode: duplicateCode,
         defaultFrontendLabel: "First Test Attribute",
         scope: "global",
       });
+      // Parse and store the created attribute's ID for cleanup
+      const firstResponseText = extractToolResponseText(firstResult);
+      const firstParsed = parseToolResponse(firstResponseText);
+      if (firstParsed.data && firstParsed.data.length > 0) {
+        const createdAttribute = JSON.parse(firstParsed.data[0]);
+        if (createdAttribute.attribute_id) {
+          createdAttributeIds.push(createdAttribute.attribute_id);
+        }
+      }
 
       // Try to create second attribute with same code
       const result = await mockServer.callTool("create-product-attribute", {

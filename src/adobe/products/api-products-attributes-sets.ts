@@ -3,7 +3,7 @@ import { buildSearchCriteriaQuery } from "../search-criteria/index";
 import type { SearchCriteria } from "../search-criteria/types/search-criteria";
 import type { ApiResponse } from "../types/api-response";
 import { apiErrorResponse, apiSuccessResponse } from "../types/api-response";
-import { DEFAULT_ATTRIBUTE_SET_ID, type AttributeSet } from "./types/product";
+import { DEFAULT_ATTRIBUTE_SET_ID, type AttributeGroup, type AttributeSet } from "./types/product";
 
 export async function createAttributeSet(client: AdobeCommerceClient, attributeSet: AttributeSet): Promise<ApiResponse<AttributeSet>> {
   const endpoint = "/products/attribute-sets";
@@ -71,5 +71,64 @@ export async function deleteAttributeFromSet(
     return apiSuccessResponse<boolean>(endpoint, true);
   } catch (error) {
     return apiErrorResponse<boolean>(endpoint, error);
+  }
+}
+
+export async function assignAttributeToSetGroup(
+  client: AdobeCommerceClient,
+  params: { attributeSetId: number; attributeGroupId: number; attributeCode: string; sortOrder?: number }
+): Promise<ApiResponse<boolean>> {
+  const endpoint = "/products/attribute-sets/attributes";
+  try {
+    await client.post(endpoint, params);
+    return apiSuccessResponse<boolean>(endpoint, true);
+  } catch (error) {
+    return apiErrorResponse<boolean>(endpoint, error);
+  }
+}
+
+export async function getAttributeGroupsForSet(client: AdobeCommerceClient, criteria: SearchCriteria): Promise<AttributeGroup[]> {
+  const searchCriteria = buildSearchCriteriaQuery(criteria);
+  const endpoint = `/products/attribute-sets/groups/list?${searchCriteria}`;
+  try {
+    const data = await client.get<{ items: AttributeGroup[] }>(endpoint);
+    if (data && Array.isArray(data.items)) return data.items;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+export async function createAttributeGroup(client: AdobeCommerceClient, group: AttributeGroup): Promise<ApiResponse<AttributeGroup>> {
+  const endpoint = "/products/attribute-sets/groups";
+  try {
+    const data = await client.post(endpoint, { group });
+    return apiSuccessResponse<AttributeGroup>(endpoint, data as AttributeGroup);
+  } catch (error) {
+    return apiErrorResponse<AttributeGroup>(endpoint, error);
+  }
+}
+
+export async function deleteAttributeGroup(client: AdobeCommerceClient, attributeGroupId: number): Promise<ApiResponse<boolean>> {
+  const endpoint = `/products/attribute-sets/groups/${attributeGroupId}`;
+  try {
+    await client.delete(endpoint);
+    return apiSuccessResponse<boolean>(endpoint, true);
+  } catch (error) {
+    return apiErrorResponse<boolean>(endpoint, error);
+  }
+}
+
+export async function updateAttributeGroup(
+  client: AdobeCommerceClient,
+  attributeSetId: number,
+  group: AttributeGroup
+): Promise<ApiResponse<AttributeGroup>> {
+  const endpoint = `/products/attribute-sets/${attributeSetId}/groups`;
+  try {
+    const data = await client.put(endpoint, { group });
+    return apiSuccessResponse<AttributeGroup>(endpoint, data as AttributeGroup);
+  } catch (error) {
+    return apiErrorResponse<AttributeGroup>(endpoint, error);
   }
 }

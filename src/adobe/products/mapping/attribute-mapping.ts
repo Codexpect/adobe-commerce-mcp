@@ -1,5 +1,11 @@
-import { CreateAttributeSetInput, CreateProductAttributeInput, UpdateAttributeSetInput } from "../schema";
-import { AttributeSet, PRODUCT_ENTITY_TYPE_ID, ProductAttribute } from "../types/product";
+import {
+  CreateAttributeGroupInput,
+  CreateAttributeSetInput,
+  CreateProductAttributeInput,
+  UpdateAttributeGroupInput,
+  UpdateAttributeSetInput,
+} from "../schema";
+import { AttributeGroup, AttributeSet, PRODUCT_ENTITY_TYPE_ID, ProductAttribute } from "../types/product";
 
 const attributeTypeMap = {
   text: { backend_type: "varchar", frontend_input: "text" },
@@ -50,5 +56,21 @@ export function mapUpdateAttributeSetInputToApiPayload(input: UpdateAttributeSet
     ...(attributeSetName && { attribute_set_name: attributeSetName }),
     ...(sortOrder !== undefined && { sort_order: sortOrder }),
     entity_type_id: PRODUCT_ENTITY_TYPE_ID,
+  };
+}
+
+export function mapCreateAttributeGroupInputToApiPayload(input: CreateAttributeGroupInput): AttributeGroup {
+  return {
+    attribute_set_id: input.attributeSetId,
+    attribute_group_name: input.attributeGroupName,
+  };
+}
+
+export function mapUpdateAttributeGroupInputToApiPayload(input: UpdateAttributeGroupInput): AttributeGroup {
+  const { attributeSetId, attributeGroupId, attributeGroupName } = input;
+  return {
+    attribute_group_id: attributeGroupId,
+    attribute_set_id: attributeSetId,
+    attribute_group_name: attributeGroupName ?? "",
   };
 }

@@ -4,6 +4,9 @@ import { CommerceParams } from "../../src/adobe/types/params";
 import { registerProductAttributeSetsTools } from "../../src/tools/tools-for-products-attribute-sets";
 import type { MockMcpServer } from "../utils/mock-mcp-server";
 import { createMockMcpServer, extractToolResponseText, parseToolResponse } from "../utils/mock-mcp-server";
+import { createProductAttribute } from "../../src/adobe/products/api-products-attributes";
+import { mapCreateProductAttributeInputToApiPayload } from "../../src/adobe/products/mapping/attribute-mapping";
+import type { CreateProductAttributeInput } from "../../src/adobe/products/schema";
 
 describe("Products Attribute Sets Tools - Functional Tests", () => {
   let client: AdobeCommerceClient;
@@ -104,6 +107,15 @@ describe("Products Attribute Sets Tools - Functional Tests", () => {
       const tool = mockServer.registeredTools.get("delete-attribute-from-set");
       expect(tool.definition.title).toBe("Delete Attribute From Set");
       expect(tool.definition.description).toContain("Delete an attribute from an attribute set");
+      expect(tool.definition.inputSchema).toBeDefined();
+      expect(tool.definition.annotations.readOnlyHint).toBe(false);
+    });
+
+    test("should register assign-attribute-to-set-group tool", () => {
+      expect(mockServer.registeredTools.has("assign-attribute-to-set-group")).toBe(true);
+      const tool = mockServer.registeredTools.get("assign-attribute-to-set-group");
+      expect(tool.definition.title).toBe("Assign Attribute to Set and Group");
+      expect(tool.definition.description).toContain("Assign an attribute to an attribute set and group");
       expect(tool.definition.inputSchema).toBeDefined();
       expect(tool.definition.annotations.readOnlyHint).toBe(false);
     });
@@ -377,20 +389,221 @@ describe("Products Attribute Sets Tools - Functional Tests", () => {
 
   describe("Delete Attribute From Set Tool", () => {
     test("should delete attribute from set", async () => {
-      // TODO: Implement this test
-      // This test requires a more complex setup with attributes and attribute sets
-      // For now, we'll test the tool registration and basic structure
-      // In a real scenario, you'd need to:
       // 1. Create an attribute set
-      // 2. Add attributes to the set
-      // 3. Delete an attribute from the set
-      
-      // For now, just verify the tool is properly registered
-      expect(mockServer.registeredTools.has("delete-attribute-from-set")).toBe(true);
-      
-      const tool = mockServer.registeredTools.get("delete-attribute-from-set");
-      expect(tool.definition.title).toBe("Delete Attribute From Set");
-      expect(tool.definition.description).toContain("Delete an attribute from an attribute set");
-    });
+      const testAttributeSetName = `DeleteAttrSet_${Date.now()}`;
+      const createSetResult = await mockServer.callTool("create-attribute-set", {
+        attributeSetName: testAttributeSetName,
+      });
+      const setText = extractToolResponseText(createSetResult);
+      const setParsed = parseToolResponse(setText);
+      console.log("setParsed", setParsed);
+      const createdSet = JSON.parse(setParsed.data[0]);
+      const attributeSetId = createdSet.attribute_set_id;
+      createdAttributeSetIds.push(attributeSetId);
+
+      // 2. Create a product attribute
+      const testAttributeCode = `delete_attr_${Date.now()}`;
+      const attributeInput: CreateProductAttributeInput = {
+        type: 'text',
+        attributeCode: testAttributeCode,
+        defaultFrontendLabel: "Delete Test Attribute",
+        scope: 'global',
+      };
+      const attributePayload = mapCreateProductAttributeInputToApiPayload(attributeInput);
+      await createProductAttribute(client, attributePayload);
+
+      // 3. Get attribute group for set using the tool
+      const groupsResult = await mockServer.callTool("search-attribute-groups", {
+        filters: [
+          { field: "attribute_set_id", value: attributeSetId, conditionType: "eq" },
+        ],
+        page: 1,
+        pageSize: 10,
+      });
+      const groupsText = extractToolResponseText(groupsResult);
+      const groupsParsed = parseToolResponse(groupsText);
+      expect(groupsParsed.data.length).toBeGreaterThan(0);
+      const group = JSON.parse(groupsParsed.data[0]);
+      const attributeGroupId = group.attribute_group_id;
+
+      // 4. Assign attribute to set/group
+      const assignResult = await mockServer.callTool("assign-attribute-to-set-group", {
+        attributeSetId: attributeSetId,
+        attributeGroupId: Number(attributeGroupId),
+        attributeCode: testAttributeCode,
+        sortOrder: 10,
+      });
+      const assignText = extractToolResponseText(assignResult);
+      expect(assignText).toContain("Assign Attribute to Set and Group");
+      expect(assignText).toMatch(/Assigned|Failed to assign attribute to set\/group/);
+
+      // // 5. Delete attribute from set
+      const deleteResult = await mockServer.callTool("delete-attribute-from-set", {
+        attributeSetId: attributeSetId,
+        attributeCode: testAttributeCode,
+      });
+      const deleteText = extractToolResponseText(deleteResult);
+      expect(deleteText).toContain("Delete Attribute From Set");
+      expect(deleteText).toContain("Deleted");
+    }, 30000);
+  });
+
+  describe("Assign Attribute to Set and Group Tool", () => {
+    test("should assign an attribute to a set and group (integration test)", async () => {
+      // 1. Create an attribute set
+      const testAttributeSetName = `AssignAttrSet_${Date.now()}`;
+      const createSetResult = await mockServer.callTool("create-attribute-set", {
+        attributeSetName: testAttributeSetName,
+      });
+      const setText = extractToolResponseText(createSetResult);
+      const setParsed = parseToolResponse(setText);
+      const createdSet = JSON.parse(setParsed.data[0]);
+      const attributeSetId = createdSet.attribute_set_id;
+      createdAttributeSetIds.push(attributeSetId);
+
+      // 2. Create a product attribute
+      const testAttributeCode = `assign_attr_${Date.now()}`;
+      const attributeInput: CreateProductAttributeInput = {
+        type: 'text',
+        attributeCode: testAttributeCode,
+        defaultFrontendLabel: "Assign Test Attribute",
+        scope: 'global',
+      };
+      const attributePayload = mapCreateProductAttributeInputToApiPayload(attributeInput);
+      await createProductAttribute(client, attributePayload);
+      // No need to clean up attribute, as it's not deleted from Magento in this test
+
+      // 3. Get attribute group for set using the tool
+      const groupsResult = await mockServer.callTool("search-attribute-groups", {
+        filters: [
+          { field: "attribute_set_id", value: attributeSetId, conditionType: "eq" },
+        ],
+        page: 1,
+        pageSize: 10,
+      });
+      const groupsText = extractToolResponseText(groupsResult);
+      const groupsParsed = parseToolResponse(groupsText);
+      expect(groupsParsed.data.length).toBeGreaterThan(0);
+      const group = JSON.parse(groupsParsed.data[0]);
+      const attributeGroupId = group.attribute_group_id;
+
+      // 4. Assign attribute to set/group
+      const assignResult = await mockServer.callTool("assign-attribute-to-set-group", {
+        attributeSetId: attributeSetId,
+        attributeGroupId: Number(attributeGroupId),
+        attributeCode: testAttributeCode,
+        sortOrder: 10,
+      });
+      const assignText = extractToolResponseText(assignResult);
+      expect(assignText).toContain("Assign Attribute to Set and Group");
+      expect(assignText).toMatch(/Assigned|Failed to assign attribute to set\/group/);
+    }, 30000);
+  });
+
+  describe("Create Attribute Group Tool", () => {
+    test("should create an attribute group in an attribute set", async () => {
+      // First create an attribute set to add the group to
+      const testAttributeSetName = `GroupTestSet_${Date.now()}`;
+      const createSetResult = await mockServer.callTool("create-attribute-set", {
+        attributeSetName: testAttributeSetName,
+      });
+      const setText = extractToolResponseText(createSetResult);
+      const setParsed = parseToolResponse(setText);
+      const createdSet = JSON.parse(setParsed.data[0]);
+      const attributeSetId = createdSet.attribute_set_id;
+      createdAttributeSetIds.push(attributeSetId);
+
+      // Now create the attribute group
+      const testGroupName = `TestGroup_${Date.now()}`;
+      const result = await mockServer.callTool("create-attribute-group", {
+        attributeSetId: attributeSetId,
+        attributeGroupName: testGroupName,
+        sortOrder: 10,
+      });
+      const responseText = extractToolResponseText(result);
+      const parsed = parseToolResponse(responseText);
+      expect(parsed.meta.name).toBe("Attribute Group");
+      expect(parsed.meta.endpoint).toContain("/products/attribute-sets/groups");
+      expect(parsed.data.length).toBe(1);
+      const createdGroup = JSON.parse(parsed.data[0]);
+      expect(createdGroup.attribute_group_name).toBe(testGroupName);
+      expect(createdGroup.attribute_group_id).toBeDefined();
+    }, 30000);
+  });
+
+  describe("Delete Attribute Group Tool", () => {
+    test("should delete an attribute group by its ID", async () => {
+      // Create an attribute set
+      const testAttributeSetName = `DeleteGroupSet_${Date.now()}`;
+      const createSetResult = await mockServer.callTool("create-attribute-set", {
+        attributeSetName: testAttributeSetName,
+      });
+      const setText = extractToolResponseText(createSetResult);
+      const setParsed = parseToolResponse(setText);
+      const createdSet = JSON.parse(setParsed.data[0]);
+      const attributeSetId = createdSet.attribute_set_id;
+      createdAttributeSetIds.push(attributeSetId);
+
+      // Create an attribute group
+      const testGroupName = `DeleteGroup_${Date.now()}`;
+      const createGroupResult = await mockServer.callTool("create-attribute-group", {
+        attributeSetId: attributeSetId,
+        attributeGroupName: testGroupName,
+      });
+      const groupText = extractToolResponseText(createGroupResult);
+      const groupParsed = parseToolResponse(groupText);
+      const createdGroup = JSON.parse(groupParsed.data[0]);
+      const attributeGroupId = createdGroup.attribute_group_id;
+
+      // Delete the attribute group
+      const deleteResult = await mockServer.callTool("delete-attribute-group", {
+        attributeGroupId: Number(attributeGroupId),
+      });
+      const deleteText = extractToolResponseText(deleteResult);
+      expect(deleteText).toContain("Delete Attribute Group");
+      expect(deleteText).toContain("Deleted");
+    }, 30000);
+  });
+
+  describe("Update Attribute Group Tool", () => {
+    test("should update an attribute group's name and sort order", async () => {
+      // Create an attribute set
+      const testAttributeSetName = `UpdateGroupSet_${Date.now()}`;
+      const createSetResult = await mockServer.callTool("create-attribute-set", {
+        attributeSetName: testAttributeSetName,
+      });
+      const setText = extractToolResponseText(createSetResult);
+      const setParsed = parseToolResponse(setText);
+      const createdSet = JSON.parse(setParsed.data[0]);
+      const attributeSetId = createdSet.attribute_set_id;
+      createdAttributeSetIds.push(attributeSetId);
+
+      // Create an attribute group
+      const testGroupName = `UpdateGroup_${Date.now()}`;
+      const createGroupResult = await mockServer.callTool("create-attribute-group", {
+        attributeSetId: attributeSetId,
+        attributeGroupName: testGroupName,
+      });
+      const groupText = extractToolResponseText(createGroupResult);
+      const groupParsed = parseToolResponse(groupText);
+      const createdGroup = JSON.parse(groupParsed.data[0]);
+      const attributeGroupId = createdGroup.attribute_group_id;
+
+      // Update the attribute group
+      const newGroupName = `UpdatedGroup_${Date.now()}`;
+      const updateResult = await mockServer.callTool("update-attribute-group", {
+        attributeSetId: attributeSetId,
+        attributeGroupId: Number(attributeGroupId),
+        attributeGroupName: newGroupName,
+      });
+      const updateText = extractToolResponseText(updateResult);
+      const updateParsed = parseToolResponse(updateText);
+      expect(updateParsed.meta.name).toBe("Update Attribute Group");
+      expect(updateParsed.meta.endpoint).toContain(`/products/attribute-sets/${attributeSetId}/groups`);
+      expect(updateParsed.data.length).toBe(1);
+      const updatedGroup = JSON.parse(updateParsed.data[0]);
+      expect(updatedGroup.attribute_group_id).toBe(attributeGroupId);
+      expect(updatedGroup.attribute_group_name).toBe(newGroupName);
+    }, 30000);
   });
 }); 
