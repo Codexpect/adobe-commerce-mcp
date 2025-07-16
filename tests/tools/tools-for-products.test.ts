@@ -145,7 +145,6 @@ describe("Products Search Tool - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      console.log(parsed);
       // Should find products with the search term in the name
       expect(parsed.data.length).toBeGreaterThan(0);
 

@@ -1,3 +1,141 @@
 ---
+description: Adobe Commerce MCP directory structure and patterns
 alwaysApply: false
 ---
+# Adobe Commerce MCP Directory Structure
+
+## Overview
+
+The `src/adobe/` directory contains the core Adobe Commerce API client and related modules for interacting with Adobe Commerce (formerly Magento) REST APIs.
+
+## Main Components
+
+### Core Client
+
+- [adobe-commerce-client.ts](mdc:src/adobe/adobe-commerce-client.ts) - Main client class that handles authentication (OAuth 1.0a and IMS) and HTTP requests to Adobe Commerce APIs
+
+### API Modules
+
+Each domain has its own directory with consistent structure:
+
+#### Products (`products/`)
+
+- [api-products.ts](mdc:src/adobe/products/api-products.ts) - Product listing and management
+- [api-products-attributes.ts](mdc:src/adobe/products/api-products-attributes.ts) - Product attributes
+- [api-products-attributes-sets.ts](mdc:src/adobe/products/api-products-attributes-sets.ts) - Attribute sets
+- [schema.ts](mdc:src/adobe/products/schema.ts) - Product schemas and validation
+- `types/product.ts` - Product type definitions
+- `mapping/` - Data mapping utilities
+
+#### Categories (`categories/`)
+
+- [api-categories.ts](mdc:src/adobe/categories/api-categories.ts) - Category management
+- `types/category.ts` - Category type definitions
+
+#### Customers (`customers/`)
+
+- [api-customers.ts](mdc:src/adobe/customers/api-customers.ts) - Customer management
+- `types/customer.ts` - Customer type definitions
+
+#### Orders (`orders/`)
+
+- [api-orders.ts](mdc:src/adobe/orders/api-orders.ts) - Order management
+- `types/order.ts` - Order type definitions
+
+#### CMS (`cms/`)
+
+- [api-cms-pages.ts](mdc:src/adobe/cms/api-cms-pages.ts) - CMS pages
+- [api-cms-blocks.ts](mdc:src/adobe/cms/api-cms-blocks.ts) - CMS blocks
+- `types/cms-page.ts` - CMS page type definitions
+- `types/cms-block.ts` - CMS block type definitions
+
+### Shared Components
+
+#### Search Criteria (`search-criteria/`)
+
+- [index.ts](mdc:src/adobe/search-criteria/index.ts) - Main search criteria builder
+- [schema.ts](mdc:src/adobe/search-criteria/schema.ts) - Search criteria schemas
+- `types/search-criteria.ts` - Search criteria type definitions
+
+#### Types (`types/`)
+
+- [api-response.ts](mdc:src/adobe/types/api-response.ts) - Standard API response wrappers
+- [params.ts](mdc:src/adobe/types/params.ts) - Authentication and configuration parameters
+
+## Patterns and Conventions
+
+### API Module Structure
+
+Each API module follows this pattern:
+
+1. **API file** (`api-*.ts`) - Contains the main API functions
+2. **Types directory** (`types/`) - Contains TypeScript interfaces and types
+3. **Schema file** (optional) - Contains validation schemas
+
+### API Function Pattern
+
+All API functions follow this consistent pattern:
+
+```typescript
+export async function get[Resource](
+  client: AdobeCommerceClient,
+  options: SearchCriteria = {}
+): Promise<ApiResponse<[ResourceType]>> {
+  const searchCriteria = buildSearchCriteriaQuery(options);
+  const endpoint = `/[resource]?${searchCriteria}`;
+  try {
+    const data = await client.get<{ items: [ResourceType][] }>(endpoint);
+    return apiSuccessResponse<[ResourceType]>(endpoint, data.items ?? []);
+  } catch (error) {
+    return apiErrorResponse<[ResourceType]>(endpoint, error);
+  }
+}
+```
+
+### Authentication
+
+The client supports two authentication methods:
+
+1. **OAuth 1.0a** - Traditional Adobe Commerce authentication
+2. **IMS (Identity Management System)** - Adobe's modern authentication system
+
+### Error Handling
+
+All API calls use standardized error handling with `apiSuccessResponse` and `apiErrorResponse` wrappers.
+
+### Search Criteria
+
+The search criteria system provides:
+
+- Pagination (`page`, `pageSize`)
+- Filtering (`filters` array with field, value, condition)
+- Sorting (`sortOrders` array with field and direction)
+
+## Related Tools
+
+The `src/tools/` directory contains MCP tool implementations that use these API modules:
+
+- [tools-for-products.ts](mdc:src/tools/tools-for-products.ts)
+- [tools-for-categories.ts](mdc:src/tools/tools-for-categories.ts)
+- [tools-for-customers.ts](mdc:src/tools/tools-for-customers.ts)
+- [tools-for-orders.ts](mdc:src/tools/tools-for-orders.ts)
+- [tools-for-cms.ts](mdc:src/tools/tools-for-cms.ts)
+- [tools-for-products-attributes.ts](mdc:src/tools/tools-for-products-attributes.ts)
+- [tools-for-products-attribute-sets.ts](mdc:src/tools/tools-for-products-attribute-sets.ts)
+
+## Usage Examples
+
+```typescript
+// Create client
+const client = AdobeCommerceClient.create(params);
+
+// Get products with search criteria
+const response = await getProducts(client, {
+  page: 1,
+  pageSize: 20,
+  filters: [{ field: "status", value: 1, conditionType: "eq" }],
+});
+
+// Get categories
+const categories = await getCategories(client, { pageSize: 50 });
+```
