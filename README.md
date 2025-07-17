@@ -1,4 +1,4 @@
-# Adobe Commerce / Magento Open Source MCP
+# Adobe Commerce / Magento MCP
 
 A Model Context Protocol (MCP) tool for integrating with the Magento REST API. No direct SQL or server access required.
 
@@ -6,7 +6,7 @@ A Model Context Protocol (MCP) tool for integrating with the Magento REST API. N
 
 This MCP tool is compatible with:
 
-- **Adobe Commerce (formerly Magento Commerce)**: Enterprise-grade eCommerce platform with advanced features and support.
+- **Adobe Commerce (formerly Magento)**: Enterprise-grade eCommerce platform with advanced features and support.
 - **Magento Open Source**: The free, open-source edition of Magento, suitable for small to medium businesses.
 
 All features are implemented using the official Magento REST API, ensuring compatibility and security for both editions. No direct database or server access is required—just API credentials from your Magento instance.
