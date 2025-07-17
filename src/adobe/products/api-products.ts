@@ -28,3 +28,14 @@ export async function getProductsAttributes(client: AdobeCommerceClient, options
     return apiErrorResponse<ProductAttribute>(endpoint, error);
   }
 }
+
+export async function createProductAttribute(client: AdobeCommerceClient, attribute: ProductAttribute): Promise<ApiResponse<ProductAttribute>> {
+  const endpoint = "/products/attributes";
+  try {
+    const data = await client.post(endpoint, { attribute });
+    return apiSuccessResponse<ProductAttribute>(endpoint, [data as ProductAttribute]);
+  } catch (error) {
+    console.error("Error creating product attribute:", error);
+    return apiErrorResponse<ProductAttribute>(endpoint, error);
+  }
+}

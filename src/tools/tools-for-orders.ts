@@ -1,12 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
 import { getOrders } from "../adobe/orders/api-orders.js";
 import { Order } from "../adobe/orders/types/order.js";
-import { mapFiltersToConditionType } from "../adobe/search-criteria/index.js";
+import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
 import { toolTextResponse } from "./tool-response.js";
 
-export function registerOrderTool(server: McpServer, client: AdobeCommerceClient) {
+export function registerOrderTools(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
     "search-orders",
     {
@@ -17,14 +18,9 @@ export function registerOrderTool(server: McpServer, client: AdobeCommerceClient
         readOnlyHint: true,
       },
     },
-    async (args: {
-      page: number;
-      pageSize: number;
-      filters?: { field: string; value: string | number; conditionType?: string }[];
-      sortOrders?: { field: string; direction: "ASC" | "DESC" }[];
-    }) => {
-      const { page, pageSize, filters = [], sortOrders = [] } = args;
-      const searchCriteria = { page, pageSize, filters: mapFiltersToConditionType(filters), sortOrders };
+    async (args) => {
+      const parsed = z.object(searchCriteriaInputSchema).parse(args);
+      const searchCriteria = buildSearchCriteriaFromInput(parsed);
       const result = await getOrders(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
@@ -32,8 +28,8 @@ export function registerOrderTool(server: McpServer, client: AdobeCommerceClient
         return `
         <meta>
           <name>Orders</name>
-          <page>${page}</page>
-          <pageSize>${pageSize}</pageSize>
+          <page>${searchCriteria.page}</page>
+          <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
@@ -44,4 +40,4 @@ export function registerOrderTool(server: McpServer, client: AdobeCommerceClient
       });
     }
   );
-} 
+}

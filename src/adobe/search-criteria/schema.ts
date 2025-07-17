@@ -52,5 +52,10 @@ export const searchCriteriaInputSchema = {
   page: z.number().int().min(1).default(1).describe("Page number to retrieve. Default 1."),
   pageSize: z.number().int().min(1).max(10).default(10).describe("Number of results to retrieve per page. Max 10."),
   filters: z.array(filterSchema).optional().describe("Array of filters to apply to the search."),
-  sortOrders: z.array(sortOrderSchema).optional().describe("Array of sort orders to apply. Each object must specify a field and direction (ASC or DESC)."),
+  sortOrders: z
+    .array(sortOrderSchema)
+    .optional()
+    .describe("Array of sort orders to apply. Each object must specify a field and direction (ASC or DESC)."),
 };
+
+export type SearchCriteriaInput = z.infer<ReturnType<typeof z.object<typeof searchCriteriaInputSchema>>>;

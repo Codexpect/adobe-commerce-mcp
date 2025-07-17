@@ -1,0 +1,14 @@
+# General Schema Pattern Rule
+
+All `*schema.ts` files follow a common pattern for input validation and type safety:
+
+1. **Define input schema**: Use Zod to specify the structure and validation for input data (e.g., creation, search, update).
+2. **Infer input type**: Use Zod's `infer` to generate a TypeScript type from the schema, ensuring type safety throughout the codebase.
+3. **Map input to entity**: Use mappers to transform the validated input type into the actual entity or API payload required by the backend or business logic.
+
+This pattern ensures consistent validation, type safety, and a clear separation between input validation and business logic across all domains.
+description:
+globs:
+alwaysApply: false
+
+---
