@@ -1,14 +1,47 @@
+---
+description: Adobe Commerce MCP directory structure and patterns
+alwaysApply: false
+---
+
 # General Schema Pattern Rule
 
 All `*schema.ts` files follow a common pattern for input validation and type safety:
 
-1. **Define input schema**: Use Zod to specify the structure and validation for input data (e.g., creation, search, update).
-2. **Infer input type**: Use Zod's `infer` to generate a TypeScript type from the schema, ensuring type safety throughout the codebase.
-3. **Map input to entity**: Use mappers to transform the validated input type into the actual entity or API payload required by the backend or business logic.
+## Schema Structure Pattern
+
+1. **Define input schema objects**: Use Zod to specify the structure and validation for input data. Schema objects are exported as constants with descriptive names (e.g., `createProductAttributeInputSchema`, `searchCriteriaInputSchema`).
+
+2. **Use descriptive field validation**: Each field should include:
+
+   - Appropriate Zod validators (`.string()`, `.number()`, `.enum()`, etc.)
+   - `.describe()` method with clear explanations and examples
+   - Optional fields use `.optional()` or `.default()`
+   - Complex validations use `.union()`, `.array()`, or nested objects
+
+3. **Infer input types**: Use Zod's `infer` with `z.object()` to generate TypeScript types from schema objects:
+
+   ```typescript
+   export type CreateProductAttributeInput = z.infer<ReturnType<typeof z.object<typeof createProductAttributeInputSchema>>>;
+   ```
+
+4. **Map input to entity**: Use mappers to transform the validated input type into the actual entity or API payload required by the backend or business logic.
+
+## Naming Conventions
+
+- Schema objects: `[action][Entity]InputSchema` (e.g., `createProductAttributeInputSchema`)
+- Type exports: `[Action][Entity]Input` (e.g., `CreateProductAttributeInput`)
+- Use camelCase for all identifiers
+
+## Validation Patterns
+
+- **Enums**: Use `.enum()` with array of string literals and descriptive `.describe()` text
+- **Optional fields**: Use `.optional()` or `.default()` with appropriate default values
+- **Complex types**: Use `.union()` for multiple types, `.array()` for collections
+- **Nested objects**: Define separate schema objects for reusable components
+- **Descriptions**: Always include `.describe()` with clear explanations and examples
+
+## Examples
+
+See [src/adobe/products/schema.ts](mdc:src/adobe/products/schema.ts) for product attribute schemas and [src/adobe/search-criteria/schema.ts](mdc:src/adobe/search-criteria/schema.ts) for search criteria schemas.
 
 This pattern ensures consistent validation, type safety, and a clear separation between input validation and business logic across all domains.
-description:
-globs:
-alwaysApply: false
-
----

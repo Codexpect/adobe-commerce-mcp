@@ -1,4 +1,4 @@
-import type { ApiResponse } from "../adobe/types/api-response.js";
+import type { ApiResponse } from "../adobe/types/api-response";
 
 export function toolTextResponse<T>(
   response: ApiResponse<T>,

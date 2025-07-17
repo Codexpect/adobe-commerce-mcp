@@ -1,25 +1,40 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { z } from "zod";
-import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
+import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
 import {
+  assignAttributeToSetGroup,
+  createAttributeGroup,
   createAttributeSet,
   deleteAttributeFromSet,
   deleteAttributeSet,
+  getAttributeGroupsForSet,
   getAttributeSetById,
   getAttributeSetsList,
   updateAttributeSet,
-} from "../adobe/products/api-products-attribute-sets.js";
-import { mapCreateAttributeSetInputToApiPayload, mapUpdateAttributeSetInputToApiPayload } from "../adobe/products/mapping/attribute-mapping.js";
+  deleteAttributeGroup,
+  updateAttributeGroup,
+} from "../adobe/products/api-products-attributes-sets";
 import {
+  mapCreateAttributeGroupInputToApiPayload,
+  mapCreateAttributeSetInputToApiPayload,
+  mapUpdateAttributeGroupInputToApiPayload,
+  mapUpdateAttributeSetInputToApiPayload,
+} from "../adobe/products/mapping/attribute-mapping";
+import {
+  assignAttributeToSetGroupInputSchema,
+  createAttributeGroupInputSchema,
   createAttributeSetInputSchema,
   deleteAttributeFromSetInputSchema,
   deleteAttributeSetInputSchema,
   getAttributeSetByIdInputSchema,
   updateAttributeSetInputSchema,
-} from "../adobe/products/schema.js";
-import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
-import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
-import { toolTextResponse } from "./tool-response.js";
+  deleteAttributeGroupInputSchema,
+  updateAttributeGroupInputSchema,
+} from "../adobe/products/schema";
+import type { AttributeGroup } from "../adobe/products/types/product";
+import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
+import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
+import { toolTextResponse } from "./tool-response";
 
 export function registerProductAttributeSetsTools(server: McpServer, client: AdobeCommerceClient) {
   registerCreateAttributeSetTool(server, client);
@@ -28,6 +43,11 @@ export function registerProductAttributeSetsTools(server: McpServer, client: Ado
   registerDeleteAttributeSetTool(server, client);
   registerUpdateAttributeSetTool(server, client);
   registerDeleteAttributeFromSetTool(server, client);
+  registerAssignAttributeToSetGroupTool(server, client);
+  registerSearchAttributeGroupsTool(server, client);
+  registerCreateAttributeGroupTool(server, client);
+  registerDeleteAttributeGroupTool(server, client);
+  registerUpdateAttributeGroupTool(server, client);
 }
 
 function registerCreateAttributeSetTool(server: McpServer, client: AdobeCommerceClient) {
@@ -48,7 +68,7 @@ function registerCreateAttributeSetTool(server: McpServer, client: AdobeCommerce
       const result = await createAttributeSet(client, attributeSet);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>Attribute Set</name>
@@ -56,8 +76,8 @@ function registerCreateAttributeSetTool(server: McpServer, client: AdobeCommerce
         <meta>
 
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${JSON.stringify(data)}
+        </data>
       `;
       });
     }
@@ -78,17 +98,18 @@ function registerSearchAttributeSetsTool(server: McpServer, client: AdobeCommerc
       const searchCriteria = buildSearchCriteriaFromInput(parsed);
       const result = await getAttributeSetsList(client, searchCriteria);
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Attribute Sets</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }
@@ -111,15 +132,15 @@ function registerGetAttributeSetByIdTool(server: McpServer, client: AdobeCommerc
 
       const result = await getAttributeSetById(client, attributeSetId);
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Attribute Set Details</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${JSON.stringify(data)}
+        </data>
       `;
       });
     }
@@ -142,13 +163,15 @@ function registerDeleteAttributeSetTool(server: McpServer, client: AdobeCommerce
 
       const result = await deleteAttributeSet(client, attributeSetId);
       return toolTextResponse(result, (resp) => {
-        const { endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Delete Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
-        <data>Deleted</data>
+        <data>
+          ${data ? "Deleted" : "Failed to delete attribute set"}
+        </data>
       `;
       });
     }
@@ -171,15 +194,15 @@ function registerUpdateAttributeSetTool(server: McpServer, client: AdobeCommerce
 
       const result = await updateAttributeSet(client, attributeSet.attribute_set_id, attributeSet);
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Update Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
         <data>
-          ${items.map((item) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${JSON.stringify(data)}
+        </data>
       `;
       });
     }
@@ -202,14 +225,164 @@ function registerDeleteAttributeFromSetTool(server: McpServer, client: AdobeComm
 
       const result = await deleteAttributeFromSet(client, attributeSetId, attributeCode);
       return toolTextResponse(result, (resp) => {
-        const { endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
          <meta>
           <name>Delete Attribute From Set</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
-        <data>Deleted</data>
+        <data>
+          ${data ? "Deleted" : "Failed to delete attribute from set"}
+        </data>
       `;
+      });
+    }
+  );
+}
+
+function registerAssignAttributeToSetGroupTool(server: McpServer, client: AdobeCommerceClient) {
+  server.registerTool(
+    "assign-attribute-to-set-group",
+    {
+      title: "Assign Attribute to Set and Group",
+      description: "Assign an attribute to an attribute set and group in Adobe Commerce.",
+      inputSchema: assignAttributeToSetGroupInputSchema,
+      annotations: { readOnlyHint: false },
+    },
+    async (args) => {
+      const parsed = z.object(assignAttributeToSetGroupInputSchema).parse(args);
+      const result = await assignAttributeToSetGroup(client, parsed);
+      return toolTextResponse(result, (resp) => {
+        const { data, endpoint } = resp;
+        return `
+         <meta>
+          <name>Assign Attribute to Set and Group</name>
+          <endpoint>${endpoint}</endpoint>
+        <meta>
+        <data>
+          ${data ? "Assigned" : "Failed to assign attribute to set/group"}
+        </data>
+      `;
+      });
+    }
+  );
+}
+
+function registerSearchAttributeGroupsTool(server: McpServer, client: AdobeCommerceClient) {
+  server.registerTool(
+    "search-attribute-groups",
+    {
+      title: "Search Attribute Groups",
+      description: "Search for attribute groups in an attribute set in Adobe Commerce.",
+      inputSchema: searchCriteriaInputSchema,
+      annotations: { readOnlyHint: true },
+    },
+    async (args) => {
+      const parsed = z.object(searchCriteriaInputSchema).parse(args);
+      const searchCriteria = buildSearchCriteriaFromInput(parsed);
+      const groups = await getAttributeGroupsForSet(client, searchCriteria);
+      return toolTextResponse({ data: groups, endpoint: `/products/attribute-sets/groups/list`, success: true, error: undefined }, (resp) => {
+        const { data, endpoint } = resp;
+        return `
+         <meta>
+          <name>Attribute Groups</name>
+          <endpoint>${endpoint}</endpoint>
+          <page>${searchCriteria.page}</page>
+          <pageSize>${searchCriteria.pageSize}</pageSize>
+          <totalItems>${data?.length}</totalItems>
+         <meta>
+         <data>
+          ${data?.map((item: AttributeGroup) => JSON.stringify(item)).join("\n")}
+         </data>
+        `;
+      });
+    }
+  );
+}
+
+function registerCreateAttributeGroupTool(server: McpServer, client: AdobeCommerceClient) {
+  server.registerTool(
+    "create-attribute-group",
+    {
+      title: "Create Attribute Group",
+      description: "Create a new attribute group in an attribute set in Adobe Commerce.",
+      inputSchema: createAttributeGroupInputSchema,
+      annotations: { readOnlyHint: false },
+    },
+    async (args) => {
+      const parsed = z.object(createAttributeGroupInputSchema).parse(args);
+      const group = mapCreateAttributeGroupInputToApiPayload(parsed);
+      const result = await createAttributeGroup(client, group);
+      return toolTextResponse(result, (resp) => {
+        const { data, endpoint } = resp;
+        return `
+         <meta>
+          <name>Attribute Group</name>
+          <endpoint>${endpoint}</endpoint>
+         <meta>
+         <data>
+          ${JSON.stringify(data)}
+         </data>
+        `;
+      });
+    }
+  );
+}
+
+function registerDeleteAttributeGroupTool(server: McpServer, client: AdobeCommerceClient) {
+  server.registerTool(
+    "delete-attribute-group",
+    {
+      title: "Delete Attribute Group",
+      description: "Delete an attribute group by its ID.",
+      inputSchema: deleteAttributeGroupInputSchema,
+      annotations: { readOnlyHint: false },
+    },
+    async (args) => {
+      const parsed = z.object(deleteAttributeGroupInputSchema).parse(args);
+      const { attributeGroupId } = parsed;
+      const result = await deleteAttributeGroup(client, attributeGroupId);
+      return toolTextResponse(result, (resp) => {
+        const { data, endpoint } = resp;
+        return `
+         <meta>
+          <name>Delete Attribute Group</name>
+          <endpoint>${endpoint}</endpoint>
+         <meta>
+         <data>
+          ${data ? "Deleted" : "Failed to delete attribute group"}
+         </data>
+        `;
+      });
+    }
+  );
+}
+
+function registerUpdateAttributeGroupTool(server: McpServer, client: AdobeCommerceClient) {
+  server.registerTool(
+    "update-attribute-group",
+    {
+      title: "Update Attribute Group",
+      description: "Update an attribute group by its ID in a given attribute set.",
+      inputSchema: updateAttributeGroupInputSchema,
+      annotations: { readOnlyHint: false },
+    },
+    async (args) => {
+      const parsed = z.object(updateAttributeGroupInputSchema).parse(args);
+      const { attributeSetId } = parsed;
+      const group = mapUpdateAttributeGroupInputToApiPayload(parsed);
+      const result = await updateAttributeGroup(client, attributeSetId, group);
+      return toolTextResponse(result, (resp) => {
+        const { data, endpoint } = resp;
+        return `
+         <meta>
+          <name>Update Attribute Group</name>
+          <endpoint>${endpoint}</endpoint>
+         <meta>
+         <data>
+          ${JSON.stringify(data)}
+         </data>
+        `;
       });
     }
   );

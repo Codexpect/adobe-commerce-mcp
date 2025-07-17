@@ -1,17 +1,68 @@
+---
+description: Adobe Commerce MCP directory tools structures and patterns
+alwaysApply: false
+---
+
 # MCP Tools Directory Rule
 
 The [src/tools](mdc:src/tools) directory contains the main entry points for registering MCP tools that interact with Adobe Commerce domains. Each file in this directory exposes a set of tools for a specific domain:
 
-- [tool-for-products.ts](mdc:src/tools/tool-for-products.ts): Product search and management tools
-- [tool-for-products-attributes.ts](mdc:src/tools/tool-for-products-attributes.ts): Product attribute search and creation tools
-- [tool-for-categories.ts](mdc:src/tools/tool-for-categories.ts): Category management tools
-- [tool-for-customers.ts](mdc:src/tools/tool-for-customers.ts): Customer management tools
-- [tool-for-orders.ts](mdc:src/tools/tool-for-orders.ts): Order management tools
-- [tool-for-cms.ts](mdc:src/tools/tool-for-cms.ts): CMS block and page tools
+## Tool Files Structure
 
-All tools use [tool-response.ts](mdc:src/tools/tool-response.ts) as a shared utility for formatting responses. This directory is the primary integration point for exposing Adobe Commerce capabilities to the MCP server.
-description:
-globs:
-alwaysApply: false
+- [tools-for-products.ts](mdc:src/tools/tools-for-products.ts): Product search and management tools
+- [tools-for-products-attributes.ts](mdc:src/tools/tools-for-products-attributes.ts): Product attribute search and creation tools
+- [tools-for-products-attribute-sets.ts](mdc:src/tools/tools-for-products-attribute-sets.ts): Product attribute set management tools (CRUD operations)
+- [tools-for-categories.ts](mdc:src/tools/tools-for-categories.ts): Category management tools
+- [tools-for-customers.ts](mdc:src/tools/tools-for-customers.ts): Customer management tools
+- [tools-for-orders.ts](mdc:src/tools/tools-for-orders.ts): Order management tools
+- [tools-for-cms.ts](mdc:src/tools/tools-for-cms.ts): CMS block and page tools
+- [tool-response.ts](mdc:src/tools/tool-response.ts): Shared utility for formatting tool responses
 
----
+## Tool Registration Pattern
+
+Each tool file follows a consistent pattern:
+
+1. **Main registration function**: `register[Domain]Tools(server: McpServer, client: AdobeCommerceClient)`
+2. **Individual tool functions**: `register[ToolName]Tool(server: McpServer, client: AdobeCommerceClient)`
+3. **Tool configuration**: Each tool includes:
+   - `title`: Human-readable tool name
+   - `description`: Detailed tool description
+   - `inputSchema`: Zod schema for input validation
+   - `annotations`: MCP annotations (e.g., `readOnlyHint`)
+
+## Response Format Pattern
+
+All tools use [tool-response.ts](mdc:src/tools/tool-response.ts) for consistent response formatting:
+
+```typescript
+return toolTextResponse(result, (resp) => {
+  const { items, endpoint } = resp;
+  return `
+  <meta>
+    <name>[Entity Name]</name>
+    <page>${searchCriteria.page}</page>
+    <pageSize>${searchCriteria.pageSize}</pageSize>
+    <endpoint>${endpoint}</endpoint>
+  <meta>
+  <data>
+    ${items.map((item) => JSON.stringify(item)).join("\n")}
+  <data>
+`;
+});
+```
+
+## Input Validation Pattern
+
+Tools use Zod schemas for input validation:
+
+- Import schemas from corresponding domain schema files
+- Parse inputs using `z.object(schema).parse(args)`
+- Use mappers to transform validated input to API payloads
+
+## Tool Naming Conventions
+
+- Tool IDs: kebab-case (e.g., `search-products`, `create-product-attribute`)
+- Function names: camelCase (e.g., `registerSearchProductTool`)
+- File names: kebab-case with `tools-for-` prefix
+
+This directory is the primary integration point for exposing Adobe Commerce capabilities to the MCP server.

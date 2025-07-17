@@ -1,13 +1,13 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { z } from "zod";
-import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
-import { getCmsBlocks } from "../adobe/cms/api-cms-blocks.js";
-import { getCmsPages } from "../adobe/cms/api-cms-pages.js";
-import { CmsBlock } from "../adobe/cms/types/cms-block.js";
-import { CmsPage } from "../adobe/cms/types/cms-page.js";
-import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
-import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
-import { toolTextResponse } from "./tool-response.js";
+import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
+import { getCmsBlocks } from "../adobe/cms/api-cms-blocks";
+import { getCmsPages } from "../adobe/cms/api-cms-pages";
+import { CmsBlock } from "../adobe/cms/types/cms-block";
+import { CmsPage } from "../adobe/cms/types/cms-page";
+import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
+import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
+import { toolTextResponse } from "./tool-response";
 
 export function registerCmsBlockTools(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
@@ -26,18 +26,19 @@ export function registerCmsBlockTools(server: McpServer, client: AdobeCommerceCl
       const result = await getCmsBlocks(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>CMS Blocks</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: CmsBlock) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: CmsBlock) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }
@@ -61,18 +62,19 @@ export function registerCmsPageTool(server: McpServer, client: AdobeCommerceClie
       const result = await getCmsPages(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>CMS Pages</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: CmsPage) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: CmsPage) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }

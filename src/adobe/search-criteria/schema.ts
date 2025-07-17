@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ConditionType } from "./types/search-criteria.js";
+import { ConditionType } from "./types/search-criteria";
 
 const conditionTypeDescriptions: Record<ConditionType, string> = {
   [ConditionType.EQ]: "Equals - exact match",

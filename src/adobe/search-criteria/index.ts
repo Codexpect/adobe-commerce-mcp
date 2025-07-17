@@ -1,5 +1,5 @@
-import type { SearchCriteriaInput } from "./schema.js";
-import { ConditionType, SearchCriteria, SearchCriteriaFilter } from "./types/search-criteria.js";
+import type { SearchCriteriaInput } from "./schema";
+import { ConditionType, SearchCriteria, SearchCriteriaFilter } from "./types/search-criteria";
 
 export function buildSearchCriteriaQuery(options: SearchCriteria): string {
   const { page = 1, pageSize = 20, filters = [], sortOrders = [] } = options;

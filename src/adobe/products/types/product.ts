@@ -5,10 +5,13 @@ export interface Product {
   // Add more fields as needed
 }
 
+export const PRODUCT_ENTITY_TYPE_ID = 4;
+export const DEFAULT_ATTRIBUTE_SET_ID = 4;
+
 export interface ProductAttribute {
   attribute_id?: number;
   attribute_code: string;
-  entity_type_id: string;
+  entity_type_id: number;
   default_frontend_label: string;
   frontend_labels?: Array<{ store_id: number; label: string }>;
   is_required?: boolean;
@@ -47,7 +50,13 @@ export interface ProductAttribute {
 export interface AttributeSet {
   attribute_set_id?: number;
   attribute_set_name?: string;
-  entity_type_id: string;
+  entity_type_id: number;
   sort_order?: number;
   skeleton_id?: number;
+}
+
+export interface AttributeGroup {
+  attribute_group_id?: number;
+  attribute_group_name: string;
+  attribute_set_id: number;
 }

@@ -1,11 +1,11 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { z } from "zod";
-import { AdobeCommerceClient } from "../adobe/adobe-commerce-client.js";
-import { getCategories } from "../adobe/categories/api-categories.js";
-import { Category } from "../adobe/categories/types/category.js";
-import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index.js";
-import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema.js";
-import { toolTextResponse } from "./tool-response.js";
+import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
+import { getCategories } from "../adobe/categories/api-categories";
+import { Category } from "../adobe/categories/types/category";
+import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
+import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
+import { toolTextResponse } from "./tool-response";
 
 export function registerCategoriesTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchCategoryTool(server, client);
@@ -28,18 +28,19 @@ function registerSearchCategoryTool(server: McpServer, client: AdobeCommerceClie
       const result = await getCategories(client, searchCriteria);
 
       return toolTextResponse(result, (resp) => {
-        const { items, endpoint } = resp;
+        const { data, endpoint } = resp;
         return `
         <meta>
           <name>Categories</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
+          <totalItems>${data?.length}</totalItems>
         <meta>
 
         <data>
-          ${items.map((item: Category) => JSON.stringify(item)).join("\n")}
-        <data>
+          ${data?.map((item: Category) => JSON.stringify(item)).join("\n")}
+        </data>
       `;
       });
     }

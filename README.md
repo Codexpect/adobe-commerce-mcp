@@ -1,87 +1,102 @@
-# Weather MCP Server
+# Adobe Commerce / Magento Open Source MCP
 
-A Model Context Protocol (MCP) server that provides weather information using the National Weather Service (NWS) API.
+A Model Context Protocol (MCP) tool for integrating with the Magento REST API. No direct SQL or server access required.
 
-## Features
+## Supported Editions
 
-- **Current Weather**: Get current weather conditions for any location using latitude and longitude coordinates
-- **Weather Forecast**: Get a 3-day weather forecast for any location
-- **Real-time Data**: Uses the official National Weather Service API for accurate, up-to-date weather information
+This MCP tool is compatible with:
 
-## Installation
+- **Adobe Commerce (formerly Magento Commerce)**: Enterprise-grade eCommerce platform with advanced features and support.
+- **Magento Open Source**: The free, open-source edition of Magento, suitable for small to medium businesses.
+
+All features are implemented using the official Magento REST API, ensuring compatibility and security for both editions. No direct database or server access is required—just API credentials from your Magento instance.
+
+## Available Tools
+
+All registered MCP tools (excluding product search tools) are listed below:
+
+| Tool ID                       | Description                                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------------------------- |
+| search-products-attributes    | Search for products attributes in Adobe Commerce with flexible search filters.               |
+| create-product-attribute      | Create a new product attribute in Adobe Commerce. Supports all attribute types.              |
+| search-attribute-sets         | Search for attribute sets in Adobe Commerce with flexible search filters.                    |
+| create-attribute-set          | Create a new attribute set in Adobe Commerce. Only attribute_set_name and sort_order needed. |
+| get-attribute-set-by-id       | Get details of an attribute set by its ID.                                                   |
+| delete-attribute-set          | Delete an attribute set by its ID.                                                           |
+| update-attribute-set          | Update an attribute set by its ID. Only provide fields you want to update.                   |
+| delete-attribute-from-set     | Delete an attribute from an attribute set by set ID and attribute code.                      |
+| assign-attribute-to-set-group | Assign an attribute to an attribute set and group in Adobe Commerce.                         |
+| search-attribute-groups       | Search for attribute groups in an attribute set in Adobe Commerce.                           |
+| create-attribute-group        | Create a new attribute group in an attribute set in Adobe Commerce.                          |
+| delete-attribute-group        | Delete an attribute group by its ID.                                                         |
+| update-attribute-group        | Update an attribute group by its ID in a given attribute set.                                |
+| search-categories             | Search for categories in Adobe Commerce with flexible search filters.                        |
+| search-customers              | Search for customers in Adobe Commerce with flexible search filters.                         |
+| search-orders                 | Search for orders in Adobe Commerce with flexible search filters.                            |
+| search-cms-blocks             | Search for CMS blocks in Adobe Commerce with flexible search filters.                        |
+| search-cms-pages              | Search for CMS pages in Adobe Commerce with flexible search filters.                         |
+
+Each tool provides a set of MCP-compatible operations for its resource type. For a full list and detailed parameters, see the source files in `src/tools/`.
+
+## Usage
+
+### 1. Install
 
 ```bash
 npm install
 ```
 
-## Building
+### 2. Build
 
 ```bash
 npm run build
 ```
 
-## Usage
+### 3. Configure
 
-The server can be used as an MCP tool in any MCP-compatible client. It provides two main tools:
-
-### getCurrentWeather
-
-Get the current weather for a specific location.
-
-**Parameters:**
-
-- `latitude` (number): The latitude of the location
-- `longitude` (number): The longitude of the location
-
-**Example:**
+Create or edit your `.cursor/mcp.json` file and provide your Magento/Adobe Commerce instance credentials:
 
 ```json
 {
-  "latitude": 40.7128,
-  "longitude": -74.006
+  "mcpServers": {
+    "adobe-commerce-mcp": {
+      "command": "node",
+      "args": ["/path/to/adobe-commerce-mcp/build/index.js"],
+      "env": {
+        "COMMERCE_BASE_URL": "https://your-magento-instance/",
+        "COMMERCE_CONSUMER_KEY": "your_consumer_key",
+        "COMMERCE_CONSUMER_SECRET": "your_consumer_secret",
+        "COMMERCE_ACCESS_TOKEN": "your_access_token",
+        "COMMERCE_ACCESS_TOKEN_SECRET": "your_access_token_secret"
+      }
+    }
+  }
 }
 ```
 
-### getForecast
+### 4. Run
 
-Get a 3-day weather forecast for a specific location.
+Start the MCP server as defined in your configuration. The tools will be available for use in any MCP-compatible client or workflow.
 
-**Parameters:**
-
-- `latitude` (number): The latitude of the location
-- `longitude` (number): The longitude of the location
-
-**Example:**
-
-```json
-{
-  "latitude": 40.7128,
-  "longitude": -74.006
-}
-```
-
-## API Information
-
-This server uses the National Weather Service (NWS) API:
-
-- Base URL: `https://api.weather.gov`
-- No API key required
-- Provides free, real-time weather data for the United States
-
-## Development
-
-The server is built with TypeScript and uses the MCP SDK. The main implementation is in `src/index.ts`.
-
-### Project Structure
+## Directory Structure
 
 ```
+adobe-commerce-mcp/
 ├── src/
-│   └── index.ts          # Main server implementation
-├── build/                # Compiled JavaScript output
-├── package.json          # Dependencies and scripts
-└── tsconfig.json         # TypeScript configuration
+│   ├── adobe/
+│   │   ├── categories/         # Category API and types
+│   │   ├── cms/                # CMS blocks and pages API and types
+│   │   ├── customers/          # Customer API and types
+│   │   ├── orders/             # Order API and types
+│   │   ├── products/           # Product API, attributes, sets, and types
+│   │   ├── search-criteria/    # Search criteria schemas and types
+│   │   └── types/              # Shared API response and parameter types
+│   ├── tools/                  # MCP tool implementations for each resource
+│   └── index.ts                # Main MCP server entry point
+├── packages/
+│   └── commerce-sdk-auth/      # Authentication SDK for Adobe Commerce
+├── tests/                      # Test suites and mocks
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
-
-## License
-
-ISC

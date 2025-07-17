@@ -1,8 +1,9 @@
 import { getImsAccessToken, ImsAuthParams } from "@adobe/commerce-sdk-auth";
 import axios, { AxiosResponse } from "axios";
 import crypto from "crypto";
+import https from "https";
 import Oauth1a from "oauth-1.0a";
-import { AdobeImsParams, CommerceParams, RequestData } from "./types/params.js";
+import { AdobeImsParams, CommerceParams, RequestData } from "./types/params";
 
 export interface OAuth1aConfig {
   consumerKey: string;
@@ -248,6 +249,10 @@ export class AdobeCommerceClient {
         headers,
         data: requestData.body,
         responseType: "json",
+        // Handle SSL certificate issues for development/testing environments
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: process.env.NODE_ENV === 'production' ? true : false
+        }),
       });
 
       return response.data;
