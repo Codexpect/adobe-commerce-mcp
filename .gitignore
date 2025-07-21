@@ -1,0 +1,22 @@
+# package directories
+node_modules
+jspm_packages
+
+# build
+build
+dist
+dist*
+.manifest-dist.yml
+
+# Config
+config.json
+.env*
+
+# IDE & Temp
+.cache
+.idea
+.vscode
+coverage
+
+# OSX
+.DS_Store

@@ -1,0 +1,61 @@
+import { z } from "zod";
+
+/**
+ * Validates product attribute codes
+ * Ensures codes are non-empty and contain only safe characters
+ */
+export const attributeCodeSchema = z
+  .string()
+  .min(1, "Attribute code cannot be empty")
+  .regex(/^[a-zA-Z0-9_]+$/, "Attribute code can only contain letters, numbers, and underscores")
+  .describe("Unique code for the attribute (e.g., 'color', 'size').");
+
+/**
+ * Validates option IDs for attribute options
+ * Ensures IDs are non-empty strings
+ */
+export const optionIdSchema = z.string().min(1, "Option ID cannot be empty").describe("The option ID.");
+
+/**
+ * Validates labels and names throughout the system
+ * Prevents empty strings that could cause display issues
+ */
+export const nonEmptyLabelSchema = z.string().min(1, "Label cannot be empty").describe("Display label.");
+
+/**
+ * Validates store IDs for multi-store configurations
+ * Ensures positive numbers to match valid Magento store IDs
+ */
+export const storeIdSchema = z.number().positive("Store ID must be a positive number").describe("Store ID.");
+
+/**
+ * Validates attribute set IDs
+ * Ensures positive numbers to match valid Magento attribute set IDs
+ */
+export const attributeSetIdSchema = z.number().positive("Attribute set ID must be positive").describe("ID of the attribute set.");
+
+/**
+ * Validates attribute group IDs
+ * Ensures positive numbers to match valid Magento attribute group IDs
+ */
+export const attributeGroupIdSchema = z.number().positive("Attribute group ID must be positive").describe("ID of the attribute group.");
+
+/**
+ * Validates sort order values
+ * Allows zero and positive numbers for proper ordering
+ */
+export const sortOrderSchema = z.number().nonnegative("Sort order cannot be negative").describe("Sort order for positioning.");
+
+/**
+ * Store-specific labels schema for multi-store configurations
+ * Used in attribute options and other store-specific content
+ */
+export const storeLabelsSchema = z
+  .array(
+    z.object({
+      storeId: storeIdSchema.describe("Store ID for the label."),
+      label: nonEmptyLabelSchema.describe("Store-specific label."),
+    })
+  )
+  .optional()
+  .describe("Store-specific labels.");
