@@ -35,7 +35,6 @@ export const assignProductToCategoryInputSchema = {
   productLink: z.object({
     sku: productSkuSchema.optional().describe("Product SKU (optional)."),
     position: categoryPositionSchema.optional().describe("Product position in category (optional)."),
-    category_id: z.string().min(1, "Category ID cannot be empty").describe("Category ID in the product link."),
   }).describe("Product link data for assignment."),
 };
 
@@ -53,7 +52,6 @@ export const updateProductInCategoryInputSchema = {
   productLink: z.object({
     sku: productSkuSchema.optional().describe("Product SKU (optional)."),
     position: categoryPositionSchema.optional().describe("Product position in category (optional)."),
-    category_id: z.string().min(1, "Category ID cannot be empty").describe("Category ID in the product link."),
   }).describe("Updated product link data."),
 };
 

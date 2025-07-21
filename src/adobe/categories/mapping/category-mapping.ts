@@ -105,7 +105,7 @@ export function mapAssignProductToCategoryInputToApiPayload(input: AssignProduct
   return {
     ...(productLink.sku && { sku: productLink.sku }),
     ...(productLink.position !== undefined && { position: productLink.position }),
-    category_id: productLink.category_id,
+    category_id: input.categoryId,
   };
 }
 
@@ -119,7 +119,7 @@ export function mapUpdateProductInCategoryInputToApiPayload(input: UpdateProduct
   const { productLink } = input;
   
   const payload: CategoryProductLink = {
-    category_id: productLink.category_id,
+    category_id: input.categoryId,
   };
   
   if (productLink.sku !== undefined) {
