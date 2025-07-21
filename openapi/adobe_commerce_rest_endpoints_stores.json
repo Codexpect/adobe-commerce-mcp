@@ -1,0 +1,1535 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "2.4.8",
+    "title": "Commerce Admin REST endpoints - Stores/Websites Only",
+    "description": "Store and website-related endpoints and schemas from Adobe Commerce REST API"
+  },
+  "tags": [
+    {
+      "name": "customerGroups/default/{storeId}"
+    },
+    {
+      "name": "inventory/in-store-pickup/pickup-locations/"
+    },
+    {
+      "name": "products/{sku}/websites"
+    },
+    {
+      "name": "products/{sku}/websites/{websiteId}"
+    },
+    {
+      "name": "store/storeConfigs"
+    },
+    {
+      "name": "store/storeGroups"
+    },
+    {
+      "name": "store/storeViews"
+    },
+    {
+      "name": "store/websites"
+    }
+  ],
+  "paths": {
+    "/V1/customerGroups/default/{storeId}": {
+      "get": {
+        "tags": [
+          "customerGroups/default/{storeId}"
+        ],
+        "description": "Get default customer group.",
+        "operationId": "GetV1CustomerGroupsDefaultStoreId",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/customer-data-group-interface"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/customer-data-group-interface"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "customerGroups/default/{storeId}"
+      }
+    },
+    "/V1/inventory/in-store-pickup/pickup-locations/": {
+      "get": {
+        "tags": [
+          "inventory/in-store-pickup/pickup-locations/"
+        ],
+        "description": "Get Pickup Locations according to the results of filtration by Search Request.",
+        "operationId": "GetV1InventoryInstorepickupPickuplocations",
+        "parameters": [
+          {
+            "name": "searchRequest[area][radius]",
+            "in": "query",
+            "description": "Search radius in KM.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "searchRequest[area][searchTerm]",
+            "in": "query",
+            "description": "Search term string.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][country][value]",
+            "in": "query",
+            "description": "Value.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][country][conditionType]",
+            "in": "query",
+            "description": "Condition Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][postcode][value]",
+            "in": "query",
+            "description": "Value.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][postcode][conditionType]",
+            "in": "query",
+            "description": "Condition Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][region][value]",
+            "in": "query",
+            "description": "Value.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][region][conditionType]",
+            "in": "query",
+            "description": "Condition Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][regionId][value]",
+            "in": "query",
+            "description": "Value.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][regionId][conditionType]",
+            "in": "query",
+            "description": "Condition Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][city][value]",
+            "in": "query",
+            "description": "Value.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][city][conditionType]",
+            "in": "query",
+            "description": "Condition Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][street][value]",
+            "in": "query",
+            "description": "Value.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][street][conditionType]",
+            "in": "query",
+            "description": "Condition Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][name][value]",
+            "in": "query",
+            "description": "Value.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][name][conditionType]",
+            "in": "query",
+            "description": "Condition Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][pickupLocationCode][value]",
+            "in": "query",
+            "description": "Value.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[filters][pickupLocationCode][conditionType]",
+            "in": "query",
+            "description": "Condition Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[pageSize]",
+            "in": "query",
+            "description": "Page size.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "searchRequest[currentPage]",
+            "in": "query",
+            "description": "Current page.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "searchRequest[scopeType]",
+            "in": "query",
+            "description": "Sales Channel Type.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[scopeCode]",
+            "in": "query",
+            "description": "Sales Channel code.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[sort][0][field]",
+            "in": "query",
+            "description": "Sorting field.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[sort][0][direction]",
+            "in": "query",
+            "description": "Sorting direction.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchRequest[extensionAttributes][productsInfo][0][sku]",
+            "in": "query",
+            "description": "Product SKU.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-result-interface"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-result-interface"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "inventory/in-store-pickup/pickup-locations/"
+      }
+    },
+    "/V1/products/{sku}/websites": {
+      "post": {
+        "tags": [
+          "products/{sku}/websites"
+        ],
+        "description": "Assign a product to the website",
+        "operationId": "PostV1ProductsSkuWebsites",
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PostV1ProductsSkuWebsitesPostv1productsskuwebsitesbody"
+        },
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "description": "will returned True if website successfully assigned to product"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "boolean",
+                  "description": "will returned True if website successfully assigned to product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "products/{sku}/websites"
+      },
+      "put": {
+        "tags": [
+          "products/{sku}/websites"
+        ],
+        "description": "Assign a product to the website",
+        "operationId": "PutV1ProductsSkuWebsites",
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PostV1ProductsSkuWebsitesPostv1productsskuwebsitesbody"
+        },
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "description": "will returned True if website successfully assigned to product"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "boolean",
+                  "description": "will returned True if website successfully assigned to product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "products/{sku}/websites"
+      }
+    },
+    "/V1/products/{sku}/websites/{websiteId}": {
+      "delete": {
+        "tags": [
+          "products/{sku}/websites/{websiteId}"
+        ],
+        "description": "Remove the website assignment from the product by product sku",
+        "operationId": "DeleteV1ProductsSkuWebsitesWebsiteId",
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "websiteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "description": "will returned True if website successfully unassigned from product"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "boolean",
+                  "description": "will returned True if website successfully unassigned from product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "products/{sku}/websites/{websiteId}"
+      }
+    },
+    "/V1/store/storeConfigs": {
+      "get": {
+        "tags": [
+          "store/storeConfigs"
+        ],
+        "description": "",
+        "operationId": "GetV1StoreStoreConfigs",
+        "parameters": [
+          {
+            "name": "storeCodes",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/store-data-store-config-interface"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/store-data-store-config-interface"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "store/storeConfigs"
+      }
+    },
+    "/V1/store/storeGroups": {
+      "get": {
+        "tags": [
+          "store/storeGroups"
+        ],
+        "description": "Retrieve list of all groups",
+        "operationId": "GetV1StoreStoreGroups",
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/store-data-group-interface"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/store-data-group-interface"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "store/storeGroups"
+      }
+    },
+    "/V1/store/storeViews": {
+      "get": {
+        "tags": [
+          "store/storeViews"
+        ],
+        "description": "Retrieve list of all stores",
+        "operationId": "GetV1StoreStoreViews",
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/store-data-store-interface"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/store-data-store-interface"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "store/storeViews"
+      }
+    },
+    "/V1/store/websites": {
+      "get": {
+        "tags": [
+          "store/websites"
+        ],
+        "description": "Retrieve list of all websites",
+        "operationId": "GetV1StoreWebsites",
+        "responses": {
+          "200": {
+            "description": "200 Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/store-data-website-interface"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/store-data-website-interface"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          }
+        },
+        "summary": "store/websites"
+      }
+    }
+  },
+  "components": {
+    "requestBodies": {
+      "PostV1CustomerGroupsPostv1customergroupsbody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "required": [
+                "group"
+              ],
+              "properties": {
+                "group": {
+                  "$ref": "#/components/schemas/customer-data-group-interface"
+                }
+              },
+              "type": "object",
+              "xml": {
+                "name": "request"
+              }
+            }
+          },
+          "application/xml": {
+            "schema": {
+              "required": [
+                "group"
+              ],
+              "properties": {
+                "group": {
+                  "$ref": "#/components/schemas/customer-data-group-interface"
+                }
+              },
+              "type": "object",
+              "xml": {
+                "name": "request"
+              }
+            }
+          }
+        }
+      },
+      "PostV1ProductsSkuWebsitesPostv1productsskuwebsitesbody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "required": [
+                "productWebsiteLink"
+              ],
+              "properties": {
+                "productWebsiteLink": {
+                  "$ref": "#/components/schemas/catalog-data-product-website-link-interface"
+                }
+              },
+              "type": "object",
+              "xml": {
+                "name": "request"
+              }
+            }
+          },
+          "application/xml": {
+            "schema": {
+              "required": [
+                "productWebsiteLink"
+              ],
+              "properties": {
+                "productWebsiteLink": {
+                  "$ref": "#/components/schemas/catalog-data-product-website-link-interface"
+                }
+              },
+              "type": "object",
+              "xml": {
+                "name": "request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "error-response": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "errors": {
+            "$ref": "#/components/schemas/error-errors"
+          },
+          "code": {
+            "type": "integer",
+            "description": "Error code"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/error-parameters"
+          },
+          "trace": {
+            "type": "string",
+            "description": "Stack trace"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "store-data-store-interface": {
+        "type": "object",
+        "description": "Store interface",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "Store name"
+          },
+          "website_id": {
+            "type": "integer"
+          },
+          "store_group_id": {
+            "type": "integer"
+          },
+          "is_active": {
+            "type": "integer"
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/store-data-store-extension-interface"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "website_id",
+          "store_group_id",
+          "is_active"
+        ]
+      },
+      "store-data-store-extension-interface": {
+        "type": "object",
+        "description": "ExtensionInterface class for @see \\Magento\\Store\\Api\\Data\\StoreInterface"
+      },
+      "store-data-group-interface": {
+        "type": "object",
+        "description": "Group interface",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "website_id": {
+            "type": "integer"
+          },
+          "root_category_id": {
+            "type": "integer"
+          },
+          "default_store_id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "Group code."
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/store-data-group-extension-interface"
+          }
+        },
+        "required": [
+          "id",
+          "website_id",
+          "root_category_id",
+          "default_store_id",
+          "name",
+          "code"
+        ]
+      },
+      "store-data-group-extension-interface": {
+        "type": "object",
+        "description": "ExtensionInterface class for @see \\Magento\\Store\\Api\\Data\\GroupInterface"
+      },
+      "store-data-website-interface": {
+        "type": "object",
+        "description": "Website interface",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "Website name"
+          },
+          "default_group_id": {
+            "type": "integer"
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/store-data-website-extension-interface"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "default_group_id"
+        ]
+      },
+      "store-data-website-extension-interface": {
+        "type": "object",
+        "description": "ExtensionInterface class for @see \\Magento\\Store\\Api\\Data\\WebsiteInterface"
+      },
+      "store-data-store-config-interface": {
+        "type": "object",
+        "description": "Interface for store config",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Store id"
+          },
+          "code": {
+            "type": "string",
+            "description": "Store code"
+          },
+          "website_id": {
+            "type": "integer",
+            "description": "Website id of the store"
+          },
+          "locale": {
+            "type": "string",
+            "description": "Store locale"
+          },
+          "base_currency_code": {
+            "type": "string",
+            "description": "Base currency code"
+          },
+          "default_display_currency_code": {
+            "type": "string",
+            "description": "Default display currency code"
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Timezone of the store"
+          },
+          "weight_unit": {
+            "type": "string",
+            "description": "The unit of weight"
+          },
+          "base_url": {
+            "type": "string",
+            "description": "Base URL for the store"
+          },
+          "base_link_url": {
+            "type": "string",
+            "description": "Base link URL for the store"
+          },
+          "base_static_url": {
+            "type": "string",
+            "description": "Base static URL for the store"
+          },
+          "base_media_url": {
+            "type": "string",
+            "description": "Base media URL for the store"
+          },
+          "secure_base_url": {
+            "type": "string",
+            "description": "Secure base URL for the store"
+          },
+          "secure_base_link_url": {
+            "type": "string",
+            "description": "Secure base link URL for the store"
+          },
+          "secure_base_static_url": {
+            "type": "string",
+            "description": "Secure base static URL for the store"
+          },
+          "secure_base_media_url": {
+            "type": "string",
+            "description": "Secure base media URL for the store"
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/store-data-store-config-extension-interface"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "website_id",
+          "locale",
+          "base_currency_code",
+          "default_display_currency_code",
+          "timezone",
+          "weight_unit",
+          "base_url",
+          "base_link_url",
+          "base_static_url",
+          "base_media_url",
+          "secure_base_url",
+          "secure_base_link_url",
+          "secure_base_static_url",
+          "secure_base_media_url"
+        ]
+      },
+      "store-data-store-config-extension-interface": {
+        "type": "object",
+        "description": "ExtensionInterface class for @see \\Magento\\Store\\Api\\Data\\StoreConfigInterface"
+      },
+      "customer-data-group-interface": {
+        "type": "object",
+        "description": "Customer group interface.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Id"
+          },
+          "code": {
+            "type": "string",
+            "description": "Code"
+          },
+          "tax_class_id": {
+            "type": "integer",
+            "description": "Tax class id"
+          },
+          "tax_class_name": {
+            "type": "string",
+            "description": "Tax class name"
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/customer-data-group-extension-interface"
+          }
+        },
+        "required": [
+          "code",
+          "tax_class_id"
+        ]
+      },
+      "catalog-data-product-website-link-interface": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "sku": {
+            "type": "string"
+          },
+          "website_id": {
+            "type": "integer",
+            "description": "Website ids"
+          }
+        },
+        "required": [
+          "sku",
+          "website_id"
+        ]
+      },
+      "inventory-in-store-pickup-api-data-search-result-interface": {
+        "type": "object",
+        "description": "Search results for providing pickup locations.",
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "Items list.",
+            "items": {
+              "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-pickup-location-interface"
+            }
+          },
+          "search_request": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-interface"
+          },
+          "total_count": {
+            "type": "integer",
+            "description": "Total count."
+          }
+        },
+        "required": [
+          "items",
+          "search_request",
+          "total_count"
+        ]
+      },
+      "inventory-in-store-pickup-api-data-pickup-location-interface": {
+        "type": "object",
+        "description": "Represents sources projection on In-Store Pickup context. Realisation must follow immutable DTO concept. Partial immutability done according to restriction of current Extension Attributes implementation.",
+        "properties": {
+          "pickup_location_code": {
+            "type": "string",
+            "description": "Source code of Pickup Location."
+          },
+          "name": {
+            "type": "string",
+            "description": "Pickup Location name."
+          },
+          "email": {
+            "type": "string",
+            "description": "Pickup Location contact email."
+          },
+          "fax": {
+            "type": "string",
+            "description": "Fax contact info."
+          },
+          "contact_name": {
+            "type": "string",
+            "description": "Pickup Location contact name."
+          },
+          "description": {
+            "type": "string",
+            "description": "Pickup Location description."
+          },
+          "latitude": {
+            "type": "number",
+            "description": "Pickup Location latitude."
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Pickup Location longitude."
+          },
+          "country_id": {
+            "type": "string",
+            "description": "Pickup Location country ID."
+          },
+          "region_id": {
+            "type": "integer",
+            "description": "Pickup Location region ID."
+          },
+          "region": {
+            "type": "string",
+            "description": "Pickup Location region."
+          },
+          "city": {
+            "type": "string",
+            "description": "Pickup Location city."
+          },
+          "street": {
+            "type": "string",
+            "description": "Pickup Location street."
+          },
+          "postcode": {
+            "type": "string",
+            "description": "Pickup Location postcode."
+          },
+          "phone": {
+            "type": "string",
+            "description": "Pickup Location phone."
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-pickup-location-extension-interface"
+          }
+        },
+        "required": [
+          "pickup_location_code"
+        ]
+      },
+      "inventory-in-store-pickup-api-data-pickup-location-extension-interface": {
+        "type": "object",
+        "description": "ExtensionInterface class for @see \\Magento\\InventoryInStorePickupApi\\Api\\Data\\PickupLocationInterface"
+      },
+      "inventory-in-store-pickup-api-data-search-request-interface": {
+        "type": "object",
+        "description": "Endpoint used to search Pickup Locations by different parameters: - by attribute filters fields @see \\Magento\\InventoryInStorePickupApi\\Api\\Data\\SearchRequest\\FiltersInterface - by distance to the address @see \\Magento\\InventoryInStorePickupApi\\Api\\Data\\SearchRequest\\AreaInterface Also, endpoint supports paging and sort orders.",
+        "properties": {
+          "area": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-area-interface"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filters-interface"
+          },
+          "page_size": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "current_page": {
+            "type": "integer",
+            "description": "Current page."
+          },
+          "scope_type": {
+            "type": "string",
+            "description": "Sales Channel Type."
+          },
+          "scope_code": {
+            "type": "string",
+            "description": "Sales Channel code."
+          },
+          "sort": {
+            "type": "array",
+            "description": "Sort Order.",
+            "items": {
+              "$ref": "#/components/schemas/framework-sort-order"
+            }
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-extension-interface"
+          }
+        },
+        "required": [
+          "current_page",
+          "scope_type",
+          "scope_code"
+        ]
+      },
+      "inventory-in-store-pickup-api-data-search-request-area-interface": {
+        "type": "object",
+        "description": "Filter by Distance to the Address. Pickup Locations will be filtered by distance according to the geo-position of the entered address. Required fields for the address are country and one of the field: region or city or postcode.",
+        "properties": {
+          "radius": {
+            "type": "integer",
+            "description": "Search radius in KM."
+          },
+          "search_term": {
+            "type": "string",
+            "description": "Search term string."
+          }
+        },
+        "required": [
+          "radius",
+          "search_term"
+        ]
+      },
+      "inventory-in-store-pickup-api-data-search-request-filters-interface": {
+        "type": "object",
+        "description": "Filter to filter by Fields. Each field may be filtered with different condition type. Supported condition types restricted by @see \\Magento\\Framework\\Api\\SearchCriteriaInterface",
+        "properties": {
+          "country": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filter-interface"
+          },
+          "postcode": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filter-interface"
+          },
+          "region": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filter-interface"
+          },
+          "region_id": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filter-interface"
+          },
+          "city": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filter-interface"
+          },
+          "street": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filter-interface"
+          },
+          "name": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filter-interface"
+          },
+          "pickup_location_code": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-filter-interface"
+          }
+        }
+      },
+      "inventory-in-store-pickup-api-data-search-request-filter-interface": {
+        "type": "object",
+        "description": "Filter for Pickup Location search.",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Value."
+          },
+          "condition_type": {
+            "type": "string",
+            "description": "Condition Type."
+          }
+        },
+        "required": [
+          "value",
+          "condition_type"
+        ]
+      },
+      "inventory-in-store-pickup-api-data-search-request-extension-interface": {
+        "type": "object",
+        "description": "ExtensionInterface class for @see \\Magento\\InventoryInStorePickupApi\\Api\\Data\\SearchRequestInterface",
+        "properties": {
+          "products_info": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-product-info-interface"
+            }
+          }
+        }
+      },
+      "inventory-in-store-pickup-api-data-search-request-product-info-interface": {
+        "type": "object",
+        "description": "Product Info Data Transfer Object.",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "description": "Product SKU."
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-api-data-search-request-product-info-extension-interface"
+          }
+        },
+        "required": [
+          "sku"
+        ]
+      },
+      "inventory-in-store-pickup-api-data-search-request-product-info-extension-interface": {
+        "type": "object",
+        "description": "ExtensionInterface class for @see \\Magento\\InventoryInStorePickupApi\\Api\\Data\\SearchRequest\\ProductInfoInterface"
+      },
+      "inventory-in-store-pickup-sales-api-data-result-interface": {
+        "type": "object",
+        "description": "Operation result object that contains status of the operation.",
+        "properties": {
+          "successful": {
+            "type": "boolean",
+            "description": "Operation result successful."
+          },
+          "errors": {
+            "type": "array",
+            "description": "Error information for failed operations.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extension_attributes": {
+            "$ref": "#/components/schemas/inventory-in-store-pickup-sales-api-data-result-extension-interface"
+          }
+        },
+        "required": [
+          "successful",
+          "errors"
+        ]
+      },
+      "inventory-in-store-pickup-sales-api-data-result-extension-interface": {
+        "type": "object",
+        "description": "ExtensionInterface class for @see \\Magento\\InventoryInStorePickupSalesApi\\Api\\Data\\ResultInterface"
+      }
+    }
+  }
+}

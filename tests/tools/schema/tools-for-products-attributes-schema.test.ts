@@ -8,8 +8,8 @@ import {
   addProductAttributeOptionInputSchema,
   updateProductAttributeOptionInputSchema,
   deleteProductAttributeOptionInputSchema
-} from "../../src/adobe/products/schemas";
-import { searchCriteriaInputSchema } from "../../src/adobe/search-criteria/schema";
+} from "../../../src/adobe/products/schemas";
+import { searchCriteriaInputSchema } from "../../../src/adobe/search-criteria/schema";
 
 describe("Product Attributes Tools - Schema Validation Tests", () => {
   // Helper function to test schema validation

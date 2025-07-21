@@ -10,8 +10,8 @@ import {
   createAttributeGroupInputSchema,
   updateAttributeGroupInputSchema,
   deleteAttributeGroupInputSchema,
-} from "../../src/adobe/products/schemas";
-import { searchCriteriaInputSchema } from "../../src/adobe/search-criteria/schema";
+} from "../../../src/adobe/products/schemas";
+import { searchCriteriaInputSchema } from "../../../src/adobe/search-criteria/schema";
 
 /**
  * Helper function to test Zod schemas with valid and invalid inputs
