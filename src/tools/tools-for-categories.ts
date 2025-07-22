@@ -43,6 +43,7 @@ import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
 import { toolTextResponse } from "./tool-response";
 
+// @TODO define fields that can be searched for in the search tools
 export function registerCategoriesTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchCategoryTool(server, client);
   registerGetCategoryTreeTool(server, client);
@@ -248,6 +249,7 @@ function registerDeleteCategoryTool(server: McpServer, client: AdobeCommerceClie
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Category with ID ${parsed.categoryId} has been successfully deleted.` : `Failed to delete category with ID ${parsed.categoryId}.`;
         return `
         <meta>
           <name>Delete Category</name>
@@ -255,7 +257,7 @@ function registerDeleteCategoryTool(server: McpServer, client: AdobeCommerceClie
         <meta>
 
         <data>
-          ${JSON.stringify(data)}
+          ${successMessage}
         </data>
       `;
       });
@@ -279,6 +281,7 @@ function registerMoveCategoryTool(server: McpServer, client: AdobeCommerceClient
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Category with ID ${parsed.categoryId} has been successfully moved to parent category with ID ${parsed.parentId}.` : `Failed to move category with ID ${parsed.categoryId} to parent category with ID ${parsed.parentId}.`;
         return `
         <meta>
           <name>Move Category</name>
@@ -286,7 +289,7 @@ function registerMoveCategoryTool(server: McpServer, client: AdobeCommerceClient
         <meta>
 
         <data>
-          ${JSON.stringify(data)}
+          ${successMessage}
         </data>
       `;
       });
@@ -449,6 +452,7 @@ function registerAssignProductToCategoryTool(server: McpServer, client: AdobeCom
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Product with SKU ${parsed.productLink.sku} has been successfully assigned to category with ID ${parsed.categoryId}.` : `Failed to assign product with SKU ${parsed.productLink.sku} to category with ID ${parsed.categoryId}.`;
         return `
         <meta>
           <name>Assign Product to Category</name>
@@ -456,7 +460,7 @@ function registerAssignProductToCategoryTool(server: McpServer, client: AdobeCom
         <meta>
 
         <data>
-          ${JSON.stringify(data)}
+          ${successMessage}
         </data>
       `;
       });
@@ -480,6 +484,7 @@ function registerUpdateProductInCategoryTool(server: McpServer, client: AdobeCom
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Product with SKU ${parsed.productLink.sku} has been successfully updated in category with ID ${parsed.categoryId}.` : `Failed to update product with SKU ${parsed.productLink.sku} in category with ID ${parsed.categoryId}.`;
         return `
         <meta>
           <name>Update Product in Category</name>
@@ -487,7 +492,7 @@ function registerUpdateProductInCategoryTool(server: McpServer, client: AdobeCom
         <meta>
 
         <data>
-          ${JSON.stringify(data)}
+          ${successMessage}
         </data>
       `;
       });
@@ -510,6 +515,7 @@ function registerRemoveProductFromCategoryTool(server: McpServer, client: AdobeC
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Product with SKU ${parsed.sku} has been successfully removed from category with ID ${parsed.categoryId}.` : `Failed to remove product with SKU ${parsed.sku} from category with ID ${parsed.categoryId}.`;
         return `
         <meta>
           <name>Remove Product from Category</name>
@@ -517,7 +523,7 @@ function registerRemoveProductFromCategoryTool(server: McpServer, client: AdobeC
         <meta>
 
         <data>
-          ${JSON.stringify(data)}
+          ${successMessage}
         </data>
       `;
       });

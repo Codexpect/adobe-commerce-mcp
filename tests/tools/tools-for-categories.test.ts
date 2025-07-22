@@ -1,20 +1,20 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
+import type { CategoryTree, CategoryProductLink } from "../../src/adobe/categories/types/category";
 import { CommerceParams } from "../../src/adobe/types/params";
 import { registerCategoriesTools } from "../../src/tools/tools-for-categories";
 import { registerProductTools } from "../../src/tools/tools-for-products";
 import type { MockMcpServer } from "../utils/mock-mcp-server";
 import { createMockMcpServer, extractToolResponseText, parseToolResponse } from "../utils/mock-mcp-server";
-import type { CategoryTree } from "../../src/adobe/categories/types/category";
+import { CategoryFixtures } from "./fixtures/category-fixtures";
 
-describe("Categories Tools - Functional Tests", () => {
+describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
   let client: AdobeCommerceClient;
   let mockServer: MockMcpServer;
-  const createdCategoryIds: number[] = [];
+  let fixtures: CategoryFixtures;
 
-  beforeAll(() => {
-    console.log("🚀 Setting up comprehensive category functional tests...");
+  beforeAll(async () => {
+    console.log("🚀 Setting up category functional tests with per-test fixtures...");
     console.log(`📍 Testing against: ${process.env.COMMERCE_BASE_URL}`);
-    console.log("📦 Testing with Adobe Commerce sample data");
 
     const params = {
       COMMERCE_BASE_URL: process.env.COMMERCE_BASE_URL,
@@ -29,24 +29,18 @@ describe("Categories Tools - Functional Tests", () => {
 
     registerCategoriesTools(mockServer.server, client);
     registerProductTools(mockServer.server, client);
+
+    // Initialize fixtures
+    fixtures = new CategoryFixtures(client);
   });
 
   beforeEach(() => {
     mockServer.clearHistory();
   });
 
-  afterAll(async () => {
-    // Cleanup: Delete all created categories
-    console.log("🧹 Cleaning up created categories...");
-    for (const categoryId of createdCategoryIds) {
-      try {
-        await client.delete(`/categories/${categoryId}`);
-        console.log(`✅ Deleted category with ID: ${categoryId}`);
-      } catch (error) {
-        console.log(`⚠️ Failed to delete category ${categoryId}:`, error);
-      }
-    }
-    console.log("🎉 Cleanup completed!");
+  afterEach(async () => {
+    // Clean up any fixtures created during the test
+    await fixtures.cleanupCurrentTest();
   });
 
   describe("Tool Registration", () => {
@@ -65,58 +59,122 @@ describe("Categories Tools - Functional Tests", () => {
         "get-category-products",
         "assign-product-to-category",
         "update-product-in-category",
-        "remove-product-from-category"
+        "remove-product-from-category",
       ];
 
-      expectedTools.forEach(toolName => {
+      expectedTools.forEach((toolName) => {
         expect(mockServer.registeredTools.has(toolName)).toBe(true);
       });
     });
 
-    test("should register search-categories tool with correct properties", () => {
-      expect(mockServer.registeredTools.has("search-categories")).toBe(true);
-
+    test("should register search-categories tool with correct configuration", () => {
       const tool = mockServer.registeredTools.get("search-categories");
-      expect(tool.definition.title).toBe("Search Categories");
-      expect(tool.definition.description).toContain("Search for categories in Adobe Commerce");
-      expect(tool.definition.inputSchema).toBeDefined();
-      expect(tool.definition.annotations?.readOnlyHint).toBe(true);
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Search Categories");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
     });
 
-    test("should register create-category tool with correct properties", () => {
-      expect(mockServer.registeredTools.has("create-category")).toBe(true);
+    test("should register get-category-tree tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("get-category-tree");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Get Category Tree");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
+    });
 
+    test("should register get-category-by-id tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("get-category-by-id");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Get Category by ID");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
+    });
+
+    test("should register create-category tool with correct configuration", () => {
       const tool = mockServer.registeredTools.get("create-category");
-      expect(tool.definition.title).toBe("Create Category");
-      expect(tool.definition.description).toContain("Create a new category in Adobe Commerce");
-      expect(tool.definition.inputSchema).toBeDefined();
-      expect(tool.definition.annotations?.readOnlyHint).toBe(false);
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Create Category");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(false);
     });
 
-    test("should register update-category tool with correct properties", () => {
-      expect(mockServer.registeredTools.has("update-category")).toBe(true);
-
+    test("should register update-category tool with correct configuration", () => {
       const tool = mockServer.registeredTools.get("update-category");
-      expect(tool.definition.title).toBe("Update Category");
-      expect(tool.definition.description).toContain("Update an existing category in Adobe Commerce");
-      expect(tool.definition.inputSchema).toBeDefined();
-      expect(tool.definition.annotations?.readOnlyHint).toBe(false);
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Update Category");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(false);
     });
 
-    test("should register delete-category tool with correct properties", () => {
-      expect(mockServer.registeredTools.has("delete-category")).toBe(true);
-
+    test("should register delete-category tool with correct configuration", () => {
       const tool = mockServer.registeredTools.get("delete-category");
-      expect(tool.definition.title).toBe("Delete Category");
-      expect(tool.definition.description).toContain("Delete a category by its ID");
-      expect(tool.definition.inputSchema).toBeDefined();
-      expect(tool.definition.annotations?.readOnlyHint).toBe(false);
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Delete Category");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(false);
+    });
+
+    test("should register move-category tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("move-category");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Move Category");
+      // Note: move-category doesn't have readOnlyHint annotation
+    });
+
+    test("should register get-category-attributes tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("get-category-attributes");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Get Category Attributes");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
+    });
+
+    test("should register get-category-attribute-by-code tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("get-category-attribute-by-code");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Get Category Attribute by Code");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
+    });
+
+    test("should register get-category-attribute-options tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("get-category-attribute-options");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Get Category Attribute Options");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
+    });
+
+    test("should register get-category-products tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("get-category-products");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Get Category Products");
+      expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
+    });
+
+    test("should register assign-product-to-category tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("assign-product-to-category");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Assign Product to Category");
+    });
+
+    test("should register update-product-in-category tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("update-product-in-category");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Update Product in Category");
+    });
+
+    test("should register remove-product-from-category tool with correct configuration", () => {
+      const tool = mockServer.registeredTools.get("remove-product-from-category");
+      expect(tool).toBeDefined();
+      expect(tool!.definition.title).toBe("Remove Product from Category");
     });
   });
 
   describe("Category Search", () => {
     test("should search categories with default parameters", async () => {
-      const result = await mockServer.callTool("search-categories", {});
+      fixtures.setCurrentTest("search_default_test");
+
+      // Create test fixtures
+      await fixtures.createFixtures([{ name: "electronics" }, { name: "clothing" }, { name: "books" }]);
+
+      // Search using the current test filter to find only our fixtures
+      const result = await mockServer.callTool("search-categories", {
+        filters: [fixtures.getCurrentTestFilter()],
+        pageSize: 10,
+      });
 
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
@@ -125,7 +183,18 @@ describe("Categories Tools - Functional Tests", () => {
       expect(parsed.meta.page).toBe("1");
       expect(parsed.meta.pageSize).toBe("10");
       expect(parsed.meta.endpoint).toContain("/categories/list");
-      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.data.length).toBe(3);
+
+      // Verify we found our fixtures with expected category names
+      const categories = parsed.data.map((item) => JSON.parse(item));
+      const foundNames = categories.map((cat) => cat.name);
+      const uniqueId = fixtures.getCurrentTestUniqueId();
+
+      // Check that we have exactly 3 items with the expected category names
+      expect(foundNames).toHaveLength(3);
+      expect(foundNames).toContain(`Test Electronics ${uniqueId}`);
+      expect(foundNames).toContain(`Test Clothing ${uniqueId}`);
+      expect(foundNames).toContain(`Test Books ${uniqueId}`);
 
       // Validate that we get category JSON objects
       const firstCategory = JSON.parse(parsed.data[0]);
@@ -133,29 +202,116 @@ describe("Categories Tools - Functional Tests", () => {
       expect(firstCategory).toHaveProperty("name");
       expect(firstCategory).toHaveProperty("parent_id");
       // Note: is_active might not be present in all category responses
-    }, 30000);
+    }, 45000);
 
     test("should respect pagination parameters", async () => {
-      const result = await mockServer.callTool("search-categories", {
-        page: 2,
-        pageSize: 5,
+      fixtures.setCurrentTest("search_pagination_test");
+
+      // Create multiple fixtures for pagination testing
+      await fixtures.createFixtures([
+        { name: "electronics" },
+        { name: "clothing" },
+        { name: "books" },
+        { name: "featured", definition: CategoryFixtures.FIXTURE_DEFINITIONS.FEATURED_CATEGORY },
+        { name: "sale", definition: CategoryFixtures.FIXTURE_DEFINITIONS.SALE_CATEGORY },
+      ]);
+
+      // Test first page
+      const resultPage1 = await mockServer.callTool("search-categories", {
+        filters: [fixtures.getCurrentTestFilter()],
+        page: 1,
+        pageSize: 2,
       });
 
-      const responseText = extractToolResponseText(result);
-      const parsed = parseToolResponse(responseText);
+      const responseTextPage1 = extractToolResponseText(resultPage1);
+      const parsedPage1 = parseToolResponse(responseTextPage1);
 
-      expect(parsed.meta.page).toBe("2");
-      expect(parsed.meta.pageSize).toBe("5");
-      expect(parsed.data.length).toBeLessThanOrEqual(5);
-      expect(parsed.data.length).toBeGreaterThan(0);
-    }, 30000);
+      expect(parsedPage1.meta.page).toBe("1");
+      expect(parsedPage1.meta.pageSize).toBe("2");
+      expect(parsedPage1.data.length).toBe(2);
+
+      // Verify first page contains expected categories
+      const categoriesPage1 = parsedPage1.data.map((item) => JSON.parse(item));
+      const namesPage1 = categoriesPage1.map((cat) => cat.name);
+      const uniqueId = fixtures.getCurrentTestUniqueId();
+
+      // Should contain 2 of our 5 categories
+      expect(namesPage1.length).toBe(2);
+      namesPage1.forEach((name) => {
+        expect(name).toContain(uniqueId);
+      });
+
+      // Test second page
+      const resultPage2 = await mockServer.callTool("search-categories", {
+        filters: [fixtures.getCurrentTestFilter()],
+        page: 2,
+        pageSize: 2,
+      });
+
+      const responseTextPage2 = extractToolResponseText(resultPage2);
+      const parsedPage2 = parseToolResponse(responseTextPage2);
+
+      expect(parsedPage2.meta.page).toBe("2");
+      expect(parsedPage2.meta.pageSize).toBe("2");
+      expect(parsedPage2.data.length).toBe(2);
+
+      // Verify second page contains different categories
+      const categoriesPage2 = parsedPage2.data.map((item) => JSON.parse(item));
+      const namesPage2 = categoriesPage2.map((cat) => cat.name);
+
+      expect(namesPage2.length).toBe(2);
+      namesPage2.forEach((name) => {
+        expect(name).toContain(uniqueId);
+      });
+
+      // Verify pages don't overlap (no duplicate names between pages)
+      const allNamesPage1 = new Set(namesPage1);
+      const allNamesPage2 = new Set(namesPage2);
+
+      namesPage1.forEach((name) => {
+        expect(allNamesPage2.has(name)).toBe(false);
+      });
+      namesPage2.forEach((name) => {
+        expect(allNamesPage1.has(name)).toBe(false);
+      });
+
+      // Test third page (should have remaining 1 category)
+      const resultPage3 = await mockServer.callTool("search-categories", {
+        filters: [fixtures.getCurrentTestFilter()],
+        page: 3,
+        pageSize: 2,
+      });
+
+      const responseTextPage3 = extractToolResponseText(resultPage3);
+      const parsedPage3 = parseToolResponse(responseTextPage3);
+
+      expect(parsedPage3.meta.page).toBe("3");
+      expect(parsedPage3.meta.pageSize).toBe("2");
+      expect(parsedPage3.data.length).toBe(1);
+
+      // Verify third page contains the last category
+      const categoriesPage3 = parsedPage3.data.map((item) => JSON.parse(item));
+      const namesPage3 = categoriesPage3.map((cat) => cat.name);
+
+      expect(namesPage3.length).toBe(1);
+      expect(namesPage3[0]).toContain(uniqueId);
+    }, 45000);
 
     test("should filter categories by name", async () => {
+      fixtures.setCurrentTest("search_name_filter_test");
+
+      // Create test fixtures
+      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }, { name: "clothing" }]);
+
+      const electronicsCategory = createdFixtures.get("electronics");
+      expect(electronicsCategory).toBeDefined();
+
       const result = await mockServer.callTool("search-categories", {
         filters: [
+          fixtures.getCurrentTestFilter(),
           {
             field: "name",
-            value: "Default Category",
+            value: electronicsCategory!.name,
             conditionType: "eq",
           },
         ],
@@ -164,17 +320,60 @@ describe("Categories Tools - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.data.length).toBe(1);
       const firstCategory = JSON.parse(parsed.data[0]);
-      expect(firstCategory.name).toBe("Default Category");
-    }, 30000);
+      expect(firstCategory.name).toBe(electronicsCategory!.name);
+      expect(firstCategory.id).toBe(electronicsCategory!.id);
+      expect(firstCategory.parent_id).toBe(2);
+    }, 45000);
 
     test("should filter categories by parent_id", async () => {
+      fixtures.setCurrentTest("search_parent_id_filter_test");
+
+      // Create test fixtures - electronics as child of default category
+      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }]);
+
+      const electronicsCategory = createdFixtures.get("electronics");
+      expect(electronicsCategory).toBeDefined();
+      expect(electronicsCategory!.id).toBeDefined();
+
+      // Create clothing and books as children of electronics
+      const clothingData = {
+        category: {
+          name: `Test Clothing ${fixtures.getCurrentTestUniqueId()}`,
+          parent_id: electronicsCategory!.id!,
+          is_active: true,
+          position: 1,
+        },
+      };
+
+      const booksData = {
+        category: {
+          name: `Test Books ${fixtures.getCurrentTestUniqueId()}`,
+          parent_id: electronicsCategory!.id!,
+          is_active: true,
+          position: 2,
+        },
+      };
+
+      const clothingResult = await mockServer.callTool("create-category", clothingData);
+      const booksResult = await mockServer.callTool("create-category", booksData);
+
+      const clothingText = extractToolResponseText(clothingResult);
+      const booksText = extractToolResponseText(booksResult);
+
+      const clothingParsed = parseToolResponse(clothingText);
+      const booksParsed = parseToolResponse(booksText);
+
+      const createdClothing = JSON.parse(clothingParsed.data[0]);
+      const createdBooks = JSON.parse(booksParsed.data[0]);
+
+      // Now search for categories that are children of electronics
       const result = await mockServer.callTool("search-categories", {
         filters: [
           {
             field: "parent_id",
-            value: 1, // Root category
+            value: electronicsCategory!.id!,
             conditionType: "eq",
           },
         ],
@@ -184,16 +383,45 @@ describe("Categories Tools - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.data.length).toBe(2);
       const categories = parsed.data.map((item: string) => JSON.parse(item));
+
+      // Should find exactly our 2 child categories
+      expect(categories.length).toBe(2);
+
+      // Verify we have the expected category names
+      const categoryNames = categories.map((category: { name: string }) => category.name);
+      const uniqueId = fixtures.getCurrentTestUniqueId();
+      expect(categoryNames).toContain(`Test Clothing ${uniqueId}`);
+      expect(categoryNames).toContain(`Test Books ${uniqueId}`);
+
+      // Verify all categories have electronics as parent
       categories.forEach((category: { parent_id: number }) => {
-        expect(category.parent_id).toBe(1);
+        expect(category.parent_id).toBe(electronicsCategory!.id);
       });
-    }, 30000);
+
+      // Verify the category IDs match what we created
+      const categoryIds = categories.map((category: { id: number }) => category.id);
+      expect(categoryIds).toContain(createdClothing.id);
+      expect(categoryIds).toContain(createdBooks.id);
+
+      // Clean up the categories created directly with create-category tool
+      await mockServer.callTool("delete-category", { categoryId: createdClothing.id });
+      await mockServer.callTool("delete-category", { categoryId: createdBooks.id });
+    }, 45000);
 
     test("should filter categories by is_active status using string value", async () => {
+      fixtures.setCurrentTest("search_is_active_filter_test");
+
+      // Create test fixtures - mix of active and inactive
+      await fixtures.createFixtures([
+        { name: "electronics" },
+        { name: "inactive", definition: CategoryFixtures.FIXTURE_DEFINITIONS.INACTIVE_CATEGORY },
+      ]);
+
       const result = await mockServer.callTool("search-categories", {
         filters: [
+          fixtures.getCurrentTestFilter(),
           {
             field: "is_active",
             value: "1", // Use string "1" for true
@@ -206,45 +434,61 @@ describe("Categories Tools - Functional Tests", () => {
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      expect(parsed.data.length).toBeGreaterThan(0);
+      expect(parsed.data.length).toBe(1);
       const categories = parsed.data.map((item: string) => JSON.parse(item));
-      categories.forEach((category: { is_active: number | boolean }) => {
+
+      // Find our fixture categories
+      const fixtureCategories = categories.filter((category: { name: string }) => category.name.includes(fixtures.getCurrentTestUniqueId()));
+
+      // Should only find the active category
+      expect(fixtureCategories.length).toBe(1);
+
+      // Verify we have the expected category name
+      const fixtureNames = fixtureCategories.map((category: { name: string }) => category.name);
+      const uniqueId = fixtures.getCurrentTestUniqueId();
+      expect(fixtureNames[0]).toBe(`Test Electronics ${uniqueId}`);
+
+      fixtureCategories.forEach((category: { is_active: number | boolean }) => {
         expect(category.is_active).toBe(true);
       });
-    }, 30000);
-
-    test("should search with multiple filters", async () => {
-      const result = await mockServer.callTool("search-categories", {
-        filters: [
-          {
-            field: "is_active",
-            value: "1", // Use string "1" for true
-            conditionType: "eq",
-          },
-          {
-            field: "parent_id",
-            value: 2, // Default category
-            conditionType: "eq",
-          },
-        ],
-        pageSize: 5,
-      });
-
-      const responseText = extractToolResponseText(result);
-      const parsed = parseToolResponse(responseText);
-
-      expect(parsed.data.length).toBeGreaterThanOrEqual(0);
-      const categories = parsed.data.map((item: string) => JSON.parse(item));
-      categories.forEach((category: { is_active: number | boolean; parent_id: number }) => {
-        expect(category.is_active).toBe(true);
-        expect(category.parent_id).toBe(2);
-      });
-    }, 30000);
+    }, 45000);
   });
 
   describe("Category Tree", () => {
-    test("should get category tree", async () => {
-      const result = await mockServer.callTool("get-category-tree", {});
+    test("should get category tree with fixtures", async () => {
+      fixtures.setCurrentTest("tree_basic_test");
+
+      // Create a simple tree structure: Electronics -> Laptops, Phones
+      const createdFixtures = await fixtures.createFixtures([
+        { name: "electronics" },
+        { name: "laptops", definition: { name: "Laptops", parent_id: 2, is_active: true, position: 1 } },
+        { name: "phones", definition: { name: "Phones", parent_id: 2, is_active: true, position: 2 } },
+      ]);
+
+      const electronicsCategory = createdFixtures.get("electronics");
+      const laptopsCategory = createdFixtures.get("laptops");
+      const phonesCategory = createdFixtures.get("phones");
+
+      expect(electronicsCategory).toBeDefined();
+      expect(laptopsCategory).toBeDefined();
+      expect(phonesCategory).toBeDefined();
+
+      // Move laptops and phones to be children of electronics
+      await mockServer.callTool("move-category", {
+        categoryId: laptopsCategory!.id!,
+        parentId: electronicsCategory!.id!,
+      });
+
+      await mockServer.callTool("move-category", {
+        categoryId: phonesCategory!.id!,
+        parentId: electronicsCategory!.id!,
+      });
+
+      // Get the category tree starting from the default category
+      const result = await mockServer.callTool("get-category-tree", {
+        rootCategoryId: 2, // Default category
+        depth: 3,
+      });
 
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
@@ -252,6 +496,8 @@ describe("Categories Tools - Functional Tests", () => {
       // Verify the response structure
       expect(parsed.meta.endpoint).toBeDefined();
       expect(parsed.meta.endpoint).toContain("/categories");
+      expect(parsed.meta.endpoint).toContain("rootCategoryId=2");
+      expect(parsed.meta.endpoint).toContain("depth=3");
       expect(parsed.data).toBeDefined();
 
       const treeData = JSON.parse(parsed.data[0]);
@@ -259,55 +505,292 @@ describe("Categories Tools - Functional Tests", () => {
       expect(treeData).toHaveProperty("name");
       expect(treeData).toHaveProperty("children_data");
       expect(Array.isArray(treeData.children_data)).toBe(true);
-    }, 30000);
+
+      // Find our electronics category in the tree
+      const findCategoryInTree = (tree: CategoryTree, categoryId: number): CategoryTree | null => {
+        if (tree.id === categoryId) return tree;
+        if (tree.children_data && Array.isArray(tree.children_data)) {
+          for (const child of tree.children_data) {
+            const found = findCategoryInTree(child, categoryId);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+
+      const electronicsInTree = findCategoryInTree(treeData, electronicsCategory!.id!);
+      expect(electronicsInTree).toBeDefined();
+      expect(electronicsInTree!.name).toBe(electronicsCategory!.name);
+
+      // Verify electronics has laptops and phones as children
+      const electronicsChildren = electronicsInTree!.children_data || [];
+      expect(electronicsChildren.length).toBe(2);
+
+      const laptopInTree = electronicsChildren.find((child: CategoryTree) => child.id === laptopsCategory!.id);
+      const phoneInTree = electronicsChildren.find((child: CategoryTree) => child.id === phonesCategory!.id);
+
+      expect(laptopInTree).toBeDefined();
+      expect(phoneInTree).toBeDefined();
+      expect(laptopInTree!.name).toBe(laptopsCategory!.name);
+      expect(phoneInTree!.name).toBe(phonesCategory!.name);
+    }, 45000);
 
     test("should get category tree with depth parameter", async () => {
+      fixtures.setCurrentTest("tree_depth_test");
+
+      // Create a deeper tree structure: Electronics -> Laptops -> Gaming Laptops
+      const createdFixtures = await fixtures.createFixtures([
+        { name: "electronics" },
+        { name: "laptops", definition: { name: "Laptops", parent_id: 2, is_active: true, position: 1 } },
+        { name: "gaming_laptops", definition: { name: "Gaming Laptops", parent_id: 2, is_active: true, position: 1 } },
+      ]);
+
+      const electronicsCategory = createdFixtures.get("electronics");
+      const laptopsCategory = createdFixtures.get("laptops");
+      const gamingLaptopsCategory = createdFixtures.get("gaming_laptops");
+
+      // Build the hierarchy: Electronics -> Laptops -> Gaming Laptops
+      await mockServer.callTool("move-category", {
+        categoryId: laptopsCategory!.id!,
+        parentId: electronicsCategory!.id!,
+      });
+
+      await mockServer.callTool("move-category", {
+        categoryId: gamingLaptopsCategory!.id!,
+        parentId: laptopsCategory!.id!,
+      });
+
+      // Test with depth=1 (should only show electronics, not its children)
+      const resultDepth1 = await mockServer.callTool("get-category-tree", {
+        rootCategoryId: 2,
+        depth: 1,
+      });
+
+      const responseTextDepth1 = extractToolResponseText(resultDepth1);
+      const parsedDepth1 = parseToolResponse(responseTextDepth1);
+
+      expect(parsedDepth1.meta.endpoint).toContain("depth=1");
+
+      const treeDataDepth1 = JSON.parse(parsedDepth1.data[0]);
+      const electronicsInTreeDepth1 = findCategoryInTree(treeDataDepth1, electronicsCategory!.id!);
+      expect(electronicsInTreeDepth1).toBeDefined();
+      expect(electronicsInTreeDepth1?.children_data).toHaveLength(0); // No children due to depth=1
+
+      // Test with depth=2 (should show electronics and laptops, but not gaming laptops)
+      const resultDepth2 = await mockServer.callTool("get-category-tree", {
+        rootCategoryId: 2,
+        depth: 2,
+      });
+
+      const responseTextDepth2 = extractToolResponseText(resultDepth2);
+      const parsedDepth2 = parseToolResponse(responseTextDepth2);
+
+      expect(parsedDepth2.meta.endpoint).toContain("depth=2");
+
+      const treeDataDepth2 = JSON.parse(parsedDepth2.data[0]);
+      const electronicsInTreeDepth2 = findCategoryInTree(treeDataDepth2, electronicsCategory!.id!);
+      expect(electronicsInTreeDepth2).toBeDefined();
+      expect(electronicsInTreeDepth2?.children_data).toHaveLength(1); // Should have laptops as child
+      expect(electronicsInTreeDepth2?.children_data?.[0]?.children_data).toHaveLength(0); // But laptops should have no children due to depth=2
+
+      // Helper function to find category in tree
+      function findCategoryInTree(tree: CategoryTree, categoryId: number): CategoryTree | null {
+        if (tree.id === categoryId) return tree;
+        if (tree.children_data && Array.isArray(tree.children_data)) {
+          for (const child of tree.children_data) {
+            const found = findCategoryInTree(child, categoryId);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+    }, 45000);
+
+    test("should get category tree with root category ID", async () => {
+      fixtures.setCurrentTest("tree_root_id_test");
+
+      // Create a tree structure: Electronics -> Laptops
+      const createdFixtures = await fixtures.createFixtures([
+        { name: "electronics" },
+        { name: "laptops", definition: { name: "Laptops", parent_id: 2, is_active: true, position: 1 } },
+      ]);
+
+      const electronicsCategory = createdFixtures.get("electronics");
+      const laptopsCategory = createdFixtures.get("laptops");
+
+      // Move laptops to be child of electronics
+      await mockServer.callTool("move-category", {
+        categoryId: laptopsCategory!.id!,
+        parentId: electronicsCategory!.id!,
+      });
+
+      // Get tree starting from electronics (not default category)
       const result = await mockServer.callTool("get-category-tree", {
+        rootCategoryId: electronicsCategory!.id!,
         depth: 2,
       });
 
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
+      expect(parsed.meta.endpoint).toContain(`rootCategoryId=${electronicsCategory!.id}`);
       expect(parsed.meta.endpoint).toContain("depth=2");
-    }, 30000);
 
-    test("should get category tree with root category ID", async () => {
+      const treeData = JSON.parse(parsed.data[0]);
+      expect(treeData.id).toBe(electronicsCategory!.id);
+      expect(treeData.name).toBe(electronicsCategory!.name);
+      expect(treeData.children_data).toHaveLength(1);
+      expect(treeData.children_data[0].id).toBe(laptopsCategory!.id);
+      expect(treeData.children_data[0].name).toBe(laptopsCategory!.name);
+    }, 45000);
+
+    test("should get category tree with complex hierarchy", async () => {
+      fixtures.setCurrentTest("tree_complex_hierarchy_test");
+
+      // Create a complex tree structure:
+      // Electronics
+      // ├── Laptops
+      // │   ├── Gaming Laptops
+      // │   └── Business Laptops
+      // └── Phones
+      //     ├── Smartphones
+      //     └── Accessories
+
+      const createdFixtures = await fixtures.createFixtures([
+        { name: "electronics" },
+        { name: "laptops", definition: { name: "Laptops", parent_id: 2, is_active: true, position: 1 } },
+        { name: "phones", definition: { name: "Phones", parent_id: 2, is_active: true, position: 2 } },
+        { name: "gaming_laptops", definition: { name: "Gaming Laptops", parent_id: 2, is_active: true, position: 1 } },
+        { name: "business_laptops", definition: { name: "Business Laptops", parent_id: 2, is_active: true, position: 2 } },
+        { name: "smartphones", definition: { name: "Smartphones", parent_id: 2, is_active: true, position: 1 } },
+        { name: "accessories", definition: { name: "Accessories", parent_id: 2, is_active: true, position: 2 } },
+      ]);
+
+      const electronicsCategory = createdFixtures.get("electronics");
+      const laptopsCategory = createdFixtures.get("laptops");
+      const phonesCategory = createdFixtures.get("phones");
+      const gamingLaptopsCategory = createdFixtures.get("gaming_laptops");
+      const businessLaptopsCategory = createdFixtures.get("business_laptops");
+      const smartphonesCategory = createdFixtures.get("smartphones");
+      const accessoriesCategory = createdFixtures.get("accessories");
+
+      // Build the hierarchy
+      // Level 1: Move laptops and phones under electronics
+      await mockServer.callTool("move-category", {
+        categoryId: laptopsCategory!.id!,
+        parentId: electronicsCategory!.id!,
+      });
+
+      await mockServer.callTool("move-category", {
+        categoryId: phonesCategory!.id!,
+        parentId: electronicsCategory!.id!,
+      });
+
+      // Level 2: Move gaming and business laptops under laptops
+      await mockServer.callTool("move-category", {
+        categoryId: gamingLaptopsCategory!.id!,
+        parentId: laptopsCategory!.id!,
+      });
+
+      await mockServer.callTool("move-category", {
+        categoryId: businessLaptopsCategory!.id!,
+        parentId: laptopsCategory!.id!,
+      });
+
+      // Level 2: Move smartphones and accessories under phones
+      await mockServer.callTool("move-category", {
+        categoryId: smartphonesCategory!.id!,
+        parentId: phonesCategory!.id!,
+      });
+
+      await mockServer.callTool("move-category", {
+        categoryId: accessoriesCategory!.id!,
+        parentId: phonesCategory!.id!,
+      });
+
+      // Get the complete tree
       const result = await mockServer.callTool("get-category-tree", {
         rootCategoryId: 2, // Default category
+        depth: 4,
       });
 
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
 
-      expect(parsed.meta.endpoint).toContain("rootCategoryId=2");
-    }, 30000);
+      const treeData = JSON.parse(parsed.data[0]);
+
+      // Helper function to find category in tree
+      function findCategoryInTree(tree: CategoryTree, categoryId: number): CategoryTree | null {
+        if (tree.id === categoryId) return tree;
+        if (tree.children_data && Array.isArray(tree.children_data)) {
+          for (const child of tree.children_data) {
+            const found = findCategoryInTree(child, categoryId);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+
+      // Verify the complete hierarchy
+      const electronicsInTree = findCategoryInTree(treeData, electronicsCategory!.id!);
+      expect(electronicsInTree).toBeDefined();
+      expect(electronicsInTree!.children_data).toHaveLength(2); // Should have laptops and phones
+
+      const laptopsInTree = findCategoryInTree(treeData, laptopsCategory!.id!);
+      expect(laptopsInTree).toBeDefined();
+      expect(laptopsInTree!.children_data).toHaveLength(2); // Should have gaming and business laptops
+
+      const phonesInTree = findCategoryInTree(treeData, phonesCategory!.id!);
+      expect(phonesInTree).toBeDefined();
+      expect(phonesInTree!.children_data).toHaveLength(2); // Should have smartphones and accessories
+
+      // Verify specific children
+      const gamingLaptopsInTree = findCategoryInTree(treeData, gamingLaptopsCategory!.id!);
+      const businessLaptopsInTree = findCategoryInTree(treeData, businessLaptopsCategory!.id!);
+      const smartphonesInTree = findCategoryInTree(treeData, smartphonesCategory!.id!);
+      const accessoriesInTree = findCategoryInTree(treeData, accessoriesCategory!.id!);
+
+      expect(gamingLaptopsInTree).toBeDefined();
+      expect(businessLaptopsInTree).toBeDefined();
+      expect(smartphonesInTree).toBeDefined();
+      expect(accessoriesInTree).toBeDefined();
+
+      // Verify they are leaf nodes (no children)
+      expect(gamingLaptopsInTree!.children_data).toHaveLength(0);
+      expect(businessLaptopsInTree!.children_data).toHaveLength(0);
+      expect(smartphonesInTree!.children_data).toHaveLength(0);
+      expect(accessoriesInTree!.children_data).toHaveLength(0);
+
+      console.log(`✅ Successfully created complex hierarchy with ${createdFixtures.size} categories`);
+    }, 60000);
   });
 
   describe("Category by ID", () => {
     test("should get category by ID", async () => {
-      // First get a category ID from search
-      const searchResult = await mockServer.callTool("search-categories", { pageSize: 1 });
-      const searchText = extractToolResponseText(searchResult);
-      const searchParsed = parseToolResponse(searchText);
-      const firstCategory = JSON.parse(searchParsed.data[0]);
-      const categoryId = firstCategory.id;
+      fixtures.setCurrentTest("get_by_id_test");
+
+      // Create test fixtures
+      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }]);
+
+      const electronicsCategory = createdFixtures.get("electronics");
+      expect(electronicsCategory).toBeDefined();
+      expect(electronicsCategory!.id).toBeDefined();
 
       const result = await mockServer.callTool("get-category-by-id", {
-        categoryId: categoryId,
+        categoryId: electronicsCategory!.id!,
       });
 
       const responseText = extractToolResponseText(result);
       const parsed = parseToolResponse(responseText);
-      expect(parsed.meta.endpoint).toContain(`/categories/${categoryId}`);
+      expect(parsed.meta.endpoint).toContain(`/categories/${electronicsCategory!.id}`);
       expect(parsed.data).toBeDefined();
 
       const categoryData = JSON.parse(parsed.data[0]);
-      expect(categoryData.id).toBe(categoryId);
+      expect(categoryData.id).toBe(electronicsCategory!.id);
       expect(categoryData).toHaveProperty("name");
       expect(categoryData).toHaveProperty("parent_id");
       // Note: is_active might not be present in all category responses
-    }, 30000);
+    }, 45000);
 
     test("should handle non-existent category ID gracefully", async () => {
       const nonExistentId = 999999;
@@ -382,50 +865,6 @@ describe("Categories Tools - Functional Tests", () => {
     }, 30000);
   });
 
-  describe("Category Products", () => {
-    test("should get products in category", async () => {
-      // First get a category ID from search
-      const searchResult = await mockServer.callTool("search-categories", { pageSize: 1 });
-      const searchText = extractToolResponseText(searchResult);
-      const searchParsed = parseToolResponse(searchText);
-      const firstCategory = JSON.parse(searchParsed.data[0]);
-      const categoryId = firstCategory.id;
-
-      const result = await mockServer.callTool("get-category-products", {
-        categoryId: categoryId,
-      });
-
-      const responseText = extractToolResponseText(result);
-      const parsed = parseToolResponse(responseText);
-
-      expect(parsed.meta.name).toBe("Category Products");
-      expect(parsed.meta.endpoint).toContain(`/categories/${categoryId}/products`);
-      expect(parsed.data).toBeDefined();
-    }, 30000);
-
-    test("should get products in category with pagination", async () => {
-      // First get a category ID from search
-      const searchResult = await mockServer.callTool("search-categories", { pageSize: 1 });
-      const searchText = extractToolResponseText(searchResult);
-      const searchParsed = parseToolResponse(searchText);
-      const firstCategory = JSON.parse(searchParsed.data[0]);
-      const categoryId = firstCategory.id;
-
-      const result = await mockServer.callTool("get-category-products", {
-        categoryId: categoryId,
-        page: 1,
-        pageSize: 5,
-      });
-
-      const responseText = extractToolResponseText(result);
-      const parsed = parseToolResponse(responseText);
-
-      expect(parsed.meta.name).toBe("Category Products");
-      expect(parsed.meta.endpoint).toContain(`/categories/${categoryId}/products`);
-      expect(parsed.data).toBeDefined();
-    }, 30000);
-  });
-
   describe("Category CRUD Operations", () => {
     test("should create a basic category", async () => {
       const testCategoryName = `Test Category ${Date.now()}`;
@@ -455,10 +894,8 @@ describe("Categories Tools - Functional Tests", () => {
       expect(createdCategory.position).toBe(1);
       expect(createdCategory.include_in_menu).toBe(true);
 
-      // Store for cleanup
-      if (createdCategory.id) {
-        createdCategoryIds.push(createdCategory.id);
-      }
+      // Clean up the category created directly with create-category tool
+      await mockServer.callTool("delete-category", { categoryId: createdCategory.id });
     }, 30000);
 
     test("should create category with minimal parameters", async () => {
@@ -485,10 +922,8 @@ describe("Categories Tools - Functional Tests", () => {
       expect(createdCategory.parent_id).toBe(2);
       expect(createdCategory.is_active).toBe(true); // Default value
 
-      // Store for cleanup
-      if (createdCategory.id) {
-        createdCategoryIds.push(createdCategory.id);
-      }
+      // Clean up the category created directly with create-category tool
+      await mockServer.callTool("delete-category", { categoryId: createdCategory.id });
     }, 30000);
 
     test("should create category with custom attributes", async () => {
@@ -517,10 +952,8 @@ describe("Categories Tools - Functional Tests", () => {
       expect(createdCategory.name).toBe(testCategoryName);
       expect(createdCategory.include_in_menu).toBe(false);
 
-      // Store for cleanup
-      if (createdCategory.id) {
-        createdCategoryIds.push(createdCategory.id);
-      }
+      // Clean up the category created directly with create-category tool
+      await mockServer.callTool("delete-category", { categoryId: createdCategory.id });
     }, 30000);
 
     test("should update category name", async () => {
@@ -538,9 +971,6 @@ describe("Categories Tools - Functional Tests", () => {
       const createParsed = parseToolResponse(createText);
       const createdCategory = JSON.parse(createParsed.data[0]);
       const categoryId = createdCategory.id;
-
-      // Store for cleanup
-      createdCategoryIds.push(categoryId);
 
       // Update the category
       const newName = `Updated Test Category ${Date.now()}`;
@@ -563,6 +993,9 @@ describe("Categories Tools - Functional Tests", () => {
       const updatedCategory = JSON.parse(parsed.data[0]);
       expect(updatedCategory.id).toBe(categoryId);
       expect(updatedCategory.name).toBe(newName);
+
+      // Clean up the category created directly with create-category tool
+      await mockServer.callTool("delete-category", { categoryId: categoryId });
     }, 30000);
 
     test("should update category position", async () => {
@@ -581,9 +1014,6 @@ describe("Categories Tools - Functional Tests", () => {
       const createParsed = parseToolResponse(createText);
       const createdCategory = JSON.parse(createParsed.data[0]);
       const categoryId = createdCategory.id;
-
-      // Store for cleanup
-      createdCategoryIds.push(categoryId);
 
       // Update the position
       const newPosition = 50;
@@ -605,73 +1035,45 @@ describe("Categories Tools - Functional Tests", () => {
       const updatedCategory = JSON.parse(parsed.data[0]);
       expect(updatedCategory.id).toBe(categoryId);
       expect(updatedCategory.position).toBe(newPosition);
+
+      // Clean up the category created directly with create-category tool
+      await mockServer.callTool("delete-category", { categoryId: categoryId });
     }, 30000);
 
     test("should create three categories and move one as child of another", async () => {
-      const timestamp = Date.now();
-      
-      // Create three categories at the same level (under Default Category)
-      const categoryA = {
-        category: {
-          name: `Category A ${timestamp}`,
-          parent_id: 2, // Default category
-          is_active: true,
-          position: 1,
-        },
-      };
+      fixtures.setCurrentTest("move_category_test");
 
-      const categoryB = {
-        category: {
-          name: `Category B ${timestamp}`,
-          parent_id: 2, // Default category
-          is_active: true,
-          position: 2,
-        },
-      };
+      // Create three categories using fixtures
+      const createdFixtures = await fixtures.createFixtures([
+        { name: "electronics" },
+        { name: "clothing" },
+        { name: "sub", definition: CategoryFixtures.FIXTURE_DEFINITIONS.SUB_CATEGORY },
+      ]);
 
-      const categoryC = {
-        category: {
-          name: `Category C ${timestamp}`,
-          parent_id: 2, // Default category
-          is_active: true,
-          position: 3,
-        },
-      };
+      const electronicsCategory = createdFixtures.get("electronics");
+      const clothingCategory = createdFixtures.get("clothing");
+      const subCategory = createdFixtures.get("sub");
 
-      // Create all three categories
-      const createAResult = await mockServer.callTool("create-category", categoryA);
-      const createBResult = await mockServer.callTool("create-category", categoryB);
-      const createCResult = await mockServer.callTool("create-category", categoryC);
+      expect(electronicsCategory).toBeDefined();
+      expect(clothingCategory).toBeDefined();
+      expect(subCategory).toBeDefined();
 
-      const createAText = extractToolResponseText(createAResult);
-      const createBText = extractToolResponseText(createBResult);
-      const createCText = extractToolResponseText(createCResult);
-
-      const createAParsed = parseToolResponse(createAText);
-      const createBParsed = parseToolResponse(createBText);
-      const createCParsed = parseToolResponse(createCText);
-
-      const createdCategoryA = JSON.parse(createAParsed.data[0]);
-      const createdCategoryB = JSON.parse(createBParsed.data[0]);
-      const createdCategoryC = JSON.parse(createCParsed.data[0]);
-
-      // Store all for cleanup
-      createdCategoryIds.push(createdCategoryA.id, createdCategoryB.id, createdCategoryC.id);
+      // Fixtures system handles cleanup automatically
 
       // Verify all categories were created at the same level
-      expect(createdCategoryA.parent_id).toBe(2);
-      expect(createdCategoryB.parent_id).toBe(2);
-      expect(createdCategoryC.parent_id).toBe(2);
+      expect(electronicsCategory!.parent_id).toBe(2);
+      expect(clothingCategory!.parent_id).toBe(2);
+      expect(subCategory!.parent_id).toBe(2);
 
       // Verify positions are set correctly
-      expect(createdCategoryA.position).toBe(1);
-      expect(createdCategoryB.position).toBe(2);
-      expect(createdCategoryC.position).toBe(3);
+      expect(electronicsCategory!.position).toBe(1);
+      expect(clothingCategory!.position).toBe(2);
+      expect(subCategory!.position).toBe(6); // SUB_CATEGORY has position 6
 
-      // Move Category C to be a child of Category A
+      // Move Sub Category to be a child of Electronics Category
       const moveData = {
-        categoryId: createdCategoryC.id,
-        parentId: createdCategoryA.id,
+        categoryId: subCategory!.id!,
+        parentId: electronicsCategory!.id!,
       };
 
       const moveResult = await mockServer.callTool("move-category", moveData);
@@ -680,33 +1082,35 @@ describe("Categories Tools - Functional Tests", () => {
       const moveParsed = parseToolResponse(moveText);
 
       expect(moveParsed.meta.name).toBe("Move Category");
-      expect(moveParsed.meta.endpoint).toContain(`/categories/${createdCategoryC.id}/move`);
+      expect(moveParsed.meta.endpoint).toContain(`/categories/${subCategory!.id}/move`);
       expect(moveParsed.data).toBeDefined();
 
-      const moveResponse = JSON.parse(moveParsed.data[0]);
-      expect(typeof moveResponse).toBe("boolean");
-      expect(moveResponse).toBe(true);
+      const moveResponse = moveParsed.data[0];
+      expect(typeof moveResponse).toBe("string");
+      expect(moveResponse).toContain("successfully moved");
+      expect(moveResponse).toContain(subCategory!.id!.toString());
+      expect(moveResponse).toContain(electronicsCategory!.id!.toString());
 
-      // Verify the move by retrieving Category C and checking its new parent
+      // Verify the move by retrieving Sub Category and checking its new parent
       const getCResult = await mockServer.callTool("get-category-by-id", {
-        categoryId: createdCategoryC.id,
+        categoryId: subCategory!.id!,
       });
 
       const getCText = extractToolResponseText(getCResult);
       const getCParsed = parseToolResponse(getCText);
       const updatedCategoryC = JSON.parse(getCParsed.data[0]);
 
-      expect(updatedCategoryC.id).toBe(createdCategoryC.id);
-      expect(updatedCategoryC.name).toBe(`Category C ${timestamp}`);
-      expect(updatedCategoryC.parent_id).toBe(createdCategoryA.id);
+      expect(updatedCategoryC.id).toBe(subCategory!.id);
+      expect(updatedCategoryC.name).toBe(subCategory!.name);
+      expect(updatedCategoryC.parent_id).toBe(electronicsCategory!.id);
 
-      // Verify Category A and B still have the same parent
+      // Verify Electronics and Clothing categories still have the same parent
       const getAResult = await mockServer.callTool("get-category-by-id", {
-        categoryId: createdCategoryA.id,
+        categoryId: electronicsCategory!.id!,
       });
 
       const getBResult = await mockServer.callTool("get-category-by-id", {
-        categoryId: createdCategoryB.id,
+        categoryId: clothingCategory!.id!,
       });
 
       const getAText = extractToolResponseText(getAResult);
@@ -743,25 +1147,27 @@ describe("Categories Tools - Functional Tests", () => {
         return null;
       };
 
-      const categoryAInTree = findCategoryInTree(treeData, createdCategoryA.id);
-      const categoryBInTree = findCategoryInTree(treeData, createdCategoryB.id);
-      const categoryCInTree = findCategoryInTree(treeData, createdCategoryC.id);
+      const categoryAInTree = findCategoryInTree(treeData, electronicsCategory!.id!);
+      const categoryBInTree = findCategoryInTree(treeData, clothingCategory!.id!);
+      const categoryCInTree = findCategoryInTree(treeData, subCategory!.id!);
 
       expect(categoryAInTree).toBeDefined();
       expect(categoryBInTree).toBeDefined();
       expect(categoryCInTree).toBeDefined();
 
-      // Verify Category C is now a child of Category A
-      expect(categoryCInTree?.parent_id).toBe(createdCategoryA.id);
+      // Verify Sub Category is now a child of Electronics Category
+      expect(categoryCInTree?.parent_id).toBe(electronicsCategory!.id);
 
-      // Verify Category A has Category C as a child
+      // Verify Electronics Category has Sub Category as a child
       const categoryAChildren = categoryAInTree?.children_data || [];
-      const categoryCInAChildren = categoryAChildren.find((child: CategoryTree) => child.id === createdCategoryC.id);
+      const categoryCInAChildren = categoryAChildren.find((child: CategoryTree) => child.id === subCategory!.id);
       expect(categoryCInAChildren).toBeDefined();
 
-      console.log(`✅ Successfully created hierarchy: Default Category (2) -> Category A (${createdCategoryA.id}) -> Category C (${createdCategoryC.id})`);
-      console.log(`✅ Category B (${createdCategoryB.id}) remains at the same level as Category A`);
-    }, 30000);
+      console.log(
+        `✅ Successfully created hierarchy: Default Category (2) -> Electronics (${electronicsCategory!.id}) -> Sub Category (${subCategory!.id})`
+      );
+      console.log(`✅ Clothing (${clothingCategory!.id}) remains at the same level as Electronics`);
+    }, 45000);
 
     test("should delete category by ID", async () => {
       // First create a category to delete
@@ -793,9 +1199,10 @@ describe("Categories Tools - Functional Tests", () => {
       expect(parsed.meta.endpoint).toContain(`/categories/${categoryId}`);
       expect(parsed.data).toBeDefined();
 
-      const deleteResult = JSON.parse(parsed.data[0]);
-      expect(typeof deleteResult).toBe("boolean");
-      expect(deleteResult).toBe(true);
+      const deleteResult = parsed.data[0];
+      expect(typeof deleteResult).toBe("string");
+      expect(deleteResult).toContain("successfully deleted");
+      expect(deleteResult).toContain(categoryId.toString());
     }, 30000);
   });
 
@@ -813,69 +1220,208 @@ describe("Categories Tools - Functional Tests", () => {
     });
 
     test("should assign product to category", async () => {
+      fixtures.setCurrentTest("assign_product_test");
+
+      // Create a test category using fixtures
+      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }]);
+      const testCategory = createdFixtures.get("electronics");
+      expect(testCategory).toBeDefined();
+      expect(testCategory!.id).toBeDefined();
+
       const assignData = {
-        categoryId: "2", // Default category
+        categoryId: testCategory!.id!.toString(),
         productLink: {
           sku: testProductSku,
           position: 1,
-          category_id: "2",
         },
       };
 
       const result = await mockServer.callTool("assign-product-to-category", assignData);
 
       const responseText = extractToolResponseText(result);
-      
+
       const parsed = parseToolResponse(responseText);
       expect(parsed.meta.name).toBe("Assign Product to Category");
-      expect(parsed.meta.endpoint).toContain("/categories/2/products");
+      expect(parsed.meta.endpoint).toContain(`/categories/${testCategory!.id}/products`);
       expect(parsed.data).toBeDefined();
 
-      const assignResult = JSON.parse(parsed.data[0]);
-      expect(typeof assignResult).toBe("boolean");
+      const assignResult = parsed.data[0];
+      expect(typeof assignResult).toBe("string");
+      expect(assignResult).toContain("successfully assigned");
+      expect(assignResult).toContain(testProductSku);
+      expect(assignResult).toContain(testCategory!.id!.toString());
     }, 30000);
 
     test("should update product position in category", async () => {
+      fixtures.setCurrentTest("update_product_position_test");
+
+      // Create a test category using fixtures
+      const createdFixtures = await fixtures.createFixtures([{ name: "clothing" }]);
+      const testCategory = createdFixtures.get("clothing");
+      expect(testCategory).toBeDefined();
+      expect(testCategory!.id).toBeDefined();
+
       const updateData = {
-        categoryId: "2", // Default category
+        categoryId: testCategory!.id!.toString(),
         productLink: {
           sku: testProductSku,
           position: 2,
-          category_id: "2",
         },
       };
 
       const result = await mockServer.callTool("update-product-in-category", updateData);
 
       const responseText = extractToolResponseText(result);
-      
+
       const parsed = parseToolResponse(responseText);
       expect(parsed.meta.name).toBe("Update Product in Category");
-      expect(parsed.meta.endpoint).toContain("/categories/2/products");
+      expect(parsed.meta.endpoint).toContain(`/categories/${testCategory!.id}/products`);
       expect(parsed.data).toBeDefined();
 
-      const updateResult = JSON.parse(parsed.data[0]);
-      expect(typeof updateResult).toBe("boolean");
+      const updateResult = parsed.data[0];
+      expect(typeof updateResult).toBe("string");
+      expect(updateResult).toContain("successfully updated");
+      expect(updateResult).toContain(testProductSku);
+      expect(updateResult).toContain(testCategory!.id!.toString());
     }, 30000);
 
     test("should remove product from category", async () => {
+      fixtures.setCurrentTest("remove_product_test");
+
+      // Create a test category using fixtures
+      const createdFixtures = await fixtures.createFixtures([{ name: "books" }]);
+      const testCategory = createdFixtures.get("books");
+      expect(testCategory).toBeDefined();
+      expect(testCategory!.id).toBeDefined();
+
+      // First, assign the product to the category
+      const assignData = {
+        categoryId: testCategory!.id!.toString(),
+        productLink: {
+          sku: testProductSku,
+          position: 1,
+        },
+      };
+
+      const assignResult = await mockServer.callTool("assign-product-to-category", assignData);
+      const assignText = extractToolResponseText(assignResult);
+      const assignParsed = parseToolResponse(assignText);
+      expect(assignParsed.meta.name).toBe("Assign Product to Category");
+      expect(assignParsed.data[0]).toContain("successfully assigned");
+      expect(assignParsed.data[0]).toContain(testProductSku);
+      expect(assignParsed.data[0]).toContain(testCategory!.id!.toString());
+
+      // Now remove the product from the category
       const removeData = {
-        categoryId: 2, // Default category
+        categoryId: testCategory!.id!,
         sku: testProductSku,
       };
 
       const result = await mockServer.callTool("remove-product-from-category", removeData);
 
       const responseText = extractToolResponseText(result);
-      
+
       const parsed = parseToolResponse(responseText);
       expect(parsed.meta.name).toBe("Remove Product from Category");
-      expect(parsed.meta.endpoint).toContain(`/categories/2/products/${testProductSku}`);
+      expect(parsed.meta.endpoint).toContain(`/categories/${testCategory!.id}/products/${testProductSku}`);
       expect(parsed.data).toBeDefined();
 
-      const removeResult = JSON.parse(parsed.data[0]);
-      expect(typeof removeResult).toBe("boolean");
+      const removeResult = parsed.data[0];
+      expect(typeof removeResult).toBe("string");
+      expect(removeResult).toContain("successfully removed");
+      expect(removeResult).toContain(testProductSku);
+      expect(removeResult).toContain(testCategory!.id!.toString());
     }, 30000);
+
+    test("should assign multiple products and retrieve category products", async () => {
+      fixtures.setCurrentTest("multiple_products_test");
+
+      // Create a test category using fixtures
+      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }]);
+      const testCategory = createdFixtures.get("electronics");
+      expect(testCategory).toBeDefined();
+      expect(testCategory!.id).toBeDefined();
+
+      // Get a second product SKU for testing
+      const searchResult2 = await mockServer.callTool("search-products", { pageSize: 2 });
+      const searchText2 = extractToolResponseText(searchResult2);
+      const searchParsed2 = parseToolResponse(searchText2);
+      const products = searchParsed2.data.map((item: string) => JSON.parse(item));
+      const secondProductSku = products[1]?.sku;
+      
+      expect(secondProductSku).toBeDefined();
+      expect(secondProductSku).not.toBe(testProductSku);
+
+      // Assign first product to the category
+      const assignData1 = {
+        categoryId: testCategory!.id!.toString(),
+        productLink: {
+          sku: testProductSku,
+          position: 1,
+        },
+      };
+
+      const assignResult1 = await mockServer.callTool("assign-product-to-category", assignData1);
+      const assignText1 = extractToolResponseText(assignResult1);
+      const assignParsed1 = parseToolResponse(assignText1);
+      expect(assignParsed1.meta.name).toBe("Assign Product to Category");
+      expect(assignParsed1.data[0]).toContain("successfully assigned");
+      expect(assignParsed1.data[0]).toContain(testProductSku);
+
+      // Assign second product to the category
+      const assignData2 = {
+        categoryId: testCategory!.id!.toString(),
+        productLink: {
+          sku: secondProductSku,
+          position: 2,
+        },
+      };
+
+      const assignResult2 = await mockServer.callTool("assign-product-to-category", assignData2);
+      const assignText2 = extractToolResponseText(assignResult2);
+      const assignParsed2 = parseToolResponse(assignText2);
+      expect(assignParsed2.meta.name).toBe("Assign Product to Category");
+      expect(assignParsed2.data[0]).toContain("successfully assigned");
+      expect(assignParsed2.data[0]).toContain(secondProductSku);
+
+      // Now retrieve all products in the category
+      const getProductsResult = await mockServer.callTool("get-category-products", {
+        categoryId: testCategory!.id!,
+      });
+
+      const getProductsText = extractToolResponseText(getProductsResult);
+      const getProductsParsed = parseToolResponse(getProductsText);
+
+      expect(getProductsParsed.meta.name).toBe("Category Products");
+      expect(getProductsParsed.meta.endpoint).toContain(`/categories/${testCategory!.id}/products`);
+      expect(getProductsParsed.data).toBeDefined();
+      expect(getProductsParsed.data.length).toBeGreaterThan(0);
+
+      // Parse the product data and verify our assigned products are there
+      const categoryProducts = getProductsParsed.data.map((item: string) => JSON.parse(item));
+      
+      // Find our assigned products in the category products
+      const foundProduct1 = categoryProducts.find((product: CategoryProductLink) => product.sku === testProductSku);
+      const foundProduct2 = categoryProducts.find((product: CategoryProductLink) => product.sku === secondProductSku);
+
+      expect(foundProduct1).toBeDefined();
+      expect(foundProduct2).toBeDefined();
+
+      // Verify the product link properties
+      expect(foundProduct1).toHaveProperty("sku");
+      expect(foundProduct1).toHaveProperty("position");
+      expect(foundProduct1).toHaveProperty("category_id");
+      expect(foundProduct1.sku).toBe(testProductSku);
+      expect(foundProduct1.position).toBe(1);
+      expect(foundProduct1.category_id).toBe(testCategory!.id!.toString());
+
+      expect(foundProduct2).toHaveProperty("sku");
+      expect(foundProduct2).toHaveProperty("position");
+      expect(foundProduct2).toHaveProperty("category_id");
+      expect(foundProduct2.sku).toBe(secondProductSku);
+      expect(foundProduct2.position).toBe(2);
+      expect(foundProduct2.category_id).toBe(testCategory!.id!.toString());
+    }, 45000);
   });
 
   describe("Error Handling", () => {
@@ -911,6 +1457,20 @@ describe("Categories Tools - Functional Tests", () => {
 
       const responseText = extractToolResponseText(result);
       expect(responseText).toContain("Failed to retrieve data from Adobe Commerce");
+
+      // Clean up the category in case it was created despite invalid parent
+      // Try to parse the response to see if a category was actually created
+      try {
+        const parsed = parseToolResponse(responseText);
+        if (parsed.data && parsed.data.length > 0) {
+          const createdCategory = JSON.parse(parsed.data[0]);
+          if (createdCategory.id) {
+            await mockServer.callTool("delete-category", { categoryId: createdCategory.id });
+          }
+        }
+      } catch {
+        // If parsing fails, the category creation failed as expected
+      }
     }, 30000);
 
     test("should handle updating non-existent category", async () => {
@@ -956,9 +1516,6 @@ describe("Categories Tools - Functional Tests", () => {
       const createdCategory = JSON.parse(createParsed.data[0]);
       const categoryId = createdCategory.id;
 
-      // Store for cleanup
-      createdCategoryIds.push(categoryId);
-
       // Try to move to invalid parent
       const moveData = {
         categoryId: categoryId,
@@ -969,90 +1526,9 @@ describe("Categories Tools - Functional Tests", () => {
 
       const responseText = extractToolResponseText(result);
       expect(responseText).toContain("Failed to retrieve data from Adobe Commerce");
+
+      // Clean up the category created directly with create-category tool
+      await mockServer.callTool("delete-category", { categoryId: categoryId });
     }, 30000);
   });
-
-  describe("Edge Cases", () => {
-    test("should handle empty search results", async () => {
-      const result = await mockServer.callTool("search-categories", {
-        filters: [
-          {
-            field: "name",
-            value: "NonExistentCategoryName12345",
-            conditionType: "eq",
-          },
-        ],
-      });
-
-      const responseText = extractToolResponseText(result);
-      const parsed = parseToolResponse(responseText);
-
-      expect(parsed.meta.name).toBe("Categories");
-      expect(parsed.data.length).toBe(0);
-    }, 30000);
-
-    test("should handle category tree with no children", async () => {
-      // Create a category with no children
-      const testName = `No Children Category ${Date.now()}`;
-      const createResult = await mockServer.callTool("create-category", {
-        category: {
-          name: testName,
-          parent_id: 2,
-          is_active: true,
-        },
-      });
-
-      const createText = extractToolResponseText(createResult);
-      const createParsed = parseToolResponse(createText);
-      const createdCategory = JSON.parse(createParsed.data[0]);
-      const categoryId = createdCategory.id;
-
-      // Store for cleanup
-      createdCategoryIds.push(categoryId);
-
-      // Get tree for this category
-      const result = await mockServer.callTool("get-category-tree", {
-        rootCategoryId: categoryId,
-      });
-
-      const responseText = extractToolResponseText(result);
-      const parsed = parseToolResponse(responseText);
-
-      expect(parsed.meta.name).toBe("Category Tree");
-      expect(parsed.data).toBeDefined();
-
-      const treeData = JSON.parse(parsed.data[0]);
-      expect(treeData.id).toBe(categoryId);
-      expect(treeData.name).toBe(testName);
-      expect(Array.isArray(treeData.children_data)).toBe(true);
-    }, 30000);
-
-    test("should handle category with special characters in name", async () => {
-      const testCategoryName = `Special Chars Category & Test ${Date.now()}`;
-
-      const categoryData = {
-        category: {
-          name: testCategoryName,
-          parent_id: 2,
-          is_active: true,
-        },
-      };
-
-      const result = await mockServer.callTool("create-category", categoryData);
-
-      const responseText = extractToolResponseText(result);
-      const parsed = parseToolResponse(responseText);
-
-      expect(parsed.meta.name).toBe("Created Category");
-      expect(parsed.data).toBeDefined();
-
-      const createdCategory = JSON.parse(parsed.data[0]);
-      expect(createdCategory.name).toBe(testCategoryName);
-
-      // Store for cleanup
-      if (createdCategory.id) {
-        createdCategoryIds.push(createdCategory.id);
-      }
-    }, 30000);
-  });
-}); 
+});

@@ -19,6 +19,7 @@ import {
 } from "../adobe/products/schemas";
 import { toolTextResponse } from "./tool-response";
 
+// @TODO define fields that can be searched for in the search tools
 export function registerProductTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchProductTool(server, client);
   registerCreateProductTool(server, client);
