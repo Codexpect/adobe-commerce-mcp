@@ -74,7 +74,7 @@ function registerCreateAttributeSetTool(server: McpServer, client: AdobeCommerce
         const { data, endpoint } = resp;
         return `
         <meta>
-          <name>Attribute Set</name>
+          <name>Create Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
@@ -104,7 +104,7 @@ function registerSearchAttributeSetsTool(server: McpServer, client: AdobeCommerc
         const { data, endpoint } = resp;
         return `
          <meta>
-          <name>Attribute Sets</name>
+          <name>Search Attribute Sets</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
@@ -319,7 +319,7 @@ function registerSearchAttributeGroupsTool(server: McpServer, client: AdobeComme
         const { data, endpoint } = resp;
         return `
          <meta>
-          <name>Attribute Groups</name>
+          <name>Search Attribute Groups</name>
           <endpoint>${endpoint}</endpoint>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
@@ -351,7 +351,7 @@ function registerCreateAttributeGroupTool(server: McpServer, client: AdobeCommer
         const { data, endpoint } = resp;
         return `
          <meta>
-          <name>Attribute Group</name>
+          <name>Create Attribute Group</name>
           <endpoint>${endpoint}</endpoint>
          <meta>
          <data>

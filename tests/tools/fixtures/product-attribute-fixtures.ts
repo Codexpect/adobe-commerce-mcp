@@ -37,20 +37,6 @@ export class ProductAttributeFixtures {
   }
 
   /**
-   * Get the unique test run ID for filtering
-   */
-  getTestRunId(): string {
-    return this.testRunId;
-  }
-
-  /**
-   * Get the current test identifier
-   */
-  getCurrentTestId(): string {
-    return this.currentTestId;
-  }
-
-  /**
    * Get the current test's unique ID
    */
   getCurrentTestUniqueId(): string {
@@ -235,17 +221,6 @@ export class ProductAttributeFixtures {
   }
 
   /**
-   * Get filter criteria to find only this test run's attributes
-   */
-  getTestRunFilter() {
-    return {
-      field: "attribute_code",
-      value: `%attr_%`,
-      conditionType: "like" as const,
-    };
-  }
-
-  /**
    * Get filter criteria to find only current test's attributes
    */
   getCurrentTestFilter() {
@@ -254,13 +229,6 @@ export class ProductAttributeFixtures {
       value: `%${this.currentTestUniqueId}%`,
       conditionType: "like" as const,
     };
-  }
-
-  /**
-   * Get an attribute that was created by this fixture manager
-   */
-  getCreatedAttribute(attributeCode: string): ProductAttribute | undefined {
-    return this.createdAttributes.get(attributeCode);
   }
 
   /**
@@ -276,13 +244,6 @@ export class ProductAttributeFixtures {
     }
     
     return currentTestAttrs;
-  }
-
-  /**
-   * Get all created attribute codes for current test
-   */
-  getCurrentTestAttributeCodes(): string[] {
-    return Array.from(this.getCurrentTestAttributes().keys());
   }
 
   /**
@@ -314,41 +275,5 @@ export class ProductAttributeFixtures {
 
     await Promise.all(cleanupPromises);
     console.log(`🎉 Test cleanup completed for: ${this.currentTestId}`);
-  }
-
-  /**
-   * Clean up all created fixtures (for emergency cleanup)
-   */
-  async cleanupAll(): Promise<void> {
-    if (this.createdAttributes.size === 0) {
-      console.log("🧹 No fixture attributes to clean up");
-      return;
-    }
-
-    console.log(`🧹 Emergency cleanup: deleting ${this.createdAttributes.size} fixture attributes...`);
-
-    const cleanupPromises = Array.from(this.createdAttributes.keys()).map(async (attributeCode) => {
-      try {
-        const response = await deleteProductAttribute(this.client, attributeCode);
-        if (response.success) {
-          console.log(`✅ Deleted fixture attribute: ${attributeCode}`);
-        } else {
-          console.log(`⚠️ Could not delete attribute ${attributeCode}: ${response.error}`);
-        }
-      } catch (error) {
-        console.log(`⚠️ Error deleting attribute ${attributeCode}:`, error);
-      }
-    });
-
-    await Promise.all(cleanupPromises);
-    this.createdAttributes.clear();
-    console.log("🎉 Emergency cleanup completed!");
-  }
-
-  /**
-   * Create a custom attribute with specific parameters for current test
-   */
-  async createCustomAttribute(baseName: string, definition: FixtureAttributeDefinition): Promise<ProductAttribute> {
-    return this.createFixture(baseName, definition);
   }
 }
