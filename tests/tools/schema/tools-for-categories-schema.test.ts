@@ -426,14 +426,12 @@ describe("Categories Tools - Schema Validation Tests", () => {
         productLink: {
           sku: "test-sku",
           position: 1,
-          category_id: "1",
         },
       },
       {
         categoryId: "2",
         productLink: {
           sku: "another-sku",
-          category_id: "2",
         },
       },
       {
@@ -441,7 +439,6 @@ describe("Categories Tools - Schema Validation Tests", () => {
         productLink: {
           sku: "test-sku-123",
           position: 0,
-          category_id: "999",
         },
       },
     ];
@@ -449,15 +446,13 @@ describe("Categories Tools - Schema Validation Tests", () => {
     const invalidInputs = [
       {}, // Missing required fields
       { categoryId: "1" }, // Missing productLink
-      { productLink: { sku: "test", category_id: "1" } }, // Missing categoryId
-      { categoryId: "", productLink: { sku: "test", category_id: "1" } }, // Empty categoryId
-      { categoryId: "1", productLink: {} }, // Missing category_id in productLink
-      { categoryId: "1", productLink: { sku: "test" } }, // Missing category_id
-      { categoryId: "1", productLink: { category_id: "" } }, // Empty category_id
-      { categoryId: "1", productLink: { sku: "", category_id: "1" } }, // Empty sku
-      { categoryId: "1", productLink: { sku: "test", position: -1, category_id: "1" } }, // Negative position
-      { categoryId: "1", productLink: { sku: "test", position: "invalid", category_id: "1" } }, // Wrong type for position
-      { categoryId: 123, productLink: { sku: "test", category_id: "1" } }, // Wrong type for categoryId
+      { productLink: { sku: "test" } }, // Missing categoryId
+      { categoryId: "", productLink: { sku: "test" } }, // Empty categoryId
+      { categoryId: "1", productLink: {} }, // Missing sku in productLink
+      { categoryId: "1", productLink: { sku: "" } }, // Empty sku
+      { categoryId: "1", productLink: { sku: "test", position: -1 } }, // Negative position
+      { categoryId: "1", productLink: { sku: "test", position: "invalid" } }, // Wrong type for position
+      { categoryId: 123, productLink: { sku: "test" } }, // Wrong type for categoryId
     ];
 
     testSchema(assignProductToCategoryInputSchema, validInputs, invalidInputs, "Assign Product To Category");
@@ -470,14 +465,12 @@ describe("Categories Tools - Schema Validation Tests", () => {
         productLink: {
           sku: "test-sku",
           position: 2,
-          category_id: "1",
         },
       },
       {
         categoryId: "2",
         productLink: {
           sku: "another-sku",
-          category_id: "2",
         },
       },
       {
@@ -485,7 +478,6 @@ describe("Categories Tools - Schema Validation Tests", () => {
         productLink: {
           sku: "test-sku-123",
           position: 0,
-          category_id: "999",
         },
       },
     ];
@@ -493,15 +485,13 @@ describe("Categories Tools - Schema Validation Tests", () => {
     const invalidInputs = [
       {}, // Missing required fields
       { categoryId: "1" }, // Missing productLink
-      { productLink: { sku: "test", category_id: "1" } }, // Missing categoryId
-      { categoryId: "", productLink: { sku: "test", category_id: "1" } }, // Empty categoryId
-      { categoryId: "1", productLink: {} }, // Missing category_id in productLink
-      { categoryId: "1", productLink: { sku: "test" } }, // Missing category_id
-      { categoryId: "1", productLink: { category_id: "" } }, // Empty category_id
-      { categoryId: "1", productLink: { sku: "", category_id: "1" } }, // Empty sku
-      { categoryId: "1", productLink: { sku: "test", position: -1, category_id: "1" } }, // Negative position
-      { categoryId: "1", productLink: { sku: "test", position: "invalid", category_id: "1" } }, // Wrong type for position
-      { categoryId: 123, productLink: { sku: "test", category_id: "1" } }, // Wrong type for categoryId
+      { productLink: { sku: "test" } }, // Missing categoryId
+      { categoryId: "", productLink: { sku: "test" } }, // Empty categoryId
+      { categoryId: "1", productLink: {} }, // Missing sku in productLink
+      { categoryId: "1", productLink: { sku: "" } }, // Empty sku
+      { categoryId: "1", productLink: { sku: "test", position: -1 } }, // Negative position
+      { categoryId: "1", productLink: { sku: "test", position: "invalid" } }, // Wrong type for position
+      { categoryId: 123, productLink: { sku: "test" } }, // Wrong type for categoryId
     ];
 
     testSchema(updateProductInCategoryInputSchema, validInputs, invalidInputs, "Update Product In Category");

@@ -6,11 +6,11 @@ dotenv.config({ path: ".env.test" });
 beforeAll(() => {
   jest.setTimeout(30000);
 
-  if (!process.env.VERBOSE_TESTS) {
+  // if (!process.env.VERBOSE_TESTS) {
     jest.spyOn(console, "log").mockImplementation(() => {});
     jest.spyOn(console, "error").mockImplementation(() => {});
     jest.spyOn(console, "warn").mockImplementation(() => {});
-  }
+  // }
 });
 
 afterAll(() => {
