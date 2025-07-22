@@ -33,6 +33,9 @@ import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
 import { toolTextResponse } from "./tool-response";
 
+// @TODO define fields that can be searched for in the search tools
+// @TODO allow to create/update all fields for the attribute
+// @TODO allow to define isFilterable
 export function registerProductAttributesTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchProductAttributesTool(server, client);
   registerCreateProductAttributeTool(server, client);
@@ -232,7 +235,7 @@ function registerGetProductAttributeOptionsTool(server: McpServer, client: Adobe
         const { data, endpoint } = resp;
         return `
         <meta>
-          <name>Product Attribute Options</name>
+          <name>Get Product Attribute Options</name>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${Array.isArray(data) ? data.length : 0}</totalItems>
         <meta>
@@ -266,7 +269,7 @@ function registerAddProductAttributeOptionTool(server: McpServer, client: AdobeC
         const { data, endpoint } = resp;
         return `
         <meta>
-          <name>Product Attribute Option</name>
+          <name>Add Product Attribute Option</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
@@ -299,7 +302,7 @@ function registerUpdateProductAttributeOptionTool(server: McpServer, client: Ado
         const { data, endpoint } = resp;
         return `
         <meta>
-          <name>Product Attribute Option</name>
+          <name>Update Product Attribute Option</name>
           <endpoint>${endpoint}</endpoint>
         <meta>
 
@@ -338,7 +341,7 @@ function registerDeleteProductAttributeOptionTool(server: McpServer, client: Ado
 
         <data>
           Option "${parsed.optionId}" deleted from attribute "${parsed.attributeCode}" successfully
-        </data>§
+        </data>
       `;
       });
     }
