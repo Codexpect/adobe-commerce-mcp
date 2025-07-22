@@ -542,7 +542,7 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
 
       const deleteResponseText = extractToolResponseText(deleteResult);
       expect(deleteResponseText).toContain("Delete Attribute Set");
-      expect(deleteResponseText).toContain("Deleted");
+      expect(deleteResponseText).toContain("has been successfully deleted");
     }, 60000);
 
     test("should update an attribute set name", async () => {
@@ -621,7 +621,7 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
 
       const deleteResponseText = extractToolResponseText(deleteResult);
       expect(deleteResponseText).toContain("Delete Attribute Group");
-      expect(deleteResponseText).toContain("Deleted");
+      expect(deleteResponseText).toContain("has been successfully deleted");
     }, 45000);
 
     test("should update an attribute group name", async () => {
@@ -716,7 +716,7 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
       });
       const assignText = extractToolResponseText(assignResult);
       expect(assignText).toContain("Assign Attribute to Set and Group");
-      expect(assignText).toContain("Assigned");
+      expect(assignText).toContain("has been successfully assigned");
 
       // 5. Clean up - delete the attribute and set
       await mockServer.callTool("delete-product-attribute", {
@@ -773,7 +773,7 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
       });
       const assignText = extractToolResponseText(assignResult);
       expect(assignText).toContain("Assign Attribute to Set and Group");
-      expect(assignText).toMatch(/Assigned|Failed to assign attribute to set\/group/);
+      expect(assignText).toMatch(/has been successfully assigned|Failed to assign attribute/);
 
       // 5. Delete attribute from set
       const deleteResult = await mockServer.callTool("delete-attribute-from-set", {
@@ -782,7 +782,7 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
       });
       const deleteText = extractToolResponseText(deleteResult);
       expect(deleteText).toContain("Delete Attribute From Set");
-      expect(deleteText).toContain("Deleted");
+      expect(deleteText).toContain("has been successfully removed");
     }, 45000);
   });
 

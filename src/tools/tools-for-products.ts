@@ -20,6 +20,8 @@ import {
 import { toolTextResponse } from "./tool-response";
 
 // @TODO define fields that can be searched for in the search tools
+// @TODO create different types of products
+// Allow to create custom attributes
 export function registerProductTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchProductTool(server, client);
   registerCreateProductTool(server, client);
@@ -53,7 +55,7 @@ function registerSearchProductTool(server: McpServer, client: AdobeCommerceClien
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: Product) => JSON.stringify(item)).join("\n")}
@@ -177,6 +179,7 @@ function registerDeleteProductTool(server: McpServer, client: AdobeCommerceClien
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Product with SKU ${parsed.sku} has been successfully deleted.` : `Failed to delete product with SKU ${parsed.sku}.`;
         return `
         <meta>
           <name>Delete Product</name>
@@ -184,7 +187,7 @@ function registerDeleteProductTool(server: McpServer, client: AdobeCommerceClien
         </meta>
 
         <data>
-          ${JSON.stringify(data)}
+          ${successMessage}
         </data>
       `;
       });

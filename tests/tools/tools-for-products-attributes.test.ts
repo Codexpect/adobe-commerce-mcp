@@ -611,7 +611,7 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
 
       const responseText = extractToolResponseText(result);
       expect(responseText).toContain("Delete Product Attribute Option");
-      expect(responseText).toContain(`Option "${optionIdToDelete}" deleted from attribute "${selectAttr!.attribute_code}" successfully`);
+      expect(responseText).toContain(`Option "${optionIdToDelete}" has been successfully deleted from attribute "${selectAttr!.attribute_code}"`);
 
       // Verify the deletion by getting options again
       const verifyResult = await mockServer.callTool("get-product-attribute-options", {
@@ -718,7 +718,7 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
 
       const deleteResponseText = extractToolResponseText(deleteResult);
       expect(deleteResponseText).toContain("Delete Product Attribute");
-      expect(deleteResponseText).toContain("deleted successfully");
+      expect(deleteResponseText).toContain("has been successfully deleted");
 
       // Verify it's deleted by trying to retrieve it
       const verifyResult = await mockServer.callTool("get-product-attribute-by-code", {

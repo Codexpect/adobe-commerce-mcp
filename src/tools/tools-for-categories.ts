@@ -86,7 +86,7 @@ function registerSearchCategoryTool(server: McpServer, client: AdobeCommerceClie
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: Category) => JSON.stringify(item)).join("\n")}
@@ -119,7 +119,7 @@ function registerGetCategoryTreeTool(server: McpServer, client: AdobeCommerceCli
         <meta>
           <name>Category Tree</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -152,7 +152,7 @@ function registerGetCategoryByIdTool(server: McpServer, client: AdobeCommerceCli
         <meta>
           <name>Category</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -186,7 +186,7 @@ function registerCreateCategoryTool(server: McpServer, client: AdobeCommerceClie
         <meta>
           <name>Created Category</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -220,7 +220,7 @@ function registerUpdateCategoryTool(server: McpServer, client: AdobeCommerceClie
         <meta>
           <name>Updated Category</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -254,7 +254,7 @@ function registerDeleteCategoryTool(server: McpServer, client: AdobeCommerceClie
         <meta>
           <name>Delete Category</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${successMessage}
@@ -286,7 +286,7 @@ function registerMoveCategoryTool(server: McpServer, client: AdobeCommerceClient
         <meta>
           <name>Move Category</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${successMessage}
@@ -322,7 +322,7 @@ function registerGetCategoryAttributesTool(server: McpServer, client: AdobeComme
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: CategoryAttribute) => JSON.stringify(item)).join("\n")}
@@ -359,7 +359,7 @@ function registerGetCategoryAttributeByCodeTool(server: McpServer, client: Adobe
         <meta>
           <name>Category Attribute</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -392,7 +392,7 @@ function registerGetCategoryAttributeOptionsTool(server: McpServer, client: Adob
         <meta>
           <name>Category Attribute Options</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -425,7 +425,7 @@ function registerGetCategoryProductsTool(server: McpServer, client: AdobeCommerc
         <meta>
           <name>Category Products</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: CategoryProductLink) => JSON.stringify(item)).join("\n")}
@@ -457,7 +457,7 @@ function registerAssignProductToCategoryTool(server: McpServer, client: AdobeCom
         <meta>
           <name>Assign Product to Category</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${successMessage}
@@ -489,7 +489,7 @@ function registerUpdateProductInCategoryTool(server: McpServer, client: AdobeCom
         <meta>
           <name>Update Product in Category</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${successMessage}
@@ -520,7 +520,7 @@ function registerRemoveProductFromCategoryTool(server: McpServer, client: AdobeC
         <meta>
           <name>Remove Product from Category</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${successMessage}

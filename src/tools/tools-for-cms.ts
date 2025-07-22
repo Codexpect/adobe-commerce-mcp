@@ -34,7 +34,7 @@ export function registerCmsBlockTools(server: McpServer, client: AdobeCommerceCl
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: CmsBlock) => JSON.stringify(item)).join("\n")}
@@ -70,7 +70,7 @@ export function registerCmsPageTool(server: McpServer, client: AdobeCommerceClie
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: CmsPage) => JSON.stringify(item)).join("\n")}
