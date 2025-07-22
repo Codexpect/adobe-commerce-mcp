@@ -1,16 +1,9 @@
-import { attributeCodeSchema } from "../common/validation-schemas";
-
-/**
- * Category Attributes Schemas
- *
- * These schemas define the validation rules for managing category attributes in Adobe Commerce.
- * Category attributes define the properties that can be assigned to categories.
- */
+import { attributeCodeSchema } from "../../../core/validation-schemas";
 
 /**
  * Schema for retrieving a specific category attribute by code
- * 
- * Used for: GET /categories/attributes/{attributeCode}
+ * Required fields:
+ * - attributeCode: The attribute code to retrieve
  */
 export const getCategoryAttributeByCodeInputSchema = {
   attributeCode: attributeCodeSchema.describe("Attribute code to retrieve (e.g., 'name', 'is_active')."),
@@ -18,9 +11,9 @@ export const getCategoryAttributeByCodeInputSchema = {
 
 /**
  * Schema for retrieving options for a specific category attribute
- * 
- * Used for: GET /categories/attributes/{attributeCode}/options
+ * Required fields:
+ * - attributeCode: The attribute code to get options for
  */
 export const getCategoryAttributeOptionsInputSchema = {
   attributeCode: attributeCodeSchema.describe("Attribute code to get options for (e.g., 'is_active')."),
-}; 
+};

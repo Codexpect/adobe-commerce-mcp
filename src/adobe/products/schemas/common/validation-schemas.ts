@@ -1,14 +1,5 @@
 import { z } from "zod";
-
-/**
- * Validates product attribute codes
- * Ensures codes are non-empty and contain only safe characters
- */
-export const attributeCodeSchema = z
-  .string()
-  .min(1, "Attribute code cannot be empty")
-  .regex(/^[a-zA-Z0-9_]+$/, "Attribute code can only contain letters, numbers, and underscores")
-  .describe("Unique code for the attribute (e.g., 'color', 'size').");
+import { storeIdSchema } from "../../../core/validation-schemas";
 
 /**
  * Validates option IDs for attribute options
@@ -21,12 +12,6 @@ export const optionIdSchema = z.string().min(1, "Option ID cannot be empty").des
  * Prevents empty strings that could cause display issues
  */
 export const nonEmptyLabelSchema = z.string().min(1, "Label cannot be empty").describe("Display label.");
-
-/**
- * Validates store IDs for multi-store configurations
- * Ensures positive numbers to match valid Magento store IDs
- */
-export const storeIdSchema = z.number().positive("Store ID must be a positive number").describe("Store ID.");
 
 /**
  * Validates attribute set IDs

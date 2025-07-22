@@ -1,17 +1,9 @@
 import { z } from "zod";
-import { attributeCodeSchema, nonEmptyLabelSchema, optionIdSchema, storeLabelsSchema } from "../common/validation-schemas";
-
-/**
- * Product Attribute Options Schemas
- *
- * These schemas manage the individual options/values available for select and multiselect attributes.
- * For example, a "Color" attribute might have options like "Red", "Blue", "Green".
- */
+import { attributeCodeSchema } from "../../../core/validation-schemas";
+import { nonEmptyLabelSchema, optionIdSchema, storeLabelsSchema } from "../common/validation-schemas";
 
 /**
  * Schema for retrieving all options for a specific attribute
- *
- * Used for: GET /products/attributes/{attributeCode}/options
  */
 export const getProductAttributeOptionsInputSchema = {
   attributeCode: attributeCodeSchema,
@@ -65,9 +57,6 @@ export const updateProductAttributeOptionInputSchema = {
  * Required fields:
  * - attributeCode: The attribute containing the option
  * - optionId: The specific option to delete
- *
- * Note: Deleting an option that is currently used by products may cause data issues.
- * Consider checking for usage before deletion.
  */
 export const deleteProductAttributeOptionInputSchema = {
   attributeCode: attributeCodeSchema,

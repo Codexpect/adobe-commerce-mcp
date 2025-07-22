@@ -1,47 +1,22 @@
 import { z } from "zod";
-import {
-  attributeCodeSchema,
-  nonEmptyLabelSchema,
-  storeLabelsSchema,
-} from "../common/validation-schemas";
+import { attributeCodeSchema } from "../../../core/validation-schemas";
+import { nonEmptyLabelSchema, storeLabelsSchema } from "../common/validation-schemas";
 
-/**
- * Product Attribute Schemas
- * 
- * These schemas define the validation rules for managing product attributes in Adobe Commerce.
- * Product attributes define the properties that can be assigned to products (color, size, etc.)
- */
+const attributeTypeEnum = z.enum(["text", "textarea", "boolean", "date", "integer", "decimal", "price", "weight", "singleselect", "multiselect"]);
 
-/**
- * Supported attribute types in Adobe Commerce
- * Each type maps to specific backend storage and frontend input types
- */
-const attributeTypeEnum = z.enum([
-  "text", "textarea", "boolean", "date", "integer", 
-  "decimal", "price", "weight", "singleselect", "multiselect"
-]);
-
-/**
- * Attribute scope determines where the attribute value is stored and managed
- */
 const attributeScopeEnum = z.enum(["store", "website", "global"]);
 
-/**
- * Frontend input types for attribute editing in admin
- */
-const frontendInputEnum = z.enum([
-  "text", "textarea", "boolean", "date", "select", "multiselect", "price"
-]);
+const frontendInputEnum = z.enum(["text", "textarea", "boolean", "date", "select", "multiselect", "price"]);
 
 /**
  * Schema for creating new product attributes
- * 
+ *
  * Required fields:
  * - type: The logical type of attribute (affects storage and display)
  * - attributeCode: Unique identifier for the attribute
  * - defaultFrontendLabel: Display name for the attribute
  * - scope: Where the attribute values are managed
- * 
+ *
  * Optional fields:
  * - options: For select/multiselect attributes, defines available choices
  */
@@ -67,8 +42,6 @@ export const createProductAttributeInputSchema = {
 
 /**
  * Schema for retrieving a product attribute by its code
- * 
- * Used for: GET /products/attributes/{attributeCode}
  */
 export const getProductAttributeByCodeInputSchema = {
   attributeCode: attributeCodeSchema,
@@ -76,9 +49,6 @@ export const getProductAttributeByCodeInputSchema = {
 
 /**
  * Schema for updating existing product attributes
- * 
- * Note: Some fields like frontend_input may be restricted by Adobe Commerce
- * for existing attributes to prevent data corruption
  */
 export const updateProductAttributeInputSchema = {
   attributeCode: attributeCodeSchema,
@@ -102,10 +72,7 @@ export const updateProductAttributeInputSchema = {
 
 /**
  * Schema for deleting product attributes
- * 
- * Note: Only user-defined attributes can be deleted.
- * System attributes (like 'name', 'price') cannot be removed.
  */
 export const deleteProductAttributeInputSchema = {
   attributeCode: attributeCodeSchema,
-}; 
+};

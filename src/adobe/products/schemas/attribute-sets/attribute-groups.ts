@@ -1,20 +1,5 @@
-import {
-  attributeCodeSchema,
-  attributeGroupIdSchema,
-  attributeSetIdSchema,
-  nonEmptyLabelSchema,
-  sortOrderSchema,
-} from "../common/validation-schemas";
-
-/**
- * Attribute Group Schemas
- *
- * Attribute groups organize attributes within an attribute set into logical sections.
- * For example, within a "Clothing" attribute set, you might have groups like:
- * - "General" (Name, Description, Price)
- * - "Physical Properties" (Size, Color, Material)
- * - "Care Instructions" (Washing, Drying)
- */
+import { attributeCodeSchema } from "../../../core/validation-schemas";
+import { attributeGroupIdSchema, attributeSetIdSchema, nonEmptyLabelSchema, sortOrderSchema } from "../common/validation-schemas";
 
 /**
  * Schema for creating new attribute groups within an attribute set
@@ -22,8 +7,6 @@ import {
  * Required fields:
  * - attributeSetId: The attribute set to add the group to
  * - attributeGroupName: Display name for the group
- *
- * Note: Groups help organize the product edit form in the admin interface
  */
 export const createAttributeGroupInputSchema = {
   attributeSetId: attributeSetIdSchema.describe("ID of the attribute set to which the group will be added."),
@@ -51,11 +34,6 @@ export const updateAttributeGroupInputSchema = {
  *
  * Required fields:
  * - attributeGroupId: The group to delete
- *
- * Note:
- * - Cannot delete groups that contain attributes
- * - Move all attributes to other groups before deletion
- * - Cannot delete system groups (like "General")
  */
 export const deleteAttributeGroupInputSchema = {
   attributeGroupId: attributeGroupIdSchema.describe("ID of the attribute group to delete."),
@@ -69,8 +47,6 @@ export const deleteAttributeGroupInputSchema = {
  * - attributeGroupId: The group to assign the attribute to
  * - attributeCode: The attribute to assign
  * - sortOrder: Position within the group (affects admin form layout)
- *
- * Note: This determines where the attribute appears in the product edit form
  */
 export const assignAttributeToSetGroupInputSchema = {
   attributeSetId: attributeSetIdSchema.describe("ID of the attribute set."),

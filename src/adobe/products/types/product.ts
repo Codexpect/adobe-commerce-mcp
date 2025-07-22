@@ -1,8 +1,94 @@
 export interface Product {
+  id?: number;
   sku: string;
   name?: string;
   price?: number;
-  // Add more fields as needed
+  attribute_set_id?: number;
+  status?: number;
+  visibility?: number;
+  type_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  weight?: number;
+  description?: string;
+  short_description?: string;
+  meta_title?: string;
+  meta_keyword?: string;
+  meta_description?: string;
+  extension_attributes?: {
+    website_ids?: number[];
+    category_links?: Array<{
+      position?: number;
+      category_id: string;
+    }>;
+  };
+  product_links?: Array<{
+    link_type?: string;
+    linked_product_sku?: string;
+    linked_product_type?: string;
+    position?: number;
+    sku?: string;
+  }>;
+  options?: Array<{
+    product_sku?: string;
+    option_id?: number;
+    title?: string;
+    type?: string;
+    sort_order?: number;
+    is_require?: boolean;
+    price?: number;
+    price_type?: string;
+    sku?: string;
+    file_extension?: string;
+    max_characters?: number;
+    image_size_x?: number;
+    image_size_y?: number;
+    values?: Array<{
+      title?: string;
+      sort_order?: number;
+      price?: number;
+      price_type?: string;
+      sku?: string;
+      option_type_id?: number;
+    }>;
+  }>;
+  media_gallery_entries?: Array<{
+    id?: number;
+    media_type?: string;
+    label?: string;
+    position?: number;
+    disabled?: boolean;
+    types?: string[];
+    file?: string;
+    content?: {
+      base64_encoded_data?: string;
+      type?: string;
+      name?: string;
+    };
+    extension_attributes?: {
+      video_content?: {
+        media_type?: string;
+        video_provider?: string;
+        video_url?: string;
+        video_title?: string;
+        video_description?: string;
+        video_metadata?: string;
+      };
+    };
+  }>;
+  tier_prices?: Array<{
+    customer_group_id?: number;
+    qty?: number;
+    value?: number;
+    extension_attributes?: {
+      website_id?: number;
+      percentage_value?: number;
+    };
+  }>;
+  custom_attributes?: Array<{
+    attribute_code: string;
+    value: string | number | boolean;
+  }>;
 }
 
 export const PRODUCT_ENTITY_TYPE_ID = 4;

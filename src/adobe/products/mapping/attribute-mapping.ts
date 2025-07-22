@@ -25,7 +25,7 @@ const attributeTypeMap = {
 
 export function mapCreateProductAttributeInputToApiPayload(input: CreateProductAttributeInput): ProductAttribute {
   const { type, attributeCode, defaultFrontendLabel, scope, options } = input;
-  const typeMapping = attributeTypeMap[type];
+  const typeMapping = attributeTypeMap[type as keyof typeof attributeTypeMap];
   if (!typeMapping) throw new Error(`Unknown attribute type: ${type}`);
 
   return {

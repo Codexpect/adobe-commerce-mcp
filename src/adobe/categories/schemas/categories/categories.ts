@@ -1,25 +1,20 @@
 import { z } from "zod";
+import { storeIdSchema } from "../../../core/validation-schemas";
 import {
   booleanSchema,
   categoryIdSchema,
   categoryNameSchema,
   categoryPositionSchema,
   depthSchema,
-  storeIdSchema,
   stringArraySchema,
 } from "../common/validation-schemas";
 
 /**
- * Category Management Schemas
- *
- * These schemas define the validation rules for managing categories in Adobe Commerce.
- * Categories organize products in a hierarchical structure for navigation and organization.
- */
-
-/**
  * Schema for retrieving the category tree
  *
- * Used for: GET /categories
+ * Optional fields:
+ * - rootCategoryId: Root category ID to start the tree from
+ * - depth: Depth of the tree to retrieve (1-10)
  */
 export const getCategoryTreeInputSchema = {
   rootCategoryId: categoryIdSchema.optional().describe("Root category ID to start the tree from (optional)."),
@@ -29,7 +24,11 @@ export const getCategoryTreeInputSchema = {
 /**
  * Schema for retrieving a specific category by ID
  *
- * Used for: GET /categories/{categoryId}
+ * Required fields:
+ * - categoryId: Category ID to retrieve
+ *
+ * Optional fields:
+ * - storeId: Store ID for multi-store configurations
  */
 export const getCategoryByIdInputSchema = {
   categoryId: categoryIdSchema.describe("Category ID to retrieve."),
@@ -88,7 +87,8 @@ export const updateCategoryInputSchema = {
 /**
  * Schema for deleting a category
  *
- * Used for: DELETE /categories/{categoryId}
+ * Required fields:
+ * - categoryId: Category ID to delete
  */
 export const deleteCategoryInputSchema = {
   categoryId: categoryIdSchema.describe("Category ID to delete."),
@@ -100,9 +100,9 @@ export const deleteCategoryInputSchema = {
  * Required fields:
  * - categoryId: ID of the category to move
  * - parentId: New parent category ID
- * 
+ *
  * Optional fields:
- * - afterId: Category ID to position after (optional)
+ * - afterId: Category ID to position after
  */
 export const moveCategoryInputSchema = {
   categoryId: categoryIdSchema.describe("Category ID to move."),
