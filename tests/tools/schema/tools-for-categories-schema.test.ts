@@ -159,6 +159,18 @@ describe("Categories Tools - Schema Validation Tests", () => {
           available_sort_by: ["name"],
         },
       },
+      {
+        category: {
+          name: "Test Category",
+          position: -1,
+        },
+      }, // Negative position is now valid
+      {
+        category: {
+          name: "Another Test",
+          position: -5,
+        },
+      }, // Large negative position is now valid
     ];
 
     const invalidInputs = [
@@ -191,12 +203,6 @@ describe("Categories Tools - Schema Validation Tests", () => {
           is_active: "invalid",
         },
       }, // Wrong type for is_active
-      {
-        category: {
-          name: "Test",
-          position: -1,
-        },
-      }, // Negative position
       {
         category: {
           name: "Test",
@@ -251,6 +257,18 @@ describe("Categories Tools - Schema Validation Tests", () => {
           available_sort_by: ["name", "position", "price"],
         },
       },
+      {
+        categoryId: "3",
+        category: {
+          position: -1,
+        },
+      }, // Negative position is now valid
+      {
+        categoryId: "4",
+        category: {
+          position: -10,
+        },
+      }, // Large negative position is now valid
     ];
 
     const invalidInputs = [
@@ -284,12 +302,6 @@ describe("Categories Tools - Schema Validation Tests", () => {
           parent_id: -1,
         },
       }, // Negative parent_id
-      {
-        categoryId: "1",
-        category: {
-          position: -1,
-        },
-      }, // Negative position
       {
         categoryId: "1",
         category: {
@@ -441,6 +453,20 @@ describe("Categories Tools - Schema Validation Tests", () => {
           position: 0,
         },
       },
+      {
+        categoryId: "3",
+        productLink: {
+          sku: "test-sku",
+          position: -1,
+        },
+      }, // Negative position is now valid
+      {
+        categoryId: "4",
+        productLink: {
+          sku: "another-sku",
+          position: -5,
+        },
+      }, // Large negative position is now valid
     ];
 
     const invalidInputs = [
@@ -450,7 +476,6 @@ describe("Categories Tools - Schema Validation Tests", () => {
       { categoryId: "", productLink: { sku: "test" } }, // Empty categoryId
       { categoryId: "1", productLink: {} }, // Missing sku in productLink
       { categoryId: "1", productLink: { sku: "" } }, // Empty sku
-      { categoryId: "1", productLink: { sku: "test", position: -1 } }, // Negative position
       { categoryId: "1", productLink: { sku: "test", position: "invalid" } }, // Wrong type for position
       { categoryId: 123, productLink: { sku: "test" } }, // Wrong type for categoryId
     ];
@@ -480,6 +505,20 @@ describe("Categories Tools - Schema Validation Tests", () => {
           position: 0,
         },
       },
+      {
+        categoryId: "3",
+        productLink: {
+          sku: "test-sku",
+          position: -1,
+        },
+      }, // Negative position is now valid
+      {
+        categoryId: "4",
+        productLink: {
+          sku: "another-sku",
+          position: -5,
+        },
+      }, // Large negative position is now valid
     ];
 
     const invalidInputs = [
@@ -489,7 +528,6 @@ describe("Categories Tools - Schema Validation Tests", () => {
       { categoryId: "", productLink: { sku: "test" } }, // Empty categoryId
       { categoryId: "1", productLink: {} }, // Missing sku in productLink
       { categoryId: "1", productLink: { sku: "" } }, // Empty sku
-      { categoryId: "1", productLink: { sku: "test", position: -1 } }, // Negative position
       { categoryId: "1", productLink: { sku: "test", position: "invalid" } }, // Wrong type for position
       { categoryId: 123, productLink: { sku: "test" } }, // Wrong type for categoryId
     ];
@@ -558,13 +596,20 @@ describe("Categories Tools - Schema Validation Tests", () => {
       const searchSchema = z.object(searchCriteriaInputSchema);
       const moveSchema = z.object(moveCategoryInputSchema);
 
-      // Negative positions
+      // Negative positions are now valid
       expect(() => createSchema.parse({
         category: {
           name: "Test",
           position: -1,
         },
-      })).toThrow();
+      })).not.toThrow();
+
+      expect(() => createSchema.parse({
+        category: {
+          name: "Test",
+          position: -999999,
+        },
+      })).not.toThrow();
 
       // Negative IDs
       expect(() => moveSchema.parse({

@@ -22,7 +22,6 @@ export const categoryIdSchema = z.number().positive("Category ID must be a posit
  */
 export const categoryPositionSchema = z
   .number()
-  .nonnegative("Category position must be non-negative")
   .describe("Display position/order of the category.");
 
 /**
