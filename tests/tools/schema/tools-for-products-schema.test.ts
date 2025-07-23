@@ -698,12 +698,12 @@ describe("Products Tools - Schema Validation Tests", () => {
         name: "Test Product",
         price: 999.99,
         attribute_set_id: 0,
-      })).toThrow("Attribute set ID must be positive");
+      })).toThrow("Entity ID must be a positive number");
 
       expect(() => updateSchema.parse({
         sku: "PROD-001",
         attribute_set_id: 0,
-      })).toThrow("Attribute set ID must be positive");
+      })).toThrow("Entity ID must be a positive number");
 
       // Negative attribute set IDs should be rejected
       expect(() => createSchema.parse({
@@ -711,12 +711,12 @@ describe("Products Tools - Schema Validation Tests", () => {
         name: "Test Product",
         price: 999.99,
         attribute_set_id: -1,
-      })).toThrow("Attribute set ID must be positive");
+      })).toThrow("Entity ID must be a positive number");
 
       expect(() => updateSchema.parse({
         sku: "PROD-001",
         attribute_set_id: -1,
-      })).toThrow("Attribute set ID must be positive");
+      })).toThrow("Entity ID must be a positive number");
 
       // Zero website IDs should be rejected
       expect(() => createSchema.parse({

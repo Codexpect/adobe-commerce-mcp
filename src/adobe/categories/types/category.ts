@@ -64,7 +64,7 @@ export interface CategoryAttribute {
 export interface CategoryProductLink {
   sku?: string;
   position?: number;
-  category_id: string;
+  category_id: number;
   extension_attributes?: CategoryProductLinkExtensionAttributes;
 }
 

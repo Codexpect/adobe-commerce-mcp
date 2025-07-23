@@ -1,5 +1,5 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
-import type { CategoryTree, CategoryProductLink } from "../../src/adobe/categories/types/category";
+import type { CategoryProductLink, CategoryTree } from "../../src/adobe/categories/types/category";
 import { CommerceParams } from "../../src/adobe/types/params";
 import { registerCategoriesTools } from "../../src/tools/tools-for-categories";
 import { registerProductTools } from "../../src/tools/tools-for-products";
@@ -979,7 +979,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       // Update the category
       const newName = `Updated Test Category ${Date.now()}`;
       const updateData = {
-        categoryId: categoryId.toString(), // Convert to string as expected by schema
+        categoryId: categoryId,
         category: {
           name: newName,
         },
@@ -1022,7 +1022,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       // Update the position
       const newPosition = 50;
       const updateData = {
-        categoryId: categoryId.toString(),
+        categoryId: categoryId,
         category: {
           position: newPosition,
         },
@@ -1211,7 +1211,6 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
   });
 
   describe("Product-Category Management", () => {
-
     test("should assign product to category", async () => {
       categoryFixtures.setCurrentTest("assign_product_test");
       productFixtures.setCurrentTest("assign_product_test");
@@ -1229,7 +1228,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const testProductSku = testProduct!.sku;
 
       const assignData = {
-        categoryId: testCategory!.id!.toString(),
+        categoryId: testCategory!.id!,
         productLink: {
           sku: testProductSku,
           position: 1,
@@ -1269,7 +1268,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const testProductSku = testProduct!.sku;
 
       const updateData = {
-        categoryId: testCategory!.id!.toString(),
+        categoryId: testCategory!.id!,
         productLink: {
           sku: testProductSku,
           position: 2,
@@ -1310,7 +1309,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       // First, assign the product to the category
       const assignData = {
-        categoryId: testCategory!.id!.toString(),
+        categoryId: testCategory!.id!,
         productLink: {
           sku: testProductSku,
           position: 1,
@@ -1358,24 +1357,21 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       expect(testCategory!.id).toBeDefined();
 
       // Create two test products using fixtures
-      const createdProducts = await productFixtures.createFixtures([
-        { name: "simple" },
-        { name: "configurable" }
-      ]);
+      const createdProducts = await productFixtures.createFixtures([{ name: "simple" }, { name: "configurable" }]);
       const firstProduct = createdProducts.get("simple");
       const secondProduct = createdProducts.get("configurable");
       expect(firstProduct).toBeDefined();
       expect(secondProduct).toBeDefined();
-      
+
       const testProductSku = firstProduct!.sku;
       const secondProductSku = secondProduct!.sku;
-      
+
       expect(secondProductSku).toBeDefined();
       expect(secondProductSku).not.toBe(testProductSku);
 
       // Assign first product to the category
       const assignData1 = {
-        categoryId: testCategory!.id!.toString(),
+        categoryId: testCategory!.id!,
         productLink: {
           sku: testProductSku,
           position: 1,
@@ -1391,7 +1387,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       // Assign second product to the category
       const assignData2 = {
-        categoryId: testCategory!.id!.toString(),
+        categoryId: testCategory!.id!,
         productLink: {
           sku: secondProductSku,
           position: 2,
@@ -1420,7 +1416,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       // Parse the product data and verify our assigned products are there
       const categoryProducts = getProductsParsed.data.map((item: string) => JSON.parse(item));
-      
+
       // Find our assigned products in the category products
       const foundProduct1 = categoryProducts.find((product: CategoryProductLink) => product.sku === testProductSku);
       const foundProduct2 = categoryProducts.find((product: CategoryProductLink) => product.sku === secondProductSku);
@@ -1496,7 +1492,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
     test("should handle updating non-existent category", async () => {
       const updateData = {
-        categoryId: "999999", // Use string as expected by schema
+        categoryId: 999999,
         category: {
           name: "Updated Name",
         },

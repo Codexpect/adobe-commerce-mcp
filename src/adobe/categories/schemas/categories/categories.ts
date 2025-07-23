@@ -71,7 +71,7 @@ export const createCategoryInputSchema = {
  * - All category fields can be updated
  */
 export const updateCategoryInputSchema = {
-  categoryId: z.string().min(1, "Category ID cannot be empty").describe("Category ID to update."),
+  categoryId: categoryIdSchema.describe("Category ID to update."),
   category: z
     .object({
       name: categoryNameSchema.optional().describe("Display name for the category (optional)."),

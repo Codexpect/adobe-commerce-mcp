@@ -235,20 +235,20 @@ describe("Categories Tools - Schema Validation Tests", () => {
   describe("Update Category Schema", () => {
     const validInputs = [
       {
-        categoryId: "1",
+        categoryId: 1,
         category: {
           name: "Updated Electronics",
         },
       },
       {
-        categoryId: "2",
+        categoryId: 2,
         category: {
           position: 2,
           is_active: false,
         },
       },
       {
-        categoryId: "999",
+        categoryId: 999,
         category: {
           name: "Updated Name",
           parent_id: 3,
@@ -258,13 +258,13 @@ describe("Categories Tools - Schema Validation Tests", () => {
         },
       },
       {
-        categoryId: "3",
+        categoryId: 3,
         category: {
           position: -1,
         },
       }, // Negative position is now valid
       {
-        categoryId: "4",
+        categoryId: 4,
         category: {
           position: -10,
         },
@@ -273,37 +273,38 @@ describe("Categories Tools - Schema Validation Tests", () => {
 
     const invalidInputs = [
       {}, // Missing categoryId
-      { categoryId: "" }, // Empty categoryId
+      { categoryId: 0 }, // Zero categoryId
+      { categoryId: -1 }, // Negative categoryId
       { category: { name: "Test" } }, // Missing categoryId
-      { categoryId: "1" }, // Missing category
-      { categoryId: 123 }, // Wrong type for categoryId
+      { categoryId: 1 }, // Missing category
+      { categoryId: "123" }, // Wrong type for categoryId
       { categoryId: null }, // Null categoryId
       {
-        categoryId: "1",
+        categoryId: 1,
         category: {
           name: "",
         },
       }, // Empty name
       {
-        categoryId: "1",
+        categoryId: 1,
         category: {
           name: 123,
         },
       }, // Wrong type for name
       {
-        categoryId: "1",
+        categoryId: 1,
         category: {
           parent_id: 0,
         },
       }, // Zero parent_id
       {
-        categoryId: "1",
+        categoryId: 1,
         category: {
           parent_id: -1,
         },
       }, // Negative parent_id
       {
-        categoryId: "1",
+        categoryId: 1,
         category: {
           available_sort_by: [""],
         },
@@ -434,34 +435,34 @@ describe("Categories Tools - Schema Validation Tests", () => {
   describe("Assign Product To Category Schema", () => {
     const validInputs = [
       {
-        categoryId: "1",
+        categoryId: 1,
         productLink: {
           sku: "test-sku",
           position: 1,
         },
       },
       {
-        categoryId: "2",
+        categoryId: 2,
         productLink: {
           sku: "another-sku",
         },
       },
       {
-        categoryId: "999",
+        categoryId: 999,
         productLink: {
           sku: "test-sku-123",
           position: 0,
         },
       },
       {
-        categoryId: "3",
+        categoryId: 3,
         productLink: {
           sku: "test-sku",
           position: -1,
         },
       }, // Negative position is now valid
       {
-        categoryId: "4",
+        categoryId: 4,
         productLink: {
           sku: "another-sku",
           position: -5,
@@ -471,13 +472,14 @@ describe("Categories Tools - Schema Validation Tests", () => {
 
     const invalidInputs = [
       {}, // Missing required fields
-      { categoryId: "1" }, // Missing productLink
+      { categoryId: 1 }, // Missing productLink
       { productLink: { sku: "test" } }, // Missing categoryId
-      { categoryId: "", productLink: { sku: "test" } }, // Empty categoryId
-      { categoryId: "1", productLink: {} }, // Missing sku in productLink
-      { categoryId: "1", productLink: { sku: "" } }, // Empty sku
-      { categoryId: "1", productLink: { sku: "test", position: "invalid" } }, // Wrong type for position
-      { categoryId: 123, productLink: { sku: "test" } }, // Wrong type for categoryId
+      { categoryId: 0, productLink: { sku: "test" } }, // Zero categoryId
+      { categoryId: -1, productLink: { sku: "test" } }, // Negative categoryId
+      { categoryId: 1, productLink: {} }, // Missing sku in productLink
+      { categoryId: 1, productLink: { sku: "" } }, // Empty sku
+      { categoryId: 1, productLink: { sku: "test", position: "invalid" } }, // Wrong type for position
+      { categoryId: "123", productLink: { sku: "test" } }, // Wrong type for categoryId
     ];
 
     testSchema(assignProductToCategoryInputSchema, validInputs, invalidInputs, "Assign Product To Category");
@@ -486,34 +488,34 @@ describe("Categories Tools - Schema Validation Tests", () => {
   describe("Update Product In Category Schema", () => {
     const validInputs = [
       {
-        categoryId: "1",
+        categoryId: 1,
         productLink: {
           sku: "test-sku",
           position: 2,
         },
       },
       {
-        categoryId: "2",
+        categoryId: 2,
         productLink: {
           sku: "another-sku",
         },
       },
       {
-        categoryId: "999",
+        categoryId: 999,
         productLink: {
           sku: "test-sku-123",
           position: 0,
         },
       },
       {
-        categoryId: "3",
+        categoryId: 3,
         productLink: {
           sku: "test-sku",
           position: -1,
         },
       }, // Negative position is now valid
       {
-        categoryId: "4",
+        categoryId: 4,
         productLink: {
           sku: "another-sku",
           position: -5,
@@ -523,13 +525,14 @@ describe("Categories Tools - Schema Validation Tests", () => {
 
     const invalidInputs = [
       {}, // Missing required fields
-      { categoryId: "1" }, // Missing productLink
+      { categoryId: 1 }, // Missing productLink
       { productLink: { sku: "test" } }, // Missing categoryId
-      { categoryId: "", productLink: { sku: "test" } }, // Empty categoryId
-      { categoryId: "1", productLink: {} }, // Missing sku in productLink
-      { categoryId: "1", productLink: { sku: "" } }, // Empty sku
-      { categoryId: "1", productLink: { sku: "test", position: "invalid" } }, // Wrong type for position
-      { categoryId: 123, productLink: { sku: "test" } }, // Wrong type for categoryId
+      { categoryId: 0, productLink: { sku: "test" } }, // Zero categoryId
+      { categoryId: -1, productLink: { sku: "test" } }, // Negative categoryId
+      { categoryId: 1, productLink: {} }, // Missing sku in productLink
+      { categoryId: 1, productLink: { sku: "" } }, // Empty sku
+      { categoryId: 1, productLink: { sku: "test", position: "invalid" } }, // Wrong type for position
+      { categoryId: "123", productLink: { sku: "test" } }, // Wrong type for categoryId
     ];
 
     testSchema(updateProductInCategoryInputSchema, validInputs, invalidInputs, "Update Product In Category");
@@ -684,28 +687,26 @@ describe("Categories Tools - Schema Validation Tests", () => {
         },
       })).toThrow("Category name cannot be empty");
 
-      // Empty category IDs
+      // Zero category IDs (now that we use numbers)
       expect(() => updateSchema.parse({
-        categoryId: "",
+        categoryId: 0,
         category: {
           name: "Test",
         },
-      })).toThrow("Category ID cannot be empty");
+      })).toThrow("Entity ID must be a positive number");
 
       expect(() => assignSchema.parse({
-        categoryId: "",
+        categoryId: 0,
         productLink: {
           sku: "test",
-          category_id: "1",
         },
-      })).toThrow("Category ID cannot be empty");
+      })).toThrow("Entity ID must be a positive number");
 
       // Empty SKUs
       expect(() => assignSchema.parse({
-        categoryId: "1",
+        categoryId: 1,
         productLink: {
           sku: "",
-          category_id: "1",
         },
       })).toThrow("Product SKU cannot be empty");
     });
@@ -740,30 +741,30 @@ describe("Categories Tools - Schema Validation Tests", () => {
       // Zero IDs should be rejected
       expect(() => getByIdSchema.parse({
         categoryId: 0,
-      })).toThrow("Category ID must be a positive number");
+      })).toThrow("Entity ID must be a positive number");
 
       expect(() => deleteSchema.parse({
         categoryId: 0,
-      })).toThrow("Category ID must be a positive number");
+      })).toThrow("Entity ID must be a positive number");
 
       expect(() => moveSchema.parse({
         categoryId: 0,
         parentId: 1,
-      })).toThrow("Category ID must be a positive number");
+      })).toThrow("Entity ID must be a positive number");
 
       // Negative IDs should be rejected
       expect(() => getByIdSchema.parse({
         categoryId: -1,
-      })).toThrow("Category ID must be a positive number");
+      })).toThrow("Entity ID must be a positive number");
 
       expect(() => deleteSchema.parse({
         categoryId: -1,
-      })).toThrow("Category ID must be a positive number");
+      })).toThrow("Entity ID must be a positive number");
 
       expect(() => moveSchema.parse({
         categoryId: -1,
         parentId: 1,
-      })).toThrow("Category ID must be a positive number");
+      })).toThrow("Entity ID must be a positive number");
     });
 
     test("SECURITY: Empty strings properly rejected for AI agent safety", () => {
@@ -781,17 +782,16 @@ describe("Categories Tools - Schema Validation Tests", () => {
       })).toThrow("Category name cannot be empty");
 
       expect(() => updateSchema.parse({
-        categoryId: "", // AI agents must not use empty IDs
+        categoryId: 0, // AI agents must not use zero/invalid IDs
         category: {
           name: "Test",
         },
-      })).toThrow("Category ID cannot be empty");
+      })).toThrow("Entity ID must be a positive number");
 
       expect(() => assignSchema.parse({
-        categoryId: "1",
+        categoryId: 1,
         productLink: {
           sku: "", // AI agents must not use empty SKUs
-          category_id: "1",
         },
       })).toThrow("Product SKU cannot be empty");
     });

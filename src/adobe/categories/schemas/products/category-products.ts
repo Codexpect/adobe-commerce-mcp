@@ -20,7 +20,7 @@ export const getCategoryProductsInputSchema = {
  * - productLink: Product link data including SKU and position
  */
 export const assignProductToCategoryInputSchema = {
-  categoryId: z.string().min(1, "Category ID cannot be empty").describe("Category ID to assign product to."),
+  categoryId: categoryIdSchema.describe("Category ID to assign product to."),
   productLink: z
     .object({
       sku: productSkuSchema.describe("Product SKU (required)."),
@@ -37,7 +37,7 @@ export const assignProductToCategoryInputSchema = {
  * - productLink: Updated product link data
  */
 export const updateProductInCategoryInputSchema = {
-  categoryId: z.string().min(1, "Category ID cannot be empty").describe("Category ID."),
+  categoryId: categoryIdSchema.describe("Category ID."),
   productLink: z
     .object({
       sku: productSkuSchema.describe("Product SKU (required)."),

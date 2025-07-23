@@ -1,6 +1,15 @@
 import { z } from "zod";
 
 /**
+ * Validates entity IDs
+ * Ensures IDs are positive numbers for all Adobe Commerce entities
+ */
+export const entityIdSchema = z
+  .number()
+  .positive("Entity ID must be a positive number")
+  .describe("Unique identifier for Adobe Commerce entities (categories, products, customers, orders, etc.).");
+
+/**
  * Validates attribute codes
  * Ensures codes are non-empty and contain only safe characters
  */

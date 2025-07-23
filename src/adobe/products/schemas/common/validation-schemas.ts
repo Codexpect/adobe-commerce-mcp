@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { storeIdSchema } from "../../../core/validation-schemas";
+import { entityIdSchema, storeIdSchema } from "../../../core/validation-schemas";
 
 /**
  * Validates option IDs for attribute options
@@ -17,13 +17,13 @@ export const nonEmptyLabelSchema = z.string().min(1, "Label cannot be empty").de
  * Validates attribute set IDs
  * Ensures positive numbers to match valid Magento attribute set IDs
  */
-export const attributeSetIdSchema = z.number().positive("Attribute set ID must be positive").describe("ID of the attribute set.");
+export const attributeSetIdSchema = entityIdSchema.describe("ID of the attribute set.");
 
 /**
  * Validates attribute group IDs
  * Ensures positive numbers to match valid Magento attribute group IDs
  */
-export const attributeGroupIdSchema = z.number().positive("Attribute group ID must be positive").describe("ID of the attribute group.");
+export const attributeGroupIdSchema = entityIdSchema.describe("ID of the attribute group.");
 
 /**
  * Validates sort order values

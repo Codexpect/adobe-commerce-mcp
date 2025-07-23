@@ -522,11 +522,11 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
              // Zero IDs should be rejected for updates/deletes
        expect(() => updateSetSchema.parse({
          attributeSetId: 0,
-       })).toThrow("Attribute set ID must be positive");
+       })).toThrow("Entity ID must be a positive number");
 
        expect(() => deleteSetSchema.parse({
          attributeSetId: 0,
-       })).toThrow("Attribute set ID must be positive");
+       })).toThrow("Entity ID must be a positive number");
     });
   });
 }); 

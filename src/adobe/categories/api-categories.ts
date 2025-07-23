@@ -61,7 +61,7 @@ export async function createCategory(client: AdobeCommerceClient, category: Cate
   }
 }
 
-export async function updateCategory(client: AdobeCommerceClient, categoryId: string, category: Category): Promise<ApiResponse<Category>> {
+export async function updateCategory(client: AdobeCommerceClient, categoryId: number, category: Category): Promise<ApiResponse<Category>> {
   const endpoint = `/categories/${categoryId}`;
   try {
     const data = (await client.put(endpoint, { category })) as Category;
@@ -137,7 +137,7 @@ export async function getCategoryProducts(client: AdobeCommerceClient, categoryI
 
 export async function assignProductToCategory(
   client: AdobeCommerceClient,
-  categoryId: string,
+  categoryId: number,
   productLink: CategoryProductLink
 ): Promise<ApiResponse<boolean>> {
   const endpoint = `/categories/${categoryId}/products`;
@@ -151,7 +151,7 @@ export async function assignProductToCategory(
 
 export async function updateProductInCategory(
   client: AdobeCommerceClient,
-  categoryId: string,
+  categoryId: number,
   productLink: CategoryProductLink
 ): Promise<ApiResponse<boolean>> {
   const endpoint = `/categories/${categoryId}/products`;

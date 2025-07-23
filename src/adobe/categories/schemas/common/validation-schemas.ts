@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { entityIdSchema } from "../../../core/validation-schemas";
 
 /**
  * Validates category names
@@ -14,7 +15,7 @@ export const categoryNameSchema = z
  * Validates category IDs
  * Ensures IDs are positive numbers
  */
-export const categoryIdSchema = z.number().positive("Category ID must be a positive number").describe("Unique identifier for the category.");
+export const categoryIdSchema = entityIdSchema.describe("Unique identifier for the category.");
 
 /**
  * Validates category positions
