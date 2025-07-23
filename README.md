@@ -17,16 +17,27 @@ All registered MCP tools are organized by resource type below:
 
 ### Products
 
-| Tool ID                                             | Description                                 |
-| --------------------------------------------------- | ------------------------------------------- |
-| (Product search tools available - see source files) | Various product search and management tools |
+| Tool ID            | Description                                                           |
+| ------------------ | --------------------------------------------------------------------- |
+| search-products    | Search for products in Adobe Commerce with flexible search filters.   |
+| create-product     | Create a new product in Adobe Commerce with the specified attributes. |
+| update-product     | Update an existing product in Adobe Commerce with new attributes.     |
+| get-product-by-sku | Retrieve a specific product from Adobe Commerce by its SKU.           |
+| delete-product     | Delete a product from Adobe Commerce by its SKU.                      |
 
 ### Product Attributes
 
-| Tool ID                    | Description                                                                     |
-| -------------------------- | ------------------------------------------------------------------------------- |
-| search-products-attributes | Search for products attributes in Adobe Commerce with flexible search filters.  |
-| create-product-attribute   | Create a new product attribute in Adobe Commerce. Supports all attribute types. |
+| Tool ID                         | Description                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------- |
+| search-products-attributes      | Search for products attributes in Adobe Commerce with flexible search filters.  |
+| create-product-attribute        | Create a new product attribute in Adobe Commerce. Supports all attribute types. |
+| get-product-attribute-by-code   | Get a single product attribute by its attribute code.                           |
+| update-product-attribute        | Update an existing product attribute by its attribute code.                     |
+| delete-product-attribute        | Delete a product attribute by its attribute code.                               |
+| get-product-attribute-options   | Get all options for a specific product attribute.                               |
+| add-product-attribute-option    | Add a new option to a product attribute.                                        |
+| update-product-attribute-option | Update an existing option of a product attribute.                               |
+| delete-product-attribute-option | Delete an option from a product attribute.                                      |
 
 ### Attribute Sets
 
@@ -35,6 +46,7 @@ All registered MCP tools are organized by resource type below:
 | search-attribute-sets         | Search for attribute sets in Adobe Commerce with flexible search filters.                    |
 | create-attribute-set          | Create a new attribute set in Adobe Commerce. Only attribute_set_name and sort_order needed. |
 | get-attribute-set-by-id       | Get details of an attribute set by its ID.                                                   |
+| get-attributes-from-set       | Get all attributes from an attribute set by its ID.                                          |
 | delete-attribute-set          | Delete an attribute set by its ID.                                                           |
 | update-attribute-set          | Update an attribute set by its ID. Only provide fields you want to update.                   |
 | delete-attribute-from-set     | Delete an attribute from an attribute set by set ID and attribute code.                      |
@@ -51,9 +63,22 @@ All registered MCP tools are organized by resource type below:
 
 ### Categories
 
-| Tool ID           | Description                                                           |
-| ----------------- | --------------------------------------------------------------------- |
-| search-categories | Search for categories in Adobe Commerce with flexible search filters. |
+| Tool ID                        | Description                                                                            |
+| ------------------------------ | -------------------------------------------------------------------------------------- |
+| search-categories              | Search for categories in Adobe Commerce with flexible search filters.                  |
+| get-category-tree              | Retrieve the category tree structure with optional root category and depth parameters. |
+| get-category-by-id             | Retrieve a specific category by its ID.                                                |
+| create-category                | Create a new category in Adobe Commerce.                                               |
+| update-category                | Update an existing category in Adobe Commerce.                                         |
+| delete-category                | Delete a category by its ID.                                                           |
+| move-category                  | Move a category to a new parent category.                                              |
+| get-category-attributes        | Retrieve category attributes with optional search criteria.                            |
+| get-category-attribute-by-code | Retrieve a specific category attribute by its code.                                    |
+| get-category-attribute-options | Retrieve options for a specific category attribute.                                    |
+| get-category-products          | Retrieve products assigned to a specific category.                                     |
+| assign-product-to-category     | Assign a product to a specific category.                                               |
+| update-product-in-category     | Update a product's assignment in a category.                                           |
+| remove-product-from-category   | Remove a product from a specific category.                                             |
 
 ### Customers
 

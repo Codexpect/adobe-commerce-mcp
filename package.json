@@ -1,6 +1,6 @@
 {
   "name": "adobe-commerce-mcp",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "src/index.ts",
   "author": "patryk@codexpect.com",
   "keywords": [
