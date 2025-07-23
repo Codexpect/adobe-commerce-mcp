@@ -6,11 +6,13 @@ import { registerProductTools } from "../../src/tools/tools-for-products";
 import type { MockMcpServer } from "../utils/mock-mcp-server";
 import { createMockMcpServer, extractToolResponseText, parseToolResponse } from "../utils/mock-mcp-server";
 import { CategoryFixtures } from "./fixtures/category-fixtures";
+import { ProductFixtures } from "./fixtures/product-fixtures";
 
 describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
   let client: AdobeCommerceClient;
   let mockServer: MockMcpServer;
-  let fixtures: CategoryFixtures;
+  let categoryFixtures: CategoryFixtures;
+  let productFixtures: ProductFixtures;
 
   beforeAll(async () => {
     console.log("🚀 Setting up category functional tests with per-test fixtures...");
@@ -31,7 +33,8 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     registerProductTools(mockServer.server, client);
 
     // Initialize fixtures
-    fixtures = new CategoryFixtures(client);
+    categoryFixtures = new CategoryFixtures(client);
+    productFixtures = new ProductFixtures(client);
   });
 
   beforeEach(() => {
@@ -40,7 +43,8 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
   afterEach(async () => {
     // Clean up any fixtures created during the test
-    await fixtures.cleanupCurrentTest();
+    await categoryFixtures.cleanupCurrentTest();
+    await productFixtures.cleanupCurrentTest();
   });
 
   describe("Tool Registration", () => {
@@ -165,14 +169,14 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
   describe("Category Search", () => {
     test("should search categories with default parameters", async () => {
-      fixtures.setCurrentTest("search_default_test");
+      categoryFixtures.setCurrentTest("search_default_test");
 
       // Create test fixtures
-      await fixtures.createFixtures([{ name: "electronics" }, { name: "clothing" }, { name: "books" }]);
+      await categoryFixtures.createFixtures([{ name: "electronics" }, { name: "clothing" }, { name: "books" }]);
 
       // Search using the current test filter to find only our fixtures
       const result = await mockServer.callTool("search-categories", {
-        filters: [fixtures.getCurrentTestFilter()],
+        filters: [categoryFixtures.getCurrentTestFilter()],
         pageSize: 10,
       });
 
@@ -188,7 +192,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       // Verify we found our fixtures with expected category names
       const categories = parsed.data.map((item) => JSON.parse(item));
       const foundNames = categories.map((cat) => cat.name);
-      const uniqueId = fixtures.getCurrentTestUniqueId();
+      const uniqueId = categoryFixtures.getCurrentTestUniqueId();
 
       // Check that we have exactly 3 items with the expected category names
       expect(foundNames).toHaveLength(3);
@@ -205,10 +209,10 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 45000);
 
     test("should respect pagination parameters", async () => {
-      fixtures.setCurrentTest("search_pagination_test");
+      categoryFixtures.setCurrentTest("search_pagination_test");
 
       // Create multiple fixtures for pagination testing
-      await fixtures.createFixtures([
+      await categoryFixtures.createFixtures([
         { name: "electronics" },
         { name: "clothing" },
         { name: "books" },
@@ -218,7 +222,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       // Test first page
       const resultPage1 = await mockServer.callTool("search-categories", {
-        filters: [fixtures.getCurrentTestFilter()],
+        filters: [categoryFixtures.getCurrentTestFilter()],
         page: 1,
         pageSize: 2,
       });
@@ -233,7 +237,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       // Verify first page contains expected categories
       const categoriesPage1 = parsedPage1.data.map((item) => JSON.parse(item));
       const namesPage1 = categoriesPage1.map((cat) => cat.name);
-      const uniqueId = fixtures.getCurrentTestUniqueId();
+      const uniqueId = categoryFixtures.getCurrentTestUniqueId();
 
       // Should contain 2 of our 5 categories
       expect(namesPage1.length).toBe(2);
@@ -243,7 +247,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       // Test second page
       const resultPage2 = await mockServer.callTool("search-categories", {
-        filters: [fixtures.getCurrentTestFilter()],
+        filters: [categoryFixtures.getCurrentTestFilter()],
         page: 2,
         pageSize: 2,
       });
@@ -277,7 +281,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       // Test third page (should have remaining 1 category)
       const resultPage3 = await mockServer.callTool("search-categories", {
-        filters: [fixtures.getCurrentTestFilter()],
+        filters: [categoryFixtures.getCurrentTestFilter()],
         page: 3,
         pageSize: 2,
       });
@@ -298,17 +302,17 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 45000);
 
     test("should filter categories by name", async () => {
-      fixtures.setCurrentTest("search_name_filter_test");
+      categoryFixtures.setCurrentTest("search_name_filter_test");
 
       // Create test fixtures
-      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }, { name: "clothing" }]);
+      const createdFixtures = await categoryFixtures.createFixtures([{ name: "electronics" }, { name: "clothing" }]);
 
       const electronicsCategory = createdFixtures.get("electronics");
       expect(electronicsCategory).toBeDefined();
 
       const result = await mockServer.callTool("search-categories", {
         filters: [
-          fixtures.getCurrentTestFilter(),
+          categoryFixtures.getCurrentTestFilter(),
           {
             field: "name",
             value: electronicsCategory!.name,
@@ -328,10 +332,10 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 45000);
 
     test("should filter categories by parent_id", async () => {
-      fixtures.setCurrentTest("search_parent_id_filter_test");
+      categoryFixtures.setCurrentTest("search_parent_id_filter_test");
 
       // Create test fixtures - electronics as child of default category
-      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }]);
+      const createdFixtures = await categoryFixtures.createFixtures([{ name: "electronics" }]);
 
       const electronicsCategory = createdFixtures.get("electronics");
       expect(electronicsCategory).toBeDefined();
@@ -340,7 +344,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       // Create clothing and books as children of electronics
       const clothingData = {
         category: {
-          name: `Test Clothing ${fixtures.getCurrentTestUniqueId()}`,
+          name: `Test Clothing ${categoryFixtures.getCurrentTestUniqueId()}`,
           parent_id: electronicsCategory!.id!,
           is_active: true,
           position: 1,
@@ -349,7 +353,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       const booksData = {
         category: {
-          name: `Test Books ${fixtures.getCurrentTestUniqueId()}`,
+          name: `Test Books ${categoryFixtures.getCurrentTestUniqueId()}`,
           parent_id: electronicsCategory!.id!,
           is_active: true,
           position: 2,
@@ -391,7 +395,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       // Verify we have the expected category names
       const categoryNames = categories.map((category: { name: string }) => category.name);
-      const uniqueId = fixtures.getCurrentTestUniqueId();
+      const uniqueId = categoryFixtures.getCurrentTestUniqueId();
       expect(categoryNames).toContain(`Test Clothing ${uniqueId}`);
       expect(categoryNames).toContain(`Test Books ${uniqueId}`);
 
@@ -411,17 +415,17 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 45000);
 
     test("should filter categories by is_active status using string value", async () => {
-      fixtures.setCurrentTest("search_is_active_filter_test");
+      categoryFixtures.setCurrentTest("search_is_active_filter_test");
 
       // Create test fixtures - mix of active and inactive
-      await fixtures.createFixtures([
+      await categoryFixtures.createFixtures([
         { name: "electronics" },
         { name: "inactive", definition: CategoryFixtures.FIXTURE_DEFINITIONS.INACTIVE_CATEGORY },
       ]);
 
       const result = await mockServer.callTool("search-categories", {
         filters: [
-          fixtures.getCurrentTestFilter(),
+          categoryFixtures.getCurrentTestFilter(),
           {
             field: "is_active",
             value: "1", // Use string "1" for true
@@ -438,14 +442,14 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const categories = parsed.data.map((item: string) => JSON.parse(item));
 
       // Find our fixture categories
-      const fixtureCategories = categories.filter((category: { name: string }) => category.name.includes(fixtures.getCurrentTestUniqueId()));
+      const fixtureCategories = categories.filter((category: { name: string }) => category.name.includes(categoryFixtures.getCurrentTestUniqueId()));
 
       // Should only find the active category
       expect(fixtureCategories.length).toBe(1);
 
       // Verify we have the expected category name
       const fixtureNames = fixtureCategories.map((category: { name: string }) => category.name);
-      const uniqueId = fixtures.getCurrentTestUniqueId();
+      const uniqueId = categoryFixtures.getCurrentTestUniqueId();
       expect(fixtureNames[0]).toBe(`Test Electronics ${uniqueId}`);
 
       fixtureCategories.forEach((category: { is_active: number | boolean }) => {
@@ -456,10 +460,10 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
   describe("Category Tree", () => {
     test("should get category tree with fixtures", async () => {
-      fixtures.setCurrentTest("tree_basic_test");
+      categoryFixtures.setCurrentTest("tree_basic_test");
 
       // Create a simple tree structure: Electronics -> Laptops, Phones
-      const createdFixtures = await fixtures.createFixtures([
+      const createdFixtures = await categoryFixtures.createFixtures([
         { name: "electronics" },
         { name: "laptops", definition: { name: "Laptops", parent_id: 2, is_active: true, position: 1 } },
         { name: "phones", definition: { name: "Phones", parent_id: 2, is_active: true, position: 2 } },
@@ -536,10 +540,10 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 45000);
 
     test("should get category tree with depth parameter", async () => {
-      fixtures.setCurrentTest("tree_depth_test");
+      categoryFixtures.setCurrentTest("tree_depth_test");
 
       // Create a deeper tree structure: Electronics -> Laptops -> Gaming Laptops
-      const createdFixtures = await fixtures.createFixtures([
+      const createdFixtures = await categoryFixtures.createFixtures([
         { name: "electronics" },
         { name: "laptops", definition: { name: "Laptops", parent_id: 2, is_active: true, position: 1 } },
         { name: "gaming_laptops", definition: { name: "Gaming Laptops", parent_id: 2, is_active: true, position: 1 } },
@@ -607,10 +611,10 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 45000);
 
     test("should get category tree with root category ID", async () => {
-      fixtures.setCurrentTest("tree_root_id_test");
+      categoryFixtures.setCurrentTest("tree_root_id_test");
 
       // Create a tree structure: Electronics -> Laptops
-      const createdFixtures = await fixtures.createFixtures([
+      const createdFixtures = await categoryFixtures.createFixtures([
         { name: "electronics" },
         { name: "laptops", definition: { name: "Laptops", parent_id: 2, is_active: true, position: 1 } },
       ]);
@@ -645,7 +649,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 45000);
 
     test("should get category tree with complex hierarchy", async () => {
-      fixtures.setCurrentTest("tree_complex_hierarchy_test");
+      categoryFixtures.setCurrentTest("tree_complex_hierarchy_test");
 
       // Create a complex tree structure:
       // Electronics
@@ -656,7 +660,7 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       //     ├── Smartphones
       //     └── Accessories
 
-      const createdFixtures = await fixtures.createFixtures([
+      const createdFixtures = await categoryFixtures.createFixtures([
         { name: "electronics" },
         { name: "laptops", definition: { name: "Laptops", parent_id: 2, is_active: true, position: 1 } },
         { name: "phones", definition: { name: "Phones", parent_id: 2, is_active: true, position: 2 } },
@@ -767,10 +771,10 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
   describe("Category by ID", () => {
     test("should get category by ID", async () => {
-      fixtures.setCurrentTest("get_by_id_test");
+      categoryFixtures.setCurrentTest("get_by_id_test");
 
       // Create test fixtures
-      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }]);
+      const createdFixtures = await categoryFixtures.createFixtures([{ name: "electronics" }]);
 
       const electronicsCategory = createdFixtures.get("electronics");
       expect(electronicsCategory).toBeDefined();
@@ -1041,10 +1045,10 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 30000);
 
     test("should create three categories and move one as child of another", async () => {
-      fixtures.setCurrentTest("move_category_test");
+      categoryFixtures.setCurrentTest("move_category_test");
 
       // Create three categories using fixtures
-      const createdFixtures = await fixtures.createFixtures([
+      const createdFixtures = await categoryFixtures.createFixtures([
         { name: "electronics" },
         { name: "clothing" },
         { name: "sub", definition: CategoryFixtures.FIXTURE_DEFINITIONS.SUB_CATEGORY },
@@ -1207,26 +1211,22 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
   });
 
   describe("Product-Category Management", () => {
-    let testProductSku: string;
-
-    beforeAll(async () => {
-      // Get a real product SKU to use for testing
-      const searchResult = await mockServer.callTool("search-products", { pageSize: 1 });
-      const searchText = extractToolResponseText(searchResult);
-      const searchParsed = parseToolResponse(searchText);
-      const firstProduct = JSON.parse(searchParsed.data[0]);
-      testProductSku = firstProduct.sku;
-      console.log(`🔍 Using product SKU for testing: ${testProductSku}`);
-    });
 
     test("should assign product to category", async () => {
-      fixtures.setCurrentTest("assign_product_test");
+      categoryFixtures.setCurrentTest("assign_product_test");
+      productFixtures.setCurrentTest("assign_product_test");
 
       // Create a test category using fixtures
-      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }]);
+      const createdFixtures = await categoryFixtures.createFixtures([{ name: "electronics" }]);
       const testCategory = createdFixtures.get("electronics");
       expect(testCategory).toBeDefined();
       expect(testCategory!.id).toBeDefined();
+
+      // Create a test product using fixtures
+      const createdProducts = await productFixtures.createFixtures([{ name: "simple" }]);
+      const testProduct = createdProducts.get("simple");
+      expect(testProduct).toBeDefined();
+      const testProductSku = testProduct!.sku;
 
       const assignData = {
         categoryId: testCategory!.id!.toString(),
@@ -1253,13 +1253,20 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 30000);
 
     test("should update product position in category", async () => {
-      fixtures.setCurrentTest("update_product_position_test");
+      categoryFixtures.setCurrentTest("update_product_position_test");
+      productFixtures.setCurrentTest("update_product_position_test");
 
       // Create a test category using fixtures
-      const createdFixtures = await fixtures.createFixtures([{ name: "clothing" }]);
+      const createdFixtures = await categoryFixtures.createFixtures([{ name: "clothing" }]);
       const testCategory = createdFixtures.get("clothing");
       expect(testCategory).toBeDefined();
       expect(testCategory!.id).toBeDefined();
+
+      // Create a test product using fixtures
+      const createdProducts = await productFixtures.createFixtures([{ name: "simple" }]);
+      const testProduct = createdProducts.get("simple");
+      expect(testProduct).toBeDefined();
+      const testProductSku = testProduct!.sku;
 
       const updateData = {
         categoryId: testCategory!.id!.toString(),
@@ -1286,13 +1293,20 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 30000);
 
     test("should remove product from category", async () => {
-      fixtures.setCurrentTest("remove_product_test");
+      categoryFixtures.setCurrentTest("remove_product_test");
+      productFixtures.setCurrentTest("remove_product_test");
 
       // Create a test category using fixtures
-      const createdFixtures = await fixtures.createFixtures([{ name: "books" }]);
+      const createdFixtures = await categoryFixtures.createFixtures([{ name: "books" }]);
       const testCategory = createdFixtures.get("books");
       expect(testCategory).toBeDefined();
       expect(testCategory!.id).toBeDefined();
+
+      // Create a test product using fixtures
+      const createdProducts = await productFixtures.createFixtures([{ name: "simple" }]);
+      const testProduct = createdProducts.get("simple");
+      expect(testProduct).toBeDefined();
+      const testProductSku = testProduct!.sku;
 
       // First, assign the product to the category
       const assignData = {
@@ -1334,20 +1348,27 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
     }, 30000);
 
     test("should assign multiple products and retrieve category products", async () => {
-      fixtures.setCurrentTest("multiple_products_test");
+      categoryFixtures.setCurrentTest("multiple_products_test");
+      productFixtures.setCurrentTest("multiple_products_test");
 
       // Create a test category using fixtures
-      const createdFixtures = await fixtures.createFixtures([{ name: "electronics" }]);
+      const createdFixtures = await categoryFixtures.createFixtures([{ name: "electronics" }]);
       const testCategory = createdFixtures.get("electronics");
       expect(testCategory).toBeDefined();
       expect(testCategory!.id).toBeDefined();
 
-      // Get a second product SKU for testing
-      const searchResult2 = await mockServer.callTool("search-products", { pageSize: 2 });
-      const searchText2 = extractToolResponseText(searchResult2);
-      const searchParsed2 = parseToolResponse(searchText2);
-      const products = searchParsed2.data.map((item: string) => JSON.parse(item));
-      const secondProductSku = products[1]?.sku;
+      // Create two test products using fixtures
+      const createdProducts = await productFixtures.createFixtures([
+        { name: "simple" },
+        { name: "configurable" }
+      ]);
+      const firstProduct = createdProducts.get("simple");
+      const secondProduct = createdProducts.get("configurable");
+      expect(firstProduct).toBeDefined();
+      expect(secondProduct).toBeDefined();
+      
+      const testProductSku = firstProduct!.sku;
+      const secondProductSku = secondProduct!.sku;
       
       expect(secondProductSku).toBeDefined();
       expect(secondProductSku).not.toBe(testProductSku);

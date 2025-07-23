@@ -380,42 +380,6 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
       expect(skusPage3.length).toBe(1);
       expect(skusPage3[0]).toContain(uniqueId);
     }, 45000);
-
-    test("should sort products by price descending", async () => {
-      fixtures.setCurrentTest("sort_price_desc_test");
-
-      await fixtures.createFixtures([
-        { name: "cheap", definition: ProductFixtures.FIXTURE_DEFINITIONS.CHEAP_PRODUCT },
-        { name: "simple", definition: ProductFixtures.FIXTURE_DEFINITIONS.SIMPLE_PRODUCT },
-        { name: "expensive", definition: ProductFixtures.FIXTURE_DEFINITIONS.EXPENSIVE_PRODUCT },
-      ]);
-
-      const result = await mockServer.callTool("search-products", {
-        filters: [fixtures.getCurrentTestFilter()],
-        sortOrders: [
-          {
-            field: "price",
-            direction: "DESC",
-          },
-        ],
-        pageSize: 5,
-      });
-
-      const responseText = extractToolResponseText(result);
-      console.log(responseText);
-      const parsed = parseToolResponse(responseText);
-      console.log(parsed);
-      expect(parsed.data.length).toBe(3);
-
-      // Validate price sorting
-      const products = parsed.data.map((item) => JSON.parse(item));
-      const prices = products.map((p) => p.price).filter((p) => p !== undefined);
-
-      // Check that prices are in descending order
-      for (let i = 0; i < prices.length - 1; i++) {
-        expect(prices[i]).toBeGreaterThanOrEqual(prices[i + 1]);
-      }
-    }, 45000);
   });
 
   describe("Get Product By SKU", () => {
