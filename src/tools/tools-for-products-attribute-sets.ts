@@ -74,9 +74,9 @@ function registerCreateAttributeSetTool(server: McpServer, client: AdobeCommerce
         const { data, endpoint } = resp;
         return `
         <meta>
-          <name>Attribute Set</name>
+          <name>Create Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -104,12 +104,12 @@ function registerSearchAttributeSetsTool(server: McpServer, client: AdobeCommerc
         const { data, endpoint } = resp;
         return `
          <meta>
-          <name>Attribute Sets</name>
+          <name>Search Attribute Sets</name>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
         <data>
           ${data?.map((item) => JSON.stringify(item)).join("\n")}
         </data>
@@ -140,7 +140,7 @@ function registerGetAttributeSetByIdTool(server: McpServer, client: AdobeCommerc
          <meta>
           <name>Attribute Set Details</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
         <data>
           ${JSON.stringify(data)}
         </data>
@@ -171,7 +171,7 @@ function registerGetAttributesFromSetTool(server: McpServer, client: AdobeCommer
          <meta>
           <name>Attributes From Set</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
         <data>
           ${JSON.stringify(data)}
         </data>
@@ -198,13 +198,14 @@ function registerDeleteAttributeSetTool(server: McpServer, client: AdobeCommerce
       const result = await deleteAttributeSet(client, attributeSetId);
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Attribute set with ID ${attributeSetId} has been successfully deleted.` : `Failed to delete attribute set with ID ${attributeSetId}.`;
         return `
          <meta>
           <name>Delete Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
         <data>
-          ${data ? "Deleted" : "Failed to delete attribute set"}
+          ${successMessage}
         </data>
       `;
       });
@@ -233,7 +234,7 @@ function registerUpdateAttributeSetTool(server: McpServer, client: AdobeCommerce
          <meta>
           <name>Update Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
         <data>
           ${JSON.stringify(data)}
         </data>
@@ -260,13 +261,14 @@ function registerDeleteAttributeFromSetTool(server: McpServer, client: AdobeComm
       const result = await deleteAttributeFromSet(client, attributeSetId, attributeCode);
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Attribute "${attributeCode}" has been successfully removed from attribute set with ID ${attributeSetId}.` : `Failed to remove attribute "${attributeCode}" from attribute set with ID ${attributeSetId}.`;
         return `
          <meta>
           <name>Delete Attribute From Set</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
         <data>
-          ${data ? "Deleted" : "Failed to delete attribute from set"}
+          ${successMessage}
         </data>
       `;
       });
@@ -288,13 +290,14 @@ function registerAssignAttributeToSetGroupTool(server: McpServer, client: AdobeC
       const result = await assignAttributeToSetGroup(client, parsed);
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Attribute "${parsed.attributeCode}" has been successfully assigned to attribute set with ID ${parsed.attributeSetId} and group with ID ${parsed.attributeGroupId}.` : `Failed to assign attribute "${parsed.attributeCode}" to attribute set with ID ${parsed.attributeSetId} and group with ID ${parsed.attributeGroupId}.`;
         return `
          <meta>
           <name>Assign Attribute to Set and Group</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
         <data>
-          ${data ? "Assigned" : "Failed to assign attribute to set/group"}
+          ${successMessage}
         </data>
       `;
       });
@@ -319,12 +322,12 @@ function registerSearchAttributeGroupsTool(server: McpServer, client: AdobeComme
         const { data, endpoint } = resp;
         return `
          <meta>
-          <name>Attribute Groups</name>
+          <name>Search Attribute Groups</name>
           <endpoint>${endpoint}</endpoint>
           <page>${searchCriteria.page}</page>
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <totalItems>${data?.length}</totalItems>
-         <meta>
+        </meta>
          <data>
           ${data?.map((item: AttributeGroup) => JSON.stringify(item)).join("\n")}
          </data>
@@ -351,9 +354,9 @@ function registerCreateAttributeGroupTool(server: McpServer, client: AdobeCommer
         const { data, endpoint } = resp;
         return `
          <meta>
-          <name>Attribute Group</name>
+          <name>Create Attribute Group</name>
           <endpoint>${endpoint}</endpoint>
-         <meta>
+        </meta>
          <data>
           ${JSON.stringify(data)}
          </data>
@@ -378,13 +381,14 @@ function registerDeleteAttributeGroupTool(server: McpServer, client: AdobeCommer
       const result = await deleteAttributeGroup(client, attributeGroupId);
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Attribute group with ID ${attributeGroupId} has been successfully deleted.` : `Failed to delete attribute group with ID ${attributeGroupId}.`;
         return `
          <meta>
           <name>Delete Attribute Group</name>
           <endpoint>${endpoint}</endpoint>
-         <meta>
+        </meta>
          <data>
-          ${data ? "Deleted" : "Failed to delete attribute group"}
+          ${successMessage}
          </data>
         `;
       });
@@ -412,7 +416,7 @@ function registerUpdateAttributeGroupTool(server: McpServer, client: AdobeCommer
          <meta>
           <name>Update Attribute Group</name>
           <endpoint>${endpoint}</endpoint>
-         <meta>
+        </meta>
          <data>
           ${JSON.stringify(data)}
          </data>

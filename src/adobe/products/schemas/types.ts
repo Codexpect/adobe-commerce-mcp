@@ -31,12 +31,25 @@ import {
   updateAttributeGroupInputSchema,
 } from "./attribute-sets/attribute-groups";
 
+import {
+  createProductInputSchema,
+  deleteProductInputSchema,
+  getProductBySkuInputSchema,
+  updateProductInputSchema,
+} from "./products/products";
+
 /**
  * TypeScript type definitions for all product attribute-related schemas
  *
  * These types are automatically inferred from the Zod schemas to ensure
  * consistency between runtime validation and compile-time type checking.
  */
+
+// Product Types
+export type CreateProductInput = z.infer<ReturnType<typeof z.object<typeof createProductInputSchema>>>;
+export type UpdateProductInput = z.infer<ReturnType<typeof z.object<typeof updateProductInputSchema>>>;
+export type GetProductBySkuInput = z.infer<ReturnType<typeof z.object<typeof getProductBySkuInputSchema>>>;
+export type DeleteProductInput = z.infer<ReturnType<typeof z.object<typeof deleteProductInputSchema>>>;
 
 // Product Attribute Types
 export type CreateProductAttributeInput = z.infer<ReturnType<typeof z.object<typeof createProductAttributeInputSchema>>>;

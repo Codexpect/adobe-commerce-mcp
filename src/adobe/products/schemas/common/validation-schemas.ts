@@ -1,14 +1,5 @@
 import { z } from "zod";
-
-/**
- * Validates product attribute codes
- * Ensures codes are non-empty and contain only safe characters
- */
-export const attributeCodeSchema = z
-  .string()
-  .min(1, "Attribute code cannot be empty")
-  .regex(/^[a-zA-Z0-9_]+$/, "Attribute code can only contain letters, numbers, and underscores")
-  .describe("Unique code for the attribute (e.g., 'color', 'size').");
+import { entityIdSchema, storeIdSchema } from "../../../core/validation-schemas";
 
 /**
  * Validates option IDs for attribute options
@@ -23,22 +14,16 @@ export const optionIdSchema = z.string().min(1, "Option ID cannot be empty").des
 export const nonEmptyLabelSchema = z.string().min(1, "Label cannot be empty").describe("Display label.");
 
 /**
- * Validates store IDs for multi-store configurations
- * Ensures positive numbers to match valid Magento store IDs
- */
-export const storeIdSchema = z.number().positive("Store ID must be a positive number").describe("Store ID.");
-
-/**
  * Validates attribute set IDs
  * Ensures positive numbers to match valid Magento attribute set IDs
  */
-export const attributeSetIdSchema = z.number().positive("Attribute set ID must be positive").describe("ID of the attribute set.");
+export const attributeSetIdSchema = entityIdSchema.describe("ID of the attribute set.");
 
 /**
  * Validates attribute group IDs
  * Ensures positive numbers to match valid Magento attribute group IDs
  */
-export const attributeGroupIdSchema = z.number().positive("Attribute group ID must be positive").describe("ID of the attribute group.");
+export const attributeGroupIdSchema = entityIdSchema.describe("ID of the attribute group.");
 
 /**
  * Validates sort order values

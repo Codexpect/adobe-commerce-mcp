@@ -32,7 +32,7 @@ export function registerOrderTools(server: McpServer, client: AdobeCommerceClien
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: Order) => JSON.stringify(item)).join("\n")}

@@ -32,7 +32,7 @@ export function registerCustomerTools(server: McpServer, client: AdobeCommerceCl
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: Customer) => JSON.stringify(item)).join("\n")}

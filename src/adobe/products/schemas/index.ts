@@ -9,11 +9,20 @@ export * from "./attributes/product-attributes";
 export * from "./attribute-sets/attribute-groups";
 export * from "./attribute-sets/attribute-sets";
 
+// Product management
+export * from "./products/products";
+
 // TypeScript type definitions
 export * from "./types";
 
 /**
  * Quick Reference Guide:
+ *
+ * Products:
+ * - createProductInputSchema: Create new products
+ * - updateProductInputSchema: Modify existing products
+ * - getProductBySkuInputSchema: Retrieve product by SKU
+ * - deleteProductInputSchema: Remove products
  *
  * Product Attributes:
  * - createProductAttributeInputSchema: Create new attributes (color, size, etc.)

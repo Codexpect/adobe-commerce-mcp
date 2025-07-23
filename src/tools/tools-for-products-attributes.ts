@@ -33,6 +33,9 @@ import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
 import { toolTextResponse } from "./tool-response";
 
+// @TODO define fields that can be searched for in the search tools
+// @TODO allow to create/update all fields for the attribute
+// @TODO allow to define isFilterable
 export function registerProductAttributesTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchProductAttributesTool(server, client);
   registerCreateProductAttributeTool(server, client);
@@ -70,7 +73,7 @@ function registerSearchProductAttributesTool(server: McpServer, client: AdobeCom
           <pageSize>${searchCriteria.pageSize}</pageSize>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${data?.length}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${data?.map((item: ProductAttribute) => JSON.stringify(item)).join("\n")}
@@ -104,7 +107,7 @@ function registerCreateProductAttributeTool(server: McpServer, client: AdobeComm
         <meta>
           <name>Create Product Attribute</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -136,7 +139,7 @@ function registerGetProductAttributeByCodeTool(server: McpServer, client: AdobeC
         <meta>
           <name>Get Product Attribute By Code</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -169,7 +172,7 @@ function registerUpdateProductAttributeTool(server: McpServer, client: AdobeComm
         <meta>
           <name>Update Product Attribute</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -197,15 +200,15 @@ function registerDeleteProductAttributeTool(server: McpServer, client: AdobeComm
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Product attribute "${parsed.attributeCode}" has been successfully deleted.` : `Failed to delete product attribute "${parsed.attributeCode}".`;
         return `
         <meta>
           <name>Delete Product Attribute</name>
           <endpoint>${endpoint}</endpoint>
-          <success>${data}</success>
-        <meta>
+        </meta>
 
         <data>
-          Attribute "${parsed.attributeCode}" deleted successfully
+          ${successMessage}
         </data>
       `;
       });
@@ -232,10 +235,10 @@ function registerGetProductAttributeOptionsTool(server: McpServer, client: Adobe
         const { data, endpoint } = resp;
         return `
         <meta>
-          <name>Product Attribute Options</name>
+          <name>Get Product Attribute Options</name>
           <endpoint>${endpoint}</endpoint>
           <totalItems>${Array.isArray(data) ? data.length : 0}</totalItems>
-        <meta>
+        </meta>
 
         <data>
           ${Array.isArray(data) ? data.map((item) => JSON.stringify(item)).join("\n") : JSON.stringify(data)}
@@ -266,9 +269,9 @@ function registerAddProductAttributeOptionTool(server: McpServer, client: AdobeC
         const { data, endpoint } = resp;
         return `
         <meta>
-          <name>Product Attribute Option</name>
+          <name>Add Product Attribute Option</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -299,9 +302,9 @@ function registerUpdateProductAttributeOptionTool(server: McpServer, client: Ado
         const { data, endpoint } = resp;
         return `
         <meta>
-          <name>Product Attribute Option</name>
+          <name>Update Product Attribute Option</name>
           <endpoint>${endpoint}</endpoint>
-        <meta>
+        </meta>
 
         <data>
           ${JSON.stringify(data)}
@@ -329,16 +332,16 @@ function registerDeleteProductAttributeOptionTool(server: McpServer, client: Ado
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data ? `Option "${parsed.optionId}" has been successfully deleted from attribute "${parsed.attributeCode}".` : `Failed to delete option "${parsed.optionId}" from attribute "${parsed.attributeCode}".`;
         return `
         <meta>
           <name>Delete Product Attribute Option</name>
           <endpoint>${endpoint}</endpoint>
-          <success>${data}</success>
-        <meta>
+        </meta>
 
         <data>
-          Option "${parsed.optionId}" deleted from attribute "${parsed.attributeCode}" successfully
-        </data>§
+          ${successMessage}
+        </data>
       `;
       });
     }
