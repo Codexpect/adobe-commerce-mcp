@@ -94,6 +94,8 @@ export async function assignAttributeToSetGroup(
 ): Promise<ApiResponse<boolean>> {
   const endpoint = "/products/attribute-sets/attributes";
   try {
+    params.sortOrder = params.sortOrder ?? 0;
+    
     await client.post(endpoint, params);
     return apiSuccessResponse<boolean>(endpoint, true);
   } catch (error) {
