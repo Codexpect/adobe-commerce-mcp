@@ -1,22 +1,26 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
-import { 
-  getProducts, 
-  createProduct, 
-  updateProduct, 
-  getProductBySku, 
-  deleteProduct 
+import {
+  assignProductToWebsite,
+  createProduct,
+  deleteProduct,
+  getProductBySku,
+  getProducts,
+  removeProductFromWebsite,
+  updateProduct,
 } from "../adobe/products/api-products";
+import {
+  assignProductToWebsiteInputSchema,
+  createProductInputSchema,
+  deleteProductInputSchema,
+  getProductBySkuInputSchema,
+  removeProductFromWebsiteInputSchema,
+  updateProductInputSchema,
+} from "../adobe/products/schemas";
 import { Product } from "../adobe/products/types/product";
 import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
-import { 
-  createProductInputSchema,
-  updateProductInputSchema,
-  getProductBySkuInputSchema,
-  deleteProductInputSchema
-} from "../adobe/products/schemas";
 import { toolTextResponse } from "./tool-response";
 
 // @TODO define fields that can be searched for in the search tools
@@ -28,6 +32,8 @@ export function registerProductTools(server: McpServer, client: AdobeCommerceCli
   registerUpdateProductTool(server, client);
   registerGetProductBySkuTool(server, client);
   registerDeleteProductTool(server, client);
+  registerAssignProductToWebsiteTool(server, client);
+  registerRemoveProductFromWebsiteTool(server, client);
 }
 
 function registerSearchProductTool(server: McpServer, client: AdobeCommerceClient) {
@@ -179,7 +185,9 @@ function registerDeleteProductTool(server: McpServer, client: AdobeCommerceClien
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data ? `Product with SKU ${parsed.sku} has been successfully deleted.` : `Failed to delete product with SKU ${parsed.sku}.`;
+        const successMessage = data
+          ? `Product with SKU ${parsed.sku} has been successfully deleted.`
+          : `Failed to delete product with SKU ${parsed.sku}.`;
         return `
         <meta>
           <name>Delete Product</name>
@@ -188,6 +196,74 @@ function registerDeleteProductTool(server: McpServer, client: AdobeCommerceClien
 
         <data>
           ${successMessage}
+        </data>
+      `;
+      });
+    }
+  );
+}
+
+function registerAssignProductToWebsiteTool(server: McpServer, client: AdobeCommerceClient) {
+  server.registerTool(
+    "assign-product-to-website",
+    {
+      title: "Assign Product to Website",
+      description: "Assign a product to a website by SKU and website ID",
+      inputSchema: assignProductToWebsiteInputSchema,
+      annotations: {
+        readOnlyHint: false,
+      },
+    },
+    async (args: unknown) => {
+      const parsed = z.object(assignProductToWebsiteInputSchema).parse(args);
+      const result = await assignProductToWebsite(client, parsed);
+
+      return toolTextResponse(result, (resp) => {
+        const { data, endpoint } = resp;
+        return `
+        <meta>
+          <name>Assign Product to Website</name>
+          <endpoint>${endpoint}</endpoint>
+          <sku>${parsed.sku}</sku>
+          <websiteId>${parsed.website_id}</websiteId>
+        </meta>
+
+        <data>
+          ${JSON.stringify({ success: data, sku: parsed.sku, website_id: parsed.website_id })}
+        </data>
+      `;
+      });
+    }
+  );
+}
+
+function registerRemoveProductFromWebsiteTool(server: McpServer, client: AdobeCommerceClient) {
+  server.registerTool(
+    "remove-product-from-website",
+    {
+      title: "Remove Product from Website",
+      description: "Remove a product from a website by SKU and website ID",
+      inputSchema: removeProductFromWebsiteInputSchema,
+      annotations: {
+        readOnlyHint: false,
+      },
+    },
+    async (args: unknown) => {
+      const parsed = z.object(removeProductFromWebsiteInputSchema).parse(args);
+      const result = await removeProductFromWebsite(client, parsed);
+
+      return toolTextResponse(result, (resp) => {
+        const { data, endpoint } = resp;
+        return `
+        <meta>
+          <name>Remove Product from Website</name>
+          <endpoint>${endpoint}</endpoint>
+          <sku>${parsed.sku}</sku>
+          <websiteId>${parsed.website_id}</websiteId>
+        </meta>
+
+        <data>
+          ${JSON.stringify({ success: data, sku: parsed.sku, website_id: parsed.website_id })}
         </data>
       `;
       });

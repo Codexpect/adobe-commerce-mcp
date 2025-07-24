@@ -94,11 +94,6 @@ describe("Products Tools - Schema Validation Tests", () => {
         visibility: 4,
         type_id: "simple",
         weight: 0.5,
-        description: "Latest smartphone with advanced features",
-        short_description: "Premium smartphone",
-        meta_title: "iPhone 15 Pro - Best Smartphone",
-        meta_keyword: "smartphone, iPhone, Apple",
-        meta_description: "Discover the latest iPhone with cutting-edge technology",
       },
       {
         sku: "configurable-product",
@@ -114,24 +109,36 @@ describe("Products Tools - Schema Validation Tests", () => {
             attribute_code: "size",
             value: "large",
           },
+          {
+            attribute_code: "is_featured",
+            value: 1,
+          },
+          {
+            attribute_code: "category_ids",
+            value: "1,2,3",
+          },
+          {
+            attribute_code: "release_date",
+            value: "2025-07-21",
+          },
+          {
+            attribute_code: "price",
+            value: "29.99",
+          },
         ],
-        extension_attributes: {
-          website_ids: [1, 2],
-          category_links: [
-            {
-              category_id: "3",
-              position: 1,
-            },
-          ],
-        },
+        website_ids: [1, 2],
+        category_links: [
+          {
+            category_id: "3",
+            position: 1,
+          },
+        ],
       },
       {
         sku: "simple-product",
         name: "Book",
         price: 19.99,
         weight: 0,
-        description: "",
-        short_description: "",
       },
     ];
 
@@ -186,41 +193,31 @@ describe("Products Tools - Schema Validation Tests", () => {
         sku: "PROD-001",
         name: "iPhone 15 Pro",
         price: 999.99,
-        extension_attributes: {
-          website_ids: [0, 1], // Zero website_id
-        },
+        website_ids: [0, 1], // Zero website_id
       },
       {
         sku: "PROD-001",
         name: "iPhone 15 Pro",
         price: 999.99,
-        extension_attributes: {
-          website_ids: [-1, 1], // Negative website_id
-        },
+        website_ids: [-1, 1], // Negative website_id
       },
       {
         sku: "PROD-001",
         name: "iPhone 15 Pro",
         price: 999.99,
-        extension_attributes: {
-          category_links: [{}], // Missing required fields
-        },
+        category_links: [{}], // Missing required fields
       },
       {
         sku: "PROD-001",
         name: "iPhone 15 Pro",
         price: 999.99,
-        extension_attributes: {
-          category_links: [{ category_id: "", position: 1 }], // Empty category_id
-        },
+        category_links: [{ category_id: "", position: 1 }], // Empty category_id
       },
       {
         sku: "PROD-001",
         name: "iPhone 15 Pro",
         price: 999.99,
-        extension_attributes: {
-          category_links: [{ category_id: "3", position: -1 }], // Negative position
-        },
+        category_links: [{ category_id: "3", position: -1 }], // Negative position
       },
     ];
 
@@ -246,16 +243,22 @@ describe("Products Tools - Schema Validation Tests", () => {
             attribute_code: "color",
             value: "red",
           },
+          {
+            attribute_code: "is_featured",
+            value: 0,
+          },
+          {
+            attribute_code: "category_ids",
+            value: "5,6,7",
+          },
         ],
-        extension_attributes: {
-          website_ids: [1, 2, 3],
-          category_links: [
-            {
-              category_id: "5",
-              position: 2,
-            },
-          ],
-        },
+        website_ids: [1, 2, 3],
+        category_links: [
+          {
+            category_id: "5",
+            position: 2,
+          },
+        ],
       },
       {
         sku: "simple-product",
@@ -301,33 +304,23 @@ describe("Products Tools - Schema Validation Tests", () => {
       },
       {
         sku: "PROD-001",
-        extension_attributes: {
-          website_ids: [0, 1], // Zero website_id
-        },
+        website_ids: [0, 1], // Zero website_id
       },
       {
         sku: "PROD-001",
-        extension_attributes: {
-          website_ids: [-1, 1], // Negative website_id
-        },
+        website_ids: [-1, 1], // Negative website_id
       },
       {
         sku: "PROD-001",
-        extension_attributes: {
-          category_links: [{}], // Missing required fields
-        },
+        category_links: [{}], // Missing required fields
       },
       {
         sku: "PROD-001",
-        extension_attributes: {
-          category_links: [{ category_id: "", position: 1 }], // Empty category_id
-        },
+        category_links: [{ category_id: "", position: 1 }], // Empty category_id
       },
       {
         sku: "PROD-001",
-        extension_attributes: {
-          category_links: [{ category_id: "3", position: -1 }], // Negative position
-        },
+        category_links: [{ category_id: "3", position: -1 }], // Negative position
       },
     ];
 
@@ -381,7 +374,6 @@ describe("Products Tools - Schema Validation Tests", () => {
   describe("Edge Cases and Boundary Values", () => {
     test("should handle extreme but valid values", () => {
       const createSchema = z.object(createProductInputSchema);
-      const updateSchema = z.object(updateProductInputSchema);
       const searchSchema = z.object(searchCriteriaInputSchema);
 
       // Very long but valid names
@@ -434,9 +426,7 @@ describe("Products Tools - Schema Validation Tests", () => {
         sku: "PROD-001",
         name: "Test Product",
         price: 999.99,
-        extension_attributes: {
-          website_ids: Array.from({ length: 10 }, (_, i) => i + 1),
-        },
+        website_ids: Array.from({ length: 10 }, (_, i) => i + 1),
       })).not.toThrow();
     });
 
@@ -558,31 +548,27 @@ describe("Products Tools - Schema Validation Tests", () => {
         name: "",
       })).toThrow("Product name is required");
 
-      // Empty category IDs in extension attributes
+      // Empty category IDs in category_links
       expect(() => createSchema.parse({
         sku: "PROD-001",
         name: "Test Product",
         price: 999.99,
-        extension_attributes: {
-          category_links: [
-            {
-              category_id: "",
-              position: 1,
-            },
-          ],
-        },
+        category_links: [
+          {
+            category_id: "",
+            position: 1,
+          },
+        ],
       })).toThrow("Category ID cannot be empty");
 
       expect(() => updateSchema.parse({
         sku: "PROD-001",
-        extension_attributes: {
-          category_links: [
-            {
-              category_id: "",
-              position: 1,
-            },
-          ],
-        },
+        category_links: [
+          {
+            category_id: "",
+            position: 1,
+          },
+        ],
       })).toThrow("Category ID cannot be empty");
     });
 
@@ -723,16 +709,12 @@ describe("Products Tools - Schema Validation Tests", () => {
         sku: "PROD-001",
         name: "Test Product",
         price: 999.99,
-        extension_attributes: {
-          website_ids: [0, 1],
-        },
+        website_ids: [0, 1],
       })).toThrow("Website ID must be positive");
 
       expect(() => updateSchema.parse({
         sku: "PROD-001",
-        extension_attributes: {
-          website_ids: [0, 1],
-        },
+        website_ids: [0, 1],
       })).toThrow("Website ID must be positive");
 
       // Negative website IDs should be rejected
@@ -740,16 +722,12 @@ describe("Products Tools - Schema Validation Tests", () => {
         sku: "PROD-001",
         name: "Test Product",
         price: 999.99,
-        extension_attributes: {
-          website_ids: [-1, 1],
-        },
+        website_ids: [-1, 1],
       })).toThrow("Website ID must be positive");
 
       expect(() => updateSchema.parse({
         sku: "PROD-001",
-        extension_attributes: {
-          website_ids: [-1, 1],
-        },
+        website_ids: [-1, 1],
       })).toThrow("Website ID must be positive");
     });
 

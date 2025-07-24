@@ -15,6 +15,7 @@ const attributeTypeMap = {
   textarea: { backend_type: "text", frontend_input: "textarea" },
   boolean: { backend_type: "int", frontend_input: "boolean" },
   date: { backend_type: "datetime", frontend_input: "date" },
+  datetime: { backend_type: "datetime", frontend_input: "datetime" },
   integer: { backend_type: "varchar", frontend_input: "text" },
   decimal: { backend_type: "varchar", frontend_input: "text" },
   weight: { backend_type: "varchar", frontend_input: "text" },

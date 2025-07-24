@@ -43,4 +43,54 @@ export const sortDirectionSchema = z
 export const storeIdSchema = z
   .number()
   .positive("Store ID must be a positive number")
-  .describe("Store ID for multi-store configurations."); 
+  .describe("Store ID for multi-store configurations.");
+
+/**
+ * Validates website IDs
+ * Ensures IDs are positive integers for website references
+ */
+export const websiteIdSchema = z
+  .number()
+  .int()
+  .positive("Website ID must be a positive integer")
+  .describe("Website ID (e.g., 1)");
+
+/**
+ * Validates store group IDs
+ * Ensures IDs are positive integers for store group references
+ */
+export const storeGroupIdSchema = z
+  .number()
+  .int()
+  .positive("Store Group ID must be a positive integer")
+  .describe("Store Group ID (e.g., 1)");
+
+/**
+ * Validates store codes
+ * Ensures codes contain only lowercase letters, numbers, and underscores
+ */
+export const storeCodeSchema = z
+  .string()
+  .min(1, "Store code cannot be empty")
+  .regex(/^[a-z0-9_]+$/, "Store code can only contain lowercase letters, numbers, and underscores")
+  .describe("Store code (e.g., 'default', 'en_us')");
+
+/**
+ * Validates website codes
+ * Ensures codes contain only lowercase letters, numbers, and underscores
+ */
+export const websiteCodeSchema = z
+  .string()
+  .min(1, "Website code cannot be empty")
+  .regex(/^[a-z0-9_]+$/, "Website code can only contain lowercase letters, numbers, and underscores")
+  .describe("Website code (e.g., 'base', 'main')");
+
+/**
+ * Validates store group codes
+ * Ensures codes contain only lowercase letters, numbers, and underscores
+ */
+export const storeGroupCodeSchema = z
+  .string()
+  .min(1, "Store group code cannot be empty")
+  .regex(/^[a-z0-9_]+$/, "Store group code can only contain lowercase letters, numbers, and underscores")
+  .describe("Store group code (e.g., 'main_website_store')"); 

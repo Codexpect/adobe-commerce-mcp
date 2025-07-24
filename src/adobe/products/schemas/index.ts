@@ -12,6 +12,9 @@ export * from "./attribute-sets/attribute-sets";
 // Product management
 export * from "./products/products";
 
+// Product website assignment
+export * from "./websites/websites";
+
 // TypeScript type definitions
 export * from "./types";
 
@@ -23,6 +26,10 @@ export * from "./types";
  * - updateProductInputSchema: Modify existing products
  * - getProductBySkuInputSchema: Retrieve product by SKU
  * - deleteProductInputSchema: Remove products
+ *
+ * Website Assignment:
+ * - assignProductToWebsiteInputSchema: Assign product to website
+ * - removeProductFromWebsiteInputSchema: Remove product from website
  *
  * Product Attributes:
  * - createProductAttributeInputSchema: Create new attributes (color, size, etc.)

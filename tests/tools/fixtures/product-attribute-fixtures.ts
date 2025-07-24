@@ -1,8 +1,18 @@
 import { AdobeCommerceClient } from "../../../src/adobe/adobe-commerce-client";
 import { createProductAttribute, deleteProductAttribute } from "../../../src/adobe/products/api-products-attributes";
+import { assignAttributeToSetGroup } from "../../../src/adobe/products/api-products-attributes-sets";
 import { mapCreateProductAttributeInputToApiPayload } from "../../../src/adobe/products/mapping/attribute-mapping";
 import type { CreateProductAttributeInput } from "../../../src/adobe/products/schemas";
 import type { ProductAttribute } from "../../../src/adobe/products/types/product";
+
+/**
+ * Product Attribute Fixtures
+ * 
+ * This class provides utilities for creating test product attributes.
+ * All created attributes are automatically assigned to:
+ * - Attribute Set ID: 4
+ * - Attribute Group ID: 7
+ */
 
 export interface FixtureAttributeDefinition {
   type: CreateProductAttributeInput["type"];
@@ -141,6 +151,13 @@ export class ProductAttributeFixtures {
       description: "A date attribute for testing",
     },
 
+    DATETIME_ATTRIBUTE: {
+      type: "datetime",
+      defaultFrontendLabel: "Test Datetime Attribute",
+      scope: "store",
+      description: "A datetime attribute for testing",
+    },
+
     INTEGER_ATTRIBUTE: {
       type: "integer",
       defaultFrontendLabel: "Test Integer Attribute",
@@ -196,6 +213,19 @@ export class ProductAttributeFixtures {
         throw new Error(`Failed to create attribute ${attributeCode}: ${response.error}`);
       }
 
+      // Assign the attribute to set 4 and group 7
+      const assignResponse = await assignAttributeToSetGroup(this.client, {
+        attributeSetId: 4,
+        attributeGroupId: 7,
+        attributeCode: attributeCode,
+      });
+
+      if (!assignResponse.success) {
+        console.warn(`⚠️ Failed to assign attribute ${attributeCode} to set 4, group 7: ${assignResponse.error}`);
+      } else {
+        console.log(`🔗 Assigned attribute ${attributeCode} to set 4, group 7`);
+      }
+
       this.createdAttributes.set(attributeCode, response.data);
       console.log(`✅ Created fixture attribute: ${attributeCode}`);
 
@@ -225,7 +255,7 @@ export class ProductAttributeFixtures {
    */
   getCurrentTestFilter() {
     return {
-      field: "attribute_code", 
+      field: "attribute_code",
       value: `%${this.currentTestUniqueId}%`,
       conditionType: "like" as const,
     };
@@ -236,13 +266,13 @@ export class ProductAttributeFixtures {
    */
   getCurrentTestAttributes(): Map<string, ProductAttribute> {
     const currentTestAttrs = new Map<string, ProductAttribute>();
-    
+
     for (const [code, attr] of this.createdAttributes) {
       if (code.includes(this.currentTestUniqueId)) {
         currentTestAttrs.set(code, attr);
       }
     }
-    
+
     return currentTestAttrs;
   }
 

@@ -10,10 +10,9 @@ export interface FixtureProductDefinition {
   status?: CreateProductInput["status"];
   visibility?: CreateProductInput["visibility"];
   weight?: CreateProductInput["weight"];
-  description?: CreateProductInput["description"];
-  short_description?: CreateProductInput["short_description"];
+  website_ids?: CreateProductInput["website_ids"];
+  category_links?: CreateProductInput["category_links"];
   custom_attributes?: CreateProductInput["custom_attributes"];
-  extension_attributes?: CreateProductInput["extension_attributes"];
 }
 
 export class ProductFixtures {
@@ -69,8 +68,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 0.5,
-      description: "A simple product for testing",
-      short_description: "Simple test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A simple product for testing" },
+        { attribute_code: "short_description", value: "Simple test product" },
+      ],
     },
 
     CONFIGURABLE_PRODUCT: {
@@ -80,8 +81,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 1.0,
-      description: "A configurable product for testing",
-      short_description: "Configurable test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A configurable product for testing" },
+        { attribute_code: "short_description", value: "Configurable test product" },
+      ],
     },
 
     DISABLED_PRODUCT: {
@@ -91,8 +94,10 @@ export class ProductFixtures {
       status: 2, // disabled
       visibility: 4,
       weight: 0.3,
-      description: "A disabled product for testing",
-      short_description: "Disabled test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A disabled product for testing" },
+        { attribute_code: "short_description", value: "Disabled test product" },
+      ],
     },
 
     CATALOG_ONLY_PRODUCT: {
@@ -102,8 +107,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 2, // catalog only
       weight: 0.7,
-      description: "A catalog-only product for testing",
-      short_description: "Catalog only test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A catalog-only product for testing" },
+        { attribute_code: "short_description", value: "Catalog only test product" },
+      ],
     },
 
     SEARCH_ONLY_PRODUCT: {
@@ -113,8 +120,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 3, // search only
       weight: 0.8,
-      description: "A search-only product for testing",
-      short_description: "Search only test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A search-only product for testing" },
+        { attribute_code: "short_description", value: "Search only test product" },
+      ],
     },
 
     HEAVY_PRODUCT: {
@@ -124,8 +133,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 5.0,
-      description: "A heavy product for testing shipping calculations",
-      short_description: "Heavy test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A heavy product for testing shipping calculations" },
+        { attribute_code: "short_description", value: "Heavy test product" },
+      ],
     },
 
     EXPENSIVE_PRODUCT: {
@@ -135,8 +146,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 2.0,
-      description: "An expensive product for testing price filters",
-      short_description: "Expensive test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "An expensive product for testing price filters" },
+        { attribute_code: "short_description", value: "Expensive test product" },
+      ],
     },
 
     CHEAP_PRODUCT: {
@@ -146,32 +159,9 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 0.1,
-      description: "A cheap product for testing price filters",
-      short_description: "Cheap test product",
-    },
-
-    PRODUCT_WITH_CUSTOM_ATTRIBUTES: {
-      name: "Test Product with Custom Attributes",
-      price: 79.99,
-      type_id: "simple",
-      status: 1,
-      visibility: 4,
-      weight: 1.5,
-      description: "A product with custom attributes for testing",
-      short_description: "Custom attributes test product",
       custom_attributes: [
-        {
-          attribute_code: "color",
-          value: "blue",
-        },
-        {
-          attribute_code: "size",
-          value: "large",
-        },
-        {
-          attribute_code: "material",
-          value: "cotton",
-        },
+        { attribute_code: "description", value: "A cheap product for testing price filters" },
+        { attribute_code: "short_description", value: "Cheap test product" },
       ],
     },
 
@@ -182,17 +172,55 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 1.2,
-      description: "A product with extension attributes for testing",
-      short_description: "Extension attributes test product",
-      extension_attributes: {
-        website_ids: [1],
-        category_links: [
-          {
-            category_id: "3",
-            position: 1,
-          },
-        ],
-      },
+      website_ids: [1],
+      category_links: [
+        {
+          category_id: "3",
+          position: 1,
+        },
+      ],
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with extension attributes for testing" },
+        { attribute_code: "short_description", value: "Extension attributes test product" },
+      ],
+    },
+
+    // New fixtures for testing different attribute types and features
+    PRODUCT_WITH_WEBSITE_IDS: {
+      name: "Test Product with Website IDs",
+      price: 69.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.8,
+      website_ids: [1, 2],
+      custom_attributes: [
+        { attribute_code: "description", value: "A product assigned to multiple websites" },
+        { attribute_code: "short_description", value: "Multi-website test product" },
+      ],
+    },
+
+    PRODUCT_WITH_CATEGORY_LINKS: {
+      name: "Test Product with Category Links",
+      price: 59.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.6,
+      category_links: [
+        {
+          category_id: "3",
+          position: 1,
+        },
+        {
+          category_id: "4",
+          position: 2,
+        },
+      ],
+      custom_attributes: [
+        { attribute_code: "description", value: "A product assigned to multiple categories" },
+        { attribute_code: "short_description", value: "Multi-category test product" },
+      ],
     },
   };
 
@@ -230,13 +258,12 @@ export class ProductFixtures {
       status: fixtureDefinition.status || 1,
       visibility: fixtureDefinition.visibility || 4,
       weight: fixtureDefinition.weight,
-      description: fixtureDefinition.description,
-      short_description: fixtureDefinition.short_description,
+      website_ids: fixtureDefinition.website_ids,
+      category_links: fixtureDefinition.category_links,
       custom_attributes: fixtureDefinition.custom_attributes,
-      extension_attributes: fixtureDefinition.extension_attributes,
     };
 
-    console.log(`🔧 Creating fixture product: ${productSku} (${fixtureDefinition.description || fixtureDefinition.name})`);
+    console.log(`🔧 Creating fixture product: ${productSku} (${fixtureDefinition.name})`);
 
     try {
       const response = await createProduct(this.client, input);

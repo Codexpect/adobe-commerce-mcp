@@ -2,11 +2,11 @@ import { z } from "zod";
 import { attributeCodeSchema } from "../../../core/validation-schemas";
 import { nonEmptyLabelSchema, storeLabelsSchema } from "../common/validation-schemas";
 
-const attributeTypeEnum = z.enum(["text", "textarea", "boolean", "date", "integer", "decimal", "price", "weight", "singleselect", "multiselect"]);
+const attributeTypeEnum = z.enum(["text", "textarea", "boolean", "date", "datetime", "integer", "decimal", "price", "weight", "singleselect", "multiselect"]);
 
 const attributeScopeEnum = z.enum(["store", "website", "global"]);
 
-const frontendInputEnum = z.enum(["text", "textarea", "boolean", "date", "select", "multiselect", "price"]);
+const frontendInputEnum = z.enum(["text", "textarea", "boolean", "date", "datetime", "select", "multiselect", "price"]);
 
 /**
  * Schema for creating new product attributes
@@ -22,7 +22,7 @@ const frontendInputEnum = z.enum(["text", "textarea", "boolean", "date", "select
  */
 export const createProductAttributeInputSchema = {
   type: attributeTypeEnum.describe(
-    "Logical type of the attribute (e.g., 'text', 'textarea', 'boolean', 'date', 'integer', 'decimal', 'price', 'weight', 'singleselect', 'multiselect')."
+    "Logical type of the attribute (e.g., 'text', 'textarea', 'boolean', 'date', 'datetime', 'integer', 'decimal', 'price', 'weight', 'singleselect', 'multiselect')."
   ),
   attributeCode: attributeCodeSchema,
   defaultFrontendLabel: nonEmptyLabelSchema.describe("Default frontend label for the attribute (e.g., 'Color')."),

@@ -17,13 +17,15 @@ All registered MCP tools are organized by resource type below:
 
 ### Products
 
-| Tool ID            | Description                                                           |
-| ------------------ | --------------------------------------------------------------------- |
-| search-products    | Search for products in Adobe Commerce with flexible search filters.   |
-| create-product     | Create a new product in Adobe Commerce with the specified attributes. |
-| update-product     | Update an existing product in Adobe Commerce with new attributes.     |
-| get-product-by-sku | Retrieve a specific product from Adobe Commerce by its SKU.           |
-| delete-product     | Delete a product from Adobe Commerce by its SKU.                      |
+| Tool ID                     | Description                                                           |
+| --------------------------- | --------------------------------------------------------------------- |
+| search-products             | Search for products in Adobe Commerce with flexible search filters.   |
+| create-product              | Create a new product in Adobe Commerce with the specified attributes. |
+| update-product              | Update an existing product in Adobe Commerce with new attributes.     |
+| get-product-by-sku          | Retrieve a specific product from Adobe Commerce by its SKU.           |
+| delete-product              | Delete a product from Adobe Commerce by its SKU.                      |
+| assign-product-to-website   | Assign a product to a website by SKU and website ID.                  |
+| remove-product-from-website | Remove a product from a website by SKU and website ID.                |
 
 ### Product Attributes
 
@@ -99,6 +101,15 @@ All registered MCP tools are organized by resource type below:
 | search-cms-blocks | Search for CMS blocks in Adobe Commerce with flexible search filters. |
 | search-cms-pages  | Search for CMS pages in Adobe Commerce with flexible search filters.  |
 
+### Stores
+
+| Tool ID           | Description                                                       |
+| ----------------- | ----------------------------------------------------------------- |
+| get-store-configs | Retrieve store configurations with optional store code filtering. |
+| get-store-views   | Get all store views in Adobe Commerce.                            |
+| get-store-groups  | Get all store groups in Adobe Commerce.                           |
+| get-websites      | Get all websites in Adobe Commerce.                               |
+
 Each tool provides a set of MCP-compatible operations for its resource type. For a full list and detailed parameters, see the source files in `src/tools/`.
 
 ## Usage
@@ -153,6 +164,7 @@ adobe-commerce-mcp/
 │   │   ├── orders/             # Order API and types
 │   │   ├── products/           # Product API, attributes, sets, and types
 │   │   ├── search-criteria/    # Search criteria schemas and types
+│   │   ├── stores/             # Store API and types
 │   │   └── types/              # Shared API response and parameter types
 │   ├── tools/                  # MCP tool implementations for each resource
 │   └── index.ts                # Main MCP server entry point
