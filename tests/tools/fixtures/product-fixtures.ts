@@ -10,10 +10,9 @@ export interface FixtureProductDefinition {
   status?: CreateProductInput["status"];
   visibility?: CreateProductInput["visibility"];
   weight?: CreateProductInput["weight"];
-  description?: CreateProductInput["description"];
-  short_description?: CreateProductInput["short_description"];
+  website_ids?: CreateProductInput["website_ids"];
+  category_links?: CreateProductInput["category_links"];
   custom_attributes?: CreateProductInput["custom_attributes"];
-  extension_attributes?: CreateProductInput["extension_attributes"];
 }
 
 export class ProductFixtures {
@@ -69,8 +68,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 0.5,
-      description: "A simple product for testing",
-      short_description: "Simple test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A simple product for testing" },
+        { attribute_code: "short_description", value: "Simple test product" },
+      ],
     },
 
     CONFIGURABLE_PRODUCT: {
@@ -80,8 +81,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 1.0,
-      description: "A configurable product for testing",
-      short_description: "Configurable test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A configurable product for testing" },
+        { attribute_code: "short_description", value: "Configurable test product" },
+      ],
     },
 
     DISABLED_PRODUCT: {
@@ -91,8 +94,10 @@ export class ProductFixtures {
       status: 2, // disabled
       visibility: 4,
       weight: 0.3,
-      description: "A disabled product for testing",
-      short_description: "Disabled test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A disabled product for testing" },
+        { attribute_code: "short_description", value: "Disabled test product" },
+      ],
     },
 
     CATALOG_ONLY_PRODUCT: {
@@ -102,8 +107,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 2, // catalog only
       weight: 0.7,
-      description: "A catalog-only product for testing",
-      short_description: "Catalog only test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A catalog-only product for testing" },
+        { attribute_code: "short_description", value: "Catalog only test product" },
+      ],
     },
 
     SEARCH_ONLY_PRODUCT: {
@@ -113,8 +120,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 3, // search only
       weight: 0.8,
-      description: "A search-only product for testing",
-      short_description: "Search only test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A search-only product for testing" },
+        { attribute_code: "short_description", value: "Search only test product" },
+      ],
     },
 
     HEAVY_PRODUCT: {
@@ -124,8 +133,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 5.0,
-      description: "A heavy product for testing shipping calculations",
-      short_description: "Heavy test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A heavy product for testing shipping calculations" },
+        { attribute_code: "short_description", value: "Heavy test product" },
+      ],
     },
 
     EXPENSIVE_PRODUCT: {
@@ -135,8 +146,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 2.0,
-      description: "An expensive product for testing price filters",
-      short_description: "Expensive test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "An expensive product for testing price filters" },
+        { attribute_code: "short_description", value: "Expensive test product" },
+      ],
     },
 
     CHEAP_PRODUCT: {
@@ -146,8 +159,10 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 0.1,
-      description: "A cheap product for testing price filters",
-      short_description: "Cheap test product",
+      custom_attributes: [
+        { attribute_code: "description", value: "A cheap product for testing price filters" },
+        { attribute_code: "short_description", value: "Cheap test product" },
+      ],
     },
 
     PRODUCT_WITH_CUSTOM_ATTRIBUTES: {
@@ -157,21 +172,13 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 1.5,
-      description: "A product with custom attributes for testing",
-      short_description: "Custom attributes test product",
       custom_attributes: [
-        {
-          attribute_code: "color",
-          value: "blue",
-        },
-        {
-          attribute_code: "size",
-          value: "large",
-        },
-        {
-          attribute_code: "material",
-          value: "cotton",
-        },
+        { attribute_code: "description", value: "A product with custom attributes for testing" },
+        { attribute_code: "short_description", value: "Custom attributes test product" },
+        { attribute_code: "color", value: "blue" },
+        { attribute_code: "size", value: "large" },
+        { attribute_code: "is_featured", value: 1 },
+        { attribute_code: "material", value: "cotton" },
       ],
     },
 
@@ -182,17 +189,238 @@ export class ProductFixtures {
       status: 1,
       visibility: 4,
       weight: 1.2,
-      description: "A product with extension attributes for testing",
-      short_description: "Extension attributes test product",
-      extension_attributes: {
-        website_ids: [1],
-        category_links: [
-          {
-            category_id: "3",
-            position: 1,
-          },
-        ],
-      },
+      website_ids: [1],
+      category_links: [
+        {
+          category_id: "3",
+          position: 1,
+        },
+      ],
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with extension attributes for testing" },
+        { attribute_code: "short_description", value: "Extension attributes test product" },
+      ],
+    },
+
+    // New fixtures for testing different attribute types and features
+    PRODUCT_WITH_WEBSITE_IDS: {
+      name: "Test Product with Website IDs",
+      price: 69.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.8,
+      website_ids: [1, 2],
+      custom_attributes: [
+        { attribute_code: "description", value: "A product assigned to multiple websites" },
+        { attribute_code: "short_description", value: "Multi-website test product" },
+      ],
+    },
+
+    PRODUCT_WITH_CATEGORY_LINKS: {
+      name: "Test Product with Category Links",
+      price: 59.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.6,
+      category_links: [
+        {
+          category_id: "3",
+          position: 1,
+        },
+        {
+          category_id: "4",
+          position: 2,
+        },
+      ],
+      custom_attributes: [
+        { attribute_code: "description", value: "A product assigned to multiple categories" },
+        { attribute_code: "short_description", value: "Multi-category test product" },
+      ],
+    },
+
+    PRODUCT_WITH_BOOLEAN_ATTRIBUTES: {
+      name: "Test Product with Boolean Attributes",
+      price: 49.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.4,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with boolean attributes for testing" },
+        { attribute_code: "short_description", value: "Boolean attributes test product" },
+        { attribute_code: "is_featured", value: 1 },
+        { attribute_code: "is_new", value: 0 },
+        { attribute_code: "is_sale", value: 1 },
+        { attribute_code: "is_bestseller", value: 0 },
+      ],
+    },
+
+    PRODUCT_WITH_TEXT_ATTRIBUTES: {
+      name: "Test Product with Text Attributes",
+      price: 39.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.3,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with text attributes for testing" },
+        { attribute_code: "short_description", value: "Text attributes test product" },
+        { attribute_code: "color", value: "blue" },
+        { attribute_code: "size", value: "large" },
+        { attribute_code: "material", value: "cotton" },
+        { attribute_code: "brand", value: "TestBrand" },
+        { attribute_code: "model", value: "TestModel-2024" },
+      ],
+    },
+
+    PRODUCT_WITH_NUMERIC_ATTRIBUTES: {
+      name: "Test Product with Numeric Attributes",
+      price: 79.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 1.0,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with numeric attributes for testing" },
+        { attribute_code: "short_description", value: "Numeric attributes test product" },
+        { attribute_code: "rating", value: 4.5 },
+        { attribute_code: "review_count", value: 25 },
+        { attribute_code: "stock_quantity", value: 100 },
+        { attribute_code: "min_order_qty", value: 1 },
+        { attribute_code: "max_order_qty", value: 10 },
+      ],
+    },
+
+    PRODUCT_WITH_DATE_ATTRIBUTES: {
+      name: "Test Product with Date Attributes",
+      price: 89.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.7,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with date attributes for testing" },
+        { attribute_code: "short_description", value: "Date attributes test product" },
+        { attribute_code: "release_date", value: "2024-01-15" },
+        { attribute_code: "expiry_date", value: "2025-12-31" },
+        { attribute_code: "manufacture_date", value: "2023-06-01" },
+      ],
+    },
+
+    PRODUCT_WITH_DATETIME_ATTRIBUTES: {
+      name: "Test Product with Datetime Attributes",
+      price: 99.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.9,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with datetime attributes for testing" },
+        { attribute_code: "short_description", value: "Datetime attributes test product" },
+        { attribute_code: "created_at", value: "2024-01-15 10:30:00" },
+        { attribute_code: "updated_at", value: "2024-01-20 14:45:00" },
+        { attribute_code: "last_modified", value: "2024-01-25 09:15:00" },
+      ],
+    },
+
+    PRODUCT_WITH_PRICE_ATTRIBUTES: {
+      name: "Test Product with Price Attributes",
+      price: 129.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 1.2,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with price attributes for testing" },
+        { attribute_code: "short_description", value: "Price attributes test product" },
+        { attribute_code: "msrp", value: "149.99" },
+        { attribute_code: "cost", value: "89.99" },
+        { attribute_code: "special_price", value: "119.99" },
+        { attribute_code: "tier_price_1", value: "109.99" },
+        { attribute_code: "tier_price_2", value: "99.99" },
+      ],
+    },
+
+    PRODUCT_WITH_WEIGHT_ATTRIBUTES: {
+      name: "Test Product with Weight Attributes",
+      price: 45.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 2.5,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with weight attributes for testing" },
+        { attribute_code: "short_description", value: "Weight attributes test product" },
+        { attribute_code: "shipping_weight", value: "2.5" },
+        { attribute_code: "package_weight", value: "3.0" },
+        { attribute_code: "dimensions_weight", value: "2.2" },
+      ],
+    },
+
+    PRODUCT_WITH_MULTISELECT_ATTRIBUTES: {
+      name: "Test Product with Multiselect Attributes",
+      price: 65.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.8,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with multiselect attributes for testing" },
+        { attribute_code: "short_description", value: "Multiselect attributes test product" },
+        { attribute_code: "tags", value: "1,2,3" },
+        { attribute_code: "categories", value: "5,6,7" },
+        { attribute_code: "features", value: "1,4,8" },
+      ],
+    },
+
+    PRODUCT_WITH_SINGLESELECT_ATTRIBUTES: {
+      name: "Test Product with Singleselect Attributes",
+      price: 55.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 0.6,
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with singleselect attributes for testing" },
+        { attribute_code: "short_description", value: "Singleselect attributes test product" },
+        { attribute_code: "primary_category", value: 3 },
+        { attribute_code: "main_color", value: 1 },
+        { attribute_code: "size_type", value: 2 },
+      ],
+    },
+
+    PRODUCT_WITH_COMPLEX_ATTRIBUTES: {
+      name: "Test Product with Complex Attributes",
+      price: 149.99,
+      type_id: "simple",
+      status: 1,
+      visibility: 4,
+      weight: 1.5,
+      website_ids: [1, 2],
+      category_links: [
+        {
+          category_id: "3",
+          position: 1,
+        },
+        {
+          category_id: "4",
+          position: 2,
+        },
+      ],
+      custom_attributes: [
+        { attribute_code: "description", value: "A product with complex attributes for testing" },
+        { attribute_code: "short_description", value: "Complex attributes test product" },
+        { attribute_code: "is_featured", value: 1 },
+        { attribute_code: "color", value: "red" },
+        { attribute_code: "rating", value: 4.8 },
+        { attribute_code: "release_date", value: "2024-03-15" },
+        { attribute_code: "msrp", value: "179.99" },
+        { attribute_code: "shipping_weight", value: "1.5" },
+        { attribute_code: "tags", value: "1,2,3" },
+        { attribute_code: "primary_category", value: 3 },
+      ],
     },
   };
 
@@ -230,13 +458,12 @@ export class ProductFixtures {
       status: fixtureDefinition.status || 1,
       visibility: fixtureDefinition.visibility || 4,
       weight: fixtureDefinition.weight,
-      description: fixtureDefinition.description,
-      short_description: fixtureDefinition.short_description,
+      website_ids: fixtureDefinition.website_ids,
+      category_links: fixtureDefinition.category_links,
       custom_attributes: fixtureDefinition.custom_attributes,
-      extension_attributes: fixtureDefinition.extension_attributes,
     };
 
-    console.log(`🔧 Creating fixture product: ${productSku} (${fixtureDefinition.description || fixtureDefinition.name})`);
+    console.log(`🔧 Creating fixture product: ${productSku} (${fixtureDefinition.name})`);
 
     try {
       const response = await createProduct(this.client, input);

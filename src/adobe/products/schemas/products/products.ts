@@ -28,13 +28,9 @@ export const skuSchema = z
  * - visibility: Where product appears (defaults to catalog+search)
  * - type_id: Product type (defaults to simple)
  * - weight: Product weight for shipping calculations
- * - description: Detailed product description
- * - short_description: Brief product description
- * - meta_title: SEO title
- * - meta_keyword: SEO keywords
- * - meta_description: SEO description
- * - custom_attributes: Additional product properties
- * - extension_attributes: Extended product data
+ * - website_ids: IDs of websites where this product is available
+ * - category_links: Categories to associate this product with
+ * - custom_attributes: Additional product properties (dynamic attributes like description, meta fields, etc.)
  */
 export const createProductInputSchema = {
   sku: skuSchema,
@@ -45,38 +41,43 @@ export const createProductInputSchema = {
   visibility: productVisibilityEnum.optional().default(4).describe("Product visibility: 1=not visible, 2=catalog, 3=search, 4=catalog+search."),
   type_id: productTypeEnum.optional().default("simple").describe("Product type: 'simple'=basic product, 'configurable'=product with variants."),
   weight: z.number().nonnegative("Weight cannot be negative").optional().describe("Product weight for shipping calculations."),
-  description: z.string().optional().describe("Detailed product description for the product page."),
-  short_description: z.string().optional().describe("Brief product description for product listings."),
-  meta_title: z.string().optional().describe("SEO title for the product page."),
-  meta_keyword: z.string().optional().describe("SEO keywords for the product page."),
-  meta_description: z.string().optional().describe("SEO description for the product page."),
-  custom_attributes: z
+  website_ids: z
+    .array(z.number().positive("Website ID must be positive"))
+    .optional()
+    .describe("IDs of websites where this product is available."),
+  category_links: z
     .array(
       z.object({
-        attribute_code: attributeCodeSchema.describe("Code of the custom attribute (e.g., 'color', 'size')."),
-        value: z.union([z.string(), z.number(), z.boolean()]).describe("Value for the custom attribute."),
+        position: z.number().nonnegative("Position cannot be negative").optional().describe("Display position within the category."),
+        category_id: z.string().min(1, "Category ID cannot be empty").describe("ID of the category to link this product to."),
       })
     )
     .optional()
-    .describe("Additional product properties defined by custom attributes."),
-  extension_attributes: z
-    .object({
-      website_ids: z
-        .array(z.number().positive("Website ID must be positive"))
-        .optional()
-        .describe("IDs of websites where this product is available."),
-      category_links: z
-        .array(
-          z.object({
-            position: z.number().nonnegative("Position cannot be negative").optional().describe("Display position within the category."),
-            category_id: z.string().min(1, "Category ID cannot be empty").describe("ID of the category to link this product to."),
-          })
-        )
-        .optional()
-        .describe("Categories to associate this product with."),
-    })
+    .describe("Categories to associate this product with."),
+  custom_attributes: z
+    .array(
+      z.object({
+        attribute_code: attributeCodeSchema.describe("Code of the custom attribute (e.g., 'color', 'size', 'description', 'meta_title')."),
+        value: z.union([z.string(), z.number(), z.boolean()]).describe(
+          "Value for the custom attribute. FORMAT REQUIREMENTS: " +
+          "• boolean attributes: use 0 (false) or 1 (true), not 'true'/'false' " +
+          "• decimal/integer attributes: must be numbers " +
+          "• single_select attributes: must be option_id (number), not the option value " +
+          "• multiselect attributes: comma-separated string of option_ids like '1,2,3', not arrays " +
+          "• date attributes: YYYY-MM-DD format like '2025-07-21' " +
+          "• datetime attributes: YYYY-MM-DD HH:mm:ss format like '2025-07-21 00:00:00' " +
+          "• weight/price attributes: must be strings " +
+          "Examples: boolean -> 1, multiselect -> '1,2,3', date -> '2025-07-21', price -> '99.99'"
+        ),
+      })
+    )
     .optional()
-    .describe("Extended product data including website assignments and category links."),
+    .describe(
+      "Additional product properties defined by custom attributes (including description, meta fields, etc.). " +
+      "IMPORTANT: Each attribute type has specific format requirements. " +
+      "Boolean: 0/1, Single_select: option_id number, Multiselect: '1,2,3' string, " +
+      "Date: 'YYYY-MM-DD', Datetime: 'YYYY-MM-DD HH:mm:ss', Weight/Price: strings."
+    ),
 };
 
 /**
@@ -93,13 +94,9 @@ export const createProductInputSchema = {
  * - visibility: New product visibility
  * - type_id: New product type
  * - weight: New product weight
- * - description: New detailed description
- * - short_description: New brief description
- * - meta_title: New SEO title
- * - meta_keyword: New SEO keywords
- * - meta_description: New SEO description
- * - custom_attributes: New custom attributes
- * - extension_attributes: New extended attributes
+ * - website_ids: New IDs of websites where this product is available
+ * - category_links: New categories to associate this product with
+ * - custom_attributes: New additional product properties (dynamic attributes like description, meta fields, etc.)
  */
 export const updateProductInputSchema = {
   sku: skuSchema,
@@ -110,38 +107,43 @@ export const updateProductInputSchema = {
   visibility: productVisibilityEnum.optional().describe("New product visibility: '1'=not visible, '2'=catalog, '3'=search, '4'=catalog+search."),
   type_id: productTypeEnum.optional().describe("New product type: 'simple'=basic product, 'configurable'=product with variants."),
   weight: z.number().nonnegative("Weight cannot be negative").optional().describe("New product weight for shipping calculations."),
-  description: z.string().optional().describe("New detailed product description for the product page."),
-  short_description: z.string().optional().describe("New brief product description for product listings."),
-  meta_title: z.string().optional().describe("New SEO title for the product page."),
-  meta_keyword: z.string().optional().describe("New SEO keywords for the product page."),
-  meta_description: z.string().optional().describe("New SEO description for the product page."),
-  custom_attributes: z
+  website_ids: z
+    .array(z.number().positive("Website ID must be positive"))
+    .optional()
+    .describe("New IDs of websites where this product is available."),
+  category_links: z
     .array(
       z.object({
-        attribute_code: attributeCodeSchema.describe("Code of the custom attribute (e.g., 'color', 'size')."),
-        value: z.union([z.string(), z.number(), z.boolean()]).describe("Value for the custom attribute."),
+        position: z.number().nonnegative("Position cannot be negative").optional().describe("New display position within the category."),
+        category_id: z.string().min(1, "Category ID cannot be empty").describe("ID of the category to link this product to."),
       })
     )
     .optional()
-    .describe("New additional product properties defined by custom attributes."),
-  extension_attributes: z
-    .object({
-      website_ids: z
-        .array(z.number().positive("Website ID must be positive"))
-        .optional()
-        .describe("New IDs of websites where this product is available."),
-      category_links: z
-        .array(
-          z.object({
-            position: z.number().nonnegative("Position cannot be negative").optional().describe("New display position within the category."),
-            category_id: z.string().min(1, "Category ID cannot be empty").describe("ID of the category to link this product to."),
-          })
-        )
-        .optional()
-        .describe("New categories to associate this product with."),
-    })
+    .describe("New categories to associate this product with."),
+  custom_attributes: z
+    .array(
+      z.object({
+        attribute_code: attributeCodeSchema.describe("Code of the custom attribute (e.g., 'color', 'size', 'description', 'meta_title')."),
+        value: z.union([z.string(), z.number(), z.boolean()]).describe(
+          "Value for the custom attribute. FORMAT REQUIREMENTS: " +
+          "• boolean attributes: use 0 (false) or 1 (true), not 'true'/'false' " +
+          "• decimal/integer attributes: must be numbers " +
+          "• single_select attributes: must be option_id (number), not the option value " +
+          "• multiselect attributes: comma-separated string of option_ids like '1,2,3', not arrays " +
+          "• date attributes: YYYY-MM-DD format like '2025-07-21' " +
+          "• datetime attributes: YYYY-MM-DD HH:mm:ss format like '2025-07-21 00:00:00' " +
+          "• weight/price attributes: must be strings " +
+          "Examples: boolean -> 1, multiselect -> '1,2,3', date -> '2025-07-21', price -> '99.99'"
+        ),
+      })
+    )
     .optional()
-    .describe("New extended product data including website assignments and category links."),
+    .describe(
+      "New additional product properties defined by custom attributes (including description, meta fields, etc.). " +
+      "IMPORTANT: Each attribute type has specific format requirements. " +
+      "Boolean: 0/1, Single_select: option_id number, Multiselect: '1,2,3' string, " +
+      "Date: 'YYYY-MM-DD', Datetime: 'YYYY-MM-DD HH:mm:ss', Weight/Price: strings."
+    ),
 };
 
 /**

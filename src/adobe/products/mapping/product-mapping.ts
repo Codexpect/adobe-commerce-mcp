@@ -1,41 +1,20 @@
 import { CreateProductInput, UpdateProductInput, AssignProductToWebsiteInput } from "../schemas";
 import { Product, ProductWebsiteLink } from "../types/product";
 
-function buildCustomAttributes(input: {
-  description?: string;
-  short_description?: string;
-  meta_title?: string;
-  meta_keyword?: string;
-  meta_description?: string;
-  custom_attributes?: Array<{ attribute_code: string; value: string | number | boolean }>;
-}): Array<{ attribute_code: string; value: string | number | boolean }> | undefined {
-  const allCustomAttributes: Array<{ attribute_code: string; value: string | number | boolean }> = [];
-
-  if (input.custom_attributes) {
-    allCustomAttributes.push(...input.custom_attributes);
-  }
-
-  if (input.description !== undefined) {
-    allCustomAttributes.push({ attribute_code: "description", value: input.description });
-  }
-  if (input.short_description !== undefined) {
-    allCustomAttributes.push({ attribute_code: "short_description", value: input.short_description });
-  }
-  if (input.meta_title !== undefined) {
-    allCustomAttributes.push({ attribute_code: "meta_title", value: input.meta_title });
-  }
-  if (input.meta_keyword !== undefined) {
-    allCustomAttributes.push({ attribute_code: "meta_keyword", value: input.meta_keyword });
-  }
-  if (input.meta_description !== undefined) {
-    allCustomAttributes.push({ attribute_code: "meta_description", value: input.meta_description });
-  }
-
-  return allCustomAttributes.length > 0 ? allCustomAttributes : undefined;
-}
-
 export function mapCreateProductInputToApiPayload(input: CreateProductInput): Product {
-  const { sku, name, price, attribute_set_id, status, visibility, type_id, weight, extension_attributes } = input;
+  const { 
+    sku, 
+    name, 
+    price, 
+    attribute_set_id, 
+    status, 
+    visibility, 
+    type_id, 
+    weight, 
+    website_ids, 
+    category_links, 
+    custom_attributes 
+  } = input;
 
   const product: Product = {
     sku,
@@ -46,19 +25,41 @@ export function mapCreateProductInputToApiPayload(input: CreateProductInput): Pr
     visibility,
     type_id,
     weight,
-    extension_attributes,
   };
 
-  const customAttributes = buildCustomAttributes(input);
-  if (customAttributes) {
-    product.custom_attributes = customAttributes;
+  if (custom_attributes) {
+    product.custom_attributes = custom_attributes;
+  }
+
+  const extension_attributes: Product['extension_attributes'] = {};
+  if (website_ids) {
+    extension_attributes.website_ids = website_ids;
+  }
+  if (category_links) {
+    extension_attributes.category_links = category_links;
+  }
+
+  if (Object.keys(extension_attributes).length > 0) {
+    product.extension_attributes = extension_attributes;
   }
 
   return Object.fromEntries(Object.entries(product).filter(([, value]) => value !== undefined)) as Product;
 }
 
 export function mapUpdateProductInputToApiPayload(input: UpdateProductInput): Partial<Product> {
-  const { sku, name, price, attribute_set_id, status, visibility, type_id, weight, extension_attributes } = input;
+  const { 
+    sku, 
+    name, 
+    price, 
+    attribute_set_id, 
+    status, 
+    visibility, 
+    type_id, 
+    weight, 
+    website_ids, 
+    category_links, 
+    custom_attributes 
+  } = input;
 
   const product: Partial<Product> = {};
 
@@ -70,11 +71,23 @@ export function mapUpdateProductInputToApiPayload(input: UpdateProductInput): Pa
   if (visibility !== undefined) product.visibility = visibility;
   if (type_id !== undefined) product.type_id = type_id;
   if (weight !== undefined) product.weight = weight;
-  if (extension_attributes !== undefined) product.extension_attributes = extension_attributes;
 
-  const customAttributes = buildCustomAttributes(input);
-  if (customAttributes) {
-    product.custom_attributes = customAttributes;
+  if (custom_attributes) {
+    product.custom_attributes = custom_attributes;
+  }
+
+  const extension_attributes: Product['extension_attributes'] = {};
+  
+  if (website_ids) {
+    extension_attributes.website_ids = website_ids;
+  }
+  
+  if (category_links) {
+    extension_attributes.category_links = category_links;
+  }
+
+  if (Object.keys(extension_attributes).length > 0) {
+    product.extension_attributes = extension_attributes;
   }
 
   return product;
