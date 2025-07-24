@@ -8,6 +8,7 @@ import { registerOrderTools } from "./tools/tools-for-orders.js";
 import { registerProductAttributeSetsTools } from "./tools/tools-for-products-attribute-sets.js";
 import { registerProductAttributesTools } from "./tools/tools-for-products-attributes.js";
 import { registerProductTools } from "./tools/tools-for-products.js";
+import { registerStoreTools } from "./tools/tools-for-stores.js";
 
 const server = new McpServer({
   name: "adobe-commerce",
@@ -28,6 +29,7 @@ async function main() {
   registerProductAttributesTools(server, client);
   registerProductAttributeSetsTools(server, client);
   registerProductTools(server, client);
+  registerStoreTools(server, client);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

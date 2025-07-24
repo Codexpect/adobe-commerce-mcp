@@ -38,6 +38,11 @@ import {
   updateProductInputSchema,
 } from "./products/products";
 
+import {
+  assignProductToWebsiteInputSchema,
+  removeProductFromWebsiteInputSchema,
+} from "./websites/websites";
+
 /**
  * TypeScript type definitions for all product attribute-related schemas
  *
@@ -50,6 +55,10 @@ export type CreateProductInput = z.infer<ReturnType<typeof z.object<typeof creat
 export type UpdateProductInput = z.infer<ReturnType<typeof z.object<typeof updateProductInputSchema>>>;
 export type GetProductBySkuInput = z.infer<ReturnType<typeof z.object<typeof getProductBySkuInputSchema>>>;
 export type DeleteProductInput = z.infer<ReturnType<typeof z.object<typeof deleteProductInputSchema>>>;
+
+// Product Website Assignment Types
+export type AssignProductToWebsiteInput = z.infer<ReturnType<typeof z.object<typeof assignProductToWebsiteInputSchema>>>;
+export type RemoveProductFromWebsiteInput = z.infer<ReturnType<typeof z.object<typeof removeProductFromWebsiteInputSchema>>>;
 
 // Product Attribute Types
 export type CreateProductAttributeInput = z.infer<ReturnType<typeof z.object<typeof createProductAttributeInputSchema>>>;

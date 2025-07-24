@@ -3,8 +3,8 @@ import { buildSearchCriteriaQuery } from "../search-criteria/index";
 import type { SearchCriteria } from "../search-criteria/types/search-criteria";
 import type { ApiResponse } from "../types/api-response";
 import { apiErrorResponse, apiSuccessResponse } from "../types/api-response";
-import { mapCreateProductInputToApiPayload, mapUpdateProductInputToApiPayload } from "./mapping/product-mapping";
-import { CreateProductInput, DeleteProductInput, GetProductBySkuInput, UpdateProductInput } from "./schemas";
+import { mapCreateProductInputToApiPayload, mapUpdateProductInputToApiPayload, mapAssignProductToWebsiteInputToApiPayload } from "./mapping/product-mapping";
+import { CreateProductInput, DeleteProductInput, GetProductBySkuInput, UpdateProductInput, AssignProductToWebsiteInput, RemoveProductFromWebsiteInput } from "./schemas";
 import type { Product } from "./types/product";
 
 export async function getProducts(client: AdobeCommerceClient, options: SearchCriteria = {}): Promise<ApiResponse<Product[]>> {
@@ -52,6 +52,33 @@ export async function getProductBySku(client: AdobeCommerceClient, input: GetPro
 
 export async function deleteProduct(client: AdobeCommerceClient, input: DeleteProductInput): Promise<ApiResponse<boolean>> {
   const endpoint = `/products/${input.sku}`;
+  try {
+    await client.delete(endpoint);
+    return apiSuccessResponse<boolean>(endpoint, true);
+  } catch (error) {
+    return apiErrorResponse<boolean>(endpoint, error);
+  }
+}
+
+export async function assignProductToWebsite(
+  client: AdobeCommerceClient,
+  input: AssignProductToWebsiteInput
+): Promise<ApiResponse<boolean>> {
+  const endpoint = `/products/${encodeURIComponent(input.sku)}/websites`;
+  try {
+    const payload = mapAssignProductToWebsiteInputToApiPayload(input);
+    await client.post(endpoint, { productWebsiteLink: payload });
+    return apiSuccessResponse<boolean>(endpoint, true);
+  } catch (error) {
+    return apiErrorResponse<boolean>(endpoint, error);
+  }
+}
+
+export async function removeProductFromWebsite(
+  client: AdobeCommerceClient,
+  input: RemoveProductFromWebsiteInput
+): Promise<ApiResponse<boolean>> {
+  const endpoint = `/products/${encodeURIComponent(input.sku)}/websites/${input.website_id}`;
   try {
     await client.delete(endpoint);
     return apiSuccessResponse<boolean>(endpoint, true);

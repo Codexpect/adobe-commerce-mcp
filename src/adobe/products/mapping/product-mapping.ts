@@ -1,5 +1,5 @@
-import { CreateProductInput, UpdateProductInput } from "../schemas";
-import { Product } from "../types/product";
+import { CreateProductInput, UpdateProductInput, AssignProductToWebsiteInput } from "../schemas";
+import { Product, ProductWebsiteLink } from "../types/product";
 
 function buildCustomAttributes(input: {
   description?: string;
@@ -78,4 +78,11 @@ export function mapUpdateProductInputToApiPayload(input: UpdateProductInput): Pa
   }
 
   return product;
+}
+
+export function mapAssignProductToWebsiteInputToApiPayload(input: AssignProductToWebsiteInput): ProductWebsiteLink {
+  return {
+    sku: input.sku,
+    website_id: input.website_id,
+  };
 }

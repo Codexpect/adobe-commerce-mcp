@@ -146,3 +146,8 @@ export interface AttributeGroup {
   attribute_group_name: string;
   attribute_set_id: number;
 }
+
+export interface ProductWebsiteLink {
+  sku: string;
+  website_id: number;
+}
