@@ -198,15 +198,23 @@ function registerDeleteAttributeSetTool(server: McpServer, client: AdobeCommerce
       const result = await deleteAttributeSet(client, attributeSetId);
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data ? `Attribute set with ID ${attributeSetId} has been successfully deleted.` : `Failed to delete attribute set with ID ${attributeSetId}.`;
+        const contextMessage = data 
+          ? `Attribute set with ID ${attributeSetId} has been successfully deleted.` 
+          : `Failed to delete attribute set with ID ${attributeSetId}.`;
+        
         return `
          <meta>
           <name>Delete Attribute Set</name>
           <endpoint>${endpoint}</endpoint>
         </meta>
+
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -261,15 +269,23 @@ function registerDeleteAttributeFromSetTool(server: McpServer, client: AdobeComm
       const result = await deleteAttributeFromSet(client, attributeSetId, attributeCode);
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data ? `Attribute "${attributeCode}" has been successfully removed from attribute set with ID ${attributeSetId}.` : `Failed to remove attribute "${attributeCode}" from attribute set with ID ${attributeSetId}.`;
+        const contextMessage = data 
+          ? `Attribute "${attributeCode}" has been successfully removed from attribute set with ID ${attributeSetId}.` 
+          : `Failed to remove attribute "${attributeCode}" from attribute set with ID ${attributeSetId}.`;
+        
         return `
          <meta>
           <name>Delete Attribute From Set</name>
           <endpoint>${endpoint}</endpoint>
         </meta>
+
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -290,15 +306,23 @@ function registerAssignAttributeToSetGroupTool(server: McpServer, client: AdobeC
       const result = await assignAttributeToSetGroup(client, parsed);
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data ? `Attribute "${parsed.attributeCode}" has been successfully assigned to attribute set with ID ${parsed.attributeSetId} and group with ID ${parsed.attributeGroupId}.` : `Failed to assign attribute "${parsed.attributeCode}" to attribute set with ID ${parsed.attributeSetId} and group with ID ${parsed.attributeGroupId}.`;
+        const contextMessage = data 
+          ? `Attribute "${parsed.attributeCode}" has been successfully assigned to attribute set with ID ${parsed.attributeSetId} and group with ID ${parsed.attributeGroupId}.` 
+          : `Failed to assign attribute "${parsed.attributeCode}" to attribute set with ID ${parsed.attributeSetId} and group with ID ${parsed.attributeGroupId}.`;
+        
         return `
          <meta>
           <name>Assign Attribute to Set and Group</name>
           <endpoint>${endpoint}</endpoint>
         </meta>
+
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -381,15 +405,23 @@ function registerDeleteAttributeGroupTool(server: McpServer, client: AdobeCommer
       const result = await deleteAttributeGroup(client, attributeGroupId);
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data ? `Attribute group with ID ${attributeGroupId} has been successfully deleted.` : `Failed to delete attribute group with ID ${attributeGroupId}.`;
+        const contextMessage = data 
+          ? `Attribute group with ID ${attributeGroupId} has been successfully deleted.` 
+          : `Failed to delete attribute group with ID ${attributeGroupId}.`;
+        
         return `
          <meta>
           <name>Delete Attribute Group</name>
           <endpoint>${endpoint}</endpoint>
         </meta>
+
          <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
          </data>
+
+         <context>
+          ${contextMessage}
+         </context>
         `;
       });
     }

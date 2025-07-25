@@ -2,7 +2,7 @@ import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
 import { registerProductTools } from "../../src/tools/tools-for-products";
 import { registerProductAttributesTools } from "../../src/tools/tools-for-products-attributes";
-import { createMockMcpServer, extractToolResponseText, MockMcpServer, parseToolResponse } from "../utils/mock-mcp-server";
+import { createMockMcpServer, extractToolResponseText, MockMcpServer, parseToolResponse, extractContextContent } from "../utils/mock-mcp-server";
 import { CategoryFixtures } from "./fixtures/category-fixtures";
 import { ProductAttributeFixtures } from "./fixtures/product-attribute-fixtures";
 import { ProductFixtures } from "./fixtures/product-fixtures";
@@ -478,8 +478,18 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
       });
 
       const deleteResponseText = extractToolResponseText(deleteResult);
-      expect(deleteResponseText).toContain("Delete Product");
-      expect(deleteResponseText).toContain("has been successfully deleted");
+      const deleteParsed = parseToolResponse(deleteResponseText);
+
+      expect(deleteParsed.meta.name).toBe("Delete Product");
+      expect(deleteParsed.data.length).toBe(1);
+
+      // Parse the boolean result from data
+      const deleteResultData = JSON.parse(deleteParsed.data[0]);
+      expect(deleteResultData).toBe(true);
+
+      // Verify the context message
+      const contextContent = extractContextContent(deleteResponseText);
+      expect(contextContent).toBe(`Product with SKU ${createdProduct.sku} has been successfully deleted.`);
 
       // Verify it's deleted by trying to retrieve it
       const verifyResult = await mockServer.callTool("get-product-by-sku", {
@@ -1855,7 +1865,7 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
         const isFeatured = customAttrs.find((attr: CustomAttribute) => attr.attribute_code === featuredCode);
         const isNew = customAttrs.find((attr: CustomAttribute) => attr.attribute_code === newCode);
         const isSale = customAttrs.find((attr: CustomAttribute) => attr.attribute_code === saleCode);
-        
+
         expect(isFeatured).toBeDefined();
         expect(isNew).toBeDefined();
         expect(isSale).toBeDefined();
@@ -1971,8 +1981,6 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
         expect(foundSkus).toContain(`prod_text_product_${uniqueId}`);
       }, 45000);
     });
-
-
 
     describe("Numeric Attributes", () => {
       test("should create and retrieve product with numeric attributes", async () => {
@@ -2358,22 +2366,22 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
         const tagsAttr = result.attributes.get("tags");
         const categoriesAttr = result.attributes.get("categories");
         const featuresAttr = result.attributes.get("features");
-        
+
         // Find the option IDs for the selected values
-        const tag1Option = tagsAttr?.options?.find(opt => opt.label === "Tag 1");
-        const tag2Option = tagsAttr?.options?.find(opt => opt.label === "Tag 2");
-        const category1Option = categoriesAttr?.options?.find(opt => opt.label === "Category 1");
-        const category2Option = categoriesAttr?.options?.find(opt => opt.label === "Category 2");
-        const feature1Option = featuresAttr?.options?.find(opt => opt.label === "Feature 1");
-        const feature3Option = featuresAttr?.options?.find(opt => opt.label === "Feature 3");
-        
+        const tag1Option = tagsAttr?.options?.find((opt) => opt.label === "Tag 1");
+        const tag2Option = tagsAttr?.options?.find((opt) => opt.label === "Tag 2");
+        const category1Option = categoriesAttr?.options?.find((opt) => opt.label === "Category 1");
+        const category2Option = categoriesAttr?.options?.find((opt) => opt.label === "Category 2");
+        const feature1Option = featuresAttr?.options?.find((opt) => opt.label === "Feature 1");
+        const feature3Option = featuresAttr?.options?.find((opt) => opt.label === "Feature 3");
+
         expect(tag1Option).toBeDefined();
         expect(tag2Option).toBeDefined();
         expect(category1Option).toBeDefined();
         expect(category2Option).toBeDefined();
         expect(feature1Option).toBeDefined();
         expect(feature3Option).toBeDefined();
-        
+
         // Verify the comma-separated option IDs
         expect(tags.value).toBe(`${tag1Option?.value},${tag2Option?.value}`);
         expect(categories.value).toBe(`${category1Option?.value},${category2Option?.value}`);
@@ -2388,8 +2396,8 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
         // Get actual attribute code and option ID for searching
         const tagsCode = result.attributeCodeMapping.get("tags");
         const tagsAttr = result.attributes.get("tags");
-        const tag1Option = tagsAttr?.options?.find(opt => opt.label === "Tag 1");
-        
+        const tag1Option = tagsAttr?.options?.find((opt) => opt.label === "Tag 1");
+
         expect(tag1Option).toBeDefined();
 
         // Search for products with the actual tag 1 option ID
@@ -2459,16 +2467,16 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
         const primaryCategoryAttr = result.attributes.get("primary_category");
         const mainColorAttr = result.attributes.get("main_color");
         const sizeTypeAttr = result.attributes.get("size_type");
-        
+
         // Find the option IDs for the selected values
-        const primaryCategoryOption = primaryCategoryAttr?.options?.find(opt => opt.label === "Category B");
-        const mainColorOption = mainColorAttr?.options?.find(opt => opt.label === "Blue");
-        const sizeTypeOption = sizeTypeAttr?.options?.find(opt => opt.label === "Large");
-        
+        const primaryCategoryOption = primaryCategoryAttr?.options?.find((opt) => opt.label === "Category B");
+        const mainColorOption = mainColorAttr?.options?.find((opt) => opt.label === "Blue");
+        const sizeTypeOption = sizeTypeAttr?.options?.find((opt) => opt.label === "Large");
+
         expect(primaryCategoryOption).toBeDefined();
         expect(mainColorOption).toBeDefined();
         expect(sizeTypeOption).toBeDefined();
-        
+
         expect(primaryCategory.value).toBe(primaryCategoryOption?.value);
         expect(mainColor.value).toBe(mainColorOption?.value);
         expect(sizeType.value).toBe(sizeTypeOption?.value);
@@ -2482,8 +2490,8 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
         // Get actual attribute code and option ID for searching
         const primaryCategoryCode = result.attributeCodeMapping.get("primary_category");
         const primaryCategoryAttr = result.attributes.get("primary_category");
-        const primaryCategoryOption = primaryCategoryAttr?.options?.find(opt => opt.label === "Category B");
-        
+        const primaryCategoryOption = primaryCategoryAttr?.options?.find((opt) => opt.label === "Category B");
+
         expect(primaryCategoryOption).toBeDefined();
 
         // Search for products with the actual primary_category option ID
@@ -2598,6 +2606,157 @@ describe("Products Tools - Functional Tests with Per-Test Fixtures", () => {
         const foundSkus = products_result.map((prod) => prod.sku);
         expect(foundSkus).toContain(`prod_mixed_product_${uniqueId}`);
       }, 45000);
+    });
+
+    describe("Website Assignment Tools", () => {
+      test("should assign product to website with context message", async () => {
+        fixtures.setCurrentTest("assign_to_website_test");
+
+        // Create a test product using fixtures
+        const createdFixtures = await fixtures.createFixtures([{ name: "simple" }]);
+        const testProduct = createdFixtures.get("simple");
+        expect(testProduct).toBeDefined();
+        const testProductSku = testProduct!.sku;
+
+        const assignData = {
+          sku: testProductSku,
+          website_id: 1,
+        };
+
+        const result = await mockServer.callTool("assign-product-to-website", assignData);
+
+        const responseText = extractToolResponseText(result);
+        const parsed = parseToolResponse(responseText);
+
+        expect(parsed.meta.name).toBe("Assign Product to Website");
+        expect(parsed.meta.endpoint).toContain("/products/");
+        expect(parsed.meta.endpoint).toContain("/websites");
+        expect(parsed.meta.sku).toBe(testProductSku);
+        expect(parsed.meta.websiteId).toBe("1");
+        expect(parsed.data.length).toBe(1);
+
+        // Parse the boolean result from data
+        const assignResultData = JSON.parse(parsed.data[0]);
+        expect(assignResultData).toBe(true);
+
+        // Verify the context message
+        const contextContent = extractContextContent(responseText);
+        expect(contextContent).toBe(`Product with SKU ${testProductSku} has been successfully assigned to website 1.`);
+      }, 30000);
+
+      test("should remove product from website with context message", async () => {
+        fixtures.setCurrentTest("remove_from_website_test");
+
+        // Create a test product using fixtures
+        const createdFixtures = await fixtures.createFixtures([{ name: "simple" }]);
+        const testProduct = createdFixtures.get("simple");
+        expect(testProduct).toBeDefined();
+        const testProductSku = testProduct!.sku;
+
+        // First assign the product to website
+        const assignData = {
+          sku: testProductSku,
+          website_id: 1,
+        };
+
+        const assignResult = await mockServer.callTool("assign-product-to-website", assignData);
+        const assignText = extractToolResponseText(assignResult);
+        const assignParsed = parseToolResponse(assignText);
+        expect(assignParsed.meta.name).toBe("Assign Product to Website");
+        expect(assignParsed.data.length).toBe(1);
+
+        // Parse the boolean result from data
+        const assignResultData = JSON.parse(assignParsed.data[0]);
+        expect(assignResultData).toBe(true);
+
+        // Verify the context message
+        const assignContextContent = extractContextContent(assignText);
+        expect(assignContextContent).toBe(`Product with SKU ${testProductSku} has been successfully assigned to website 1.`);
+
+        // Now remove the product from website
+        const removeData = {
+          sku: testProductSku,
+          website_id: 1,
+        };
+
+        const result = await mockServer.callTool("remove-product-from-website", removeData);
+
+        const responseText = extractToolResponseText(result);
+        const parsed = parseToolResponse(responseText);
+
+        expect(parsed.meta.name).toBe("Remove Product from Website");
+        expect(parsed.meta.endpoint).toContain("/products/");
+        expect(parsed.meta.endpoint).toContain("/websites");
+        expect(parsed.meta.sku).toBe(testProductSku);
+        expect(parsed.meta.websiteId).toBe("1");
+        expect(parsed.data.length).toBe(1);
+
+        // Parse the boolean result from data
+        const removeResultData = JSON.parse(parsed.data[0]);
+        expect(removeResultData).toBe(true);
+
+        // Verify the context message
+        const removeContextContent = extractContextContent(responseText);
+        expect(removeContextContent).toBe(`Product with SKU ${testProductSku} has been successfully removed from website 1.`);
+      }, 30000);
+
+      test("should handle assigning product to non-existent website", async () => {
+        fixtures.setCurrentTest("assign_to_invalid_website_test");
+
+        // Create a test product using fixtures
+        const createdFixtures = await fixtures.createFixtures([{ name: "simple" }]);
+        const testProduct = createdFixtures.get("simple");
+        expect(testProduct).toBeDefined();
+        const testProductSku = testProduct!.sku;
+
+        const assignData = {
+          sku: testProductSku,
+          website_id: 999999, // Non-existent website
+        };
+
+        const result = await mockServer.callTool("assign-product-to-website", assignData);
+
+        const responseText = extractToolResponseText(result);
+        expect(responseText).toContain("Failed to retrieve data from Adobe Commerce");
+      }, 30000);
+
+      test("should handle removing product from non-existent website", async () => {
+        fixtures.setCurrentTest("remove_from_invalid_website_test");
+
+        // Create a test product using fixtures
+        const createdFixtures = await fixtures.createFixtures([{ name: "simple" }]);
+        const testProduct = createdFixtures.get("simple");
+        expect(testProduct).toBeDefined();
+        const testProductSku = testProduct!.sku;
+
+        const removeData = {
+          sku: testProductSku,
+          website_id: 999999, // Non-existent website
+        };
+
+        const result = await mockServer.callTool("remove-product-from-website", removeData);
+
+        const responseText = extractToolResponseText(result);
+        const parsed = parseToolResponse(responseText);
+
+        // Removing from non-existent website actually succeeds (you can't remove from something that doesn't exist)
+        expect(parsed.meta.name).toBe("Remove Product from Website");
+        expect(parsed.meta.endpoint).toContain("/products/");
+        expect(parsed.meta.endpoint).toContain("/websites");
+        expect(parsed.meta.sku).toBe(testProductSku);
+        expect(parsed.meta.websiteId).toBe("999999");
+        expect(parsed.data.length).toBe(1);
+
+        // Parse the boolean result from data
+        const removeResultData = JSON.parse(parsed.data[0]);
+        expect(removeResultData).toBe(true);
+
+        // Verify the context message
+        expect(responseText).toContain("<context>");
+        expect(responseText).toContain("successfully removed");
+        expect(responseText).toContain(testProductSku);
+        expect(responseText).toContain("999999");
+      }, 30000);
     });
   });
 });

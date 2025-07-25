@@ -1,7 +1,7 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
 import { registerProductAttributesTools } from "../../src/tools/tools-for-products-attributes";
-import { createMockMcpServer, extractToolResponseText, parseToolResponse, MockMcpServer } from "../utils/mock-mcp-server";
+import { createMockMcpServer, extractToolResponseText, parseToolResponse, MockMcpServer, extractContextContent } from "../utils/mock-mcp-server";
 import { ProductAttributeFixtures } from "./fixtures/product-attribute-fixtures";
 
 describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", () => {
@@ -518,9 +518,13 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
       expect(parsed.meta.name).toBe("Add Product Attribute Option");
       expect(parsed.data.length).toBe(1);
       
+      // Now we can parse the actual option ID from the data
       const optionId = JSON.parse(parsed.data[0]);
-      console.log(optionId);
       expect(optionId).toBeTruthy();
+      
+      // Verify the context message
+      const contextContent = extractContextContent(responseText);
+      expect(contextContent).toBe(`Option "New Test Option" has been successfully added to attribute "${selectAttr!.attribute_code}" with id ${optionId}.`);
     }, 45000);
 
     test("should update an existing option in select attribute", async () => {
@@ -560,8 +564,13 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
       expect(parsed.meta.name).toBe("Update Product Attribute Option");
       expect(parsed.data.length).toBe(1);
       
-      const updatedOptionId = JSON.parse(parsed.data[0]);
-      expect(updatedOptionId).toBeTruthy();
+      // Parse the boolean result from data
+      const updateResult = JSON.parse(parsed.data[0]);
+      expect(updateResult).toBe(true);
+      
+      // Verify the context message
+      const contextContent = extractContextContent(responseText);
+      expect(contextContent).toBe(`Option "${optionToUpdate!.value}" has been successfully updated for attribute "${selectAttr!.attribute_code}".`);
 
       // Verify the update by getting options again
       const verifyResult = await mockServer.callTool("get-product-attribute-options", {
@@ -611,8 +620,18 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
       });
 
       const responseText = extractToolResponseText(result);
-      expect(responseText).toContain("Delete Product Attribute Option");
-      expect(responseText).toContain(`Option "${optionIdToDelete}" has been successfully deleted from attribute "${selectAttr!.attribute_code}"`);
+      const parsed = parseToolResponse(responseText);
+      
+      expect(parsed.meta.name).toBe("Delete Product Attribute Option");
+      expect(parsed.data.length).toBe(1);
+      
+      // Parse the boolean result from data
+      const deleteResult = JSON.parse(parsed.data[0]);
+      expect(deleteResult).toBe(true);
+      
+      // Verify the context message
+      const contextContent = extractContextContent(responseText);
+      expect(contextContent).toBe(`Option "${optionIdToDelete}" has been successfully deleted from attribute "${selectAttr!.attribute_code}".`);
 
       // Verify the deletion by getting options again
       const verifyResult = await mockServer.callTool("get-product-attribute-options", {

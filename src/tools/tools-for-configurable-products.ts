@@ -58,23 +58,23 @@ function registerAddConfigurableProductOptionTool(server: McpServer, client: Ado
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
-          ? `Product option with attribute ID ${parsed.attributeId} has been successfully added to configurable product with SKU ${parsed.sku}.`
+        const contextMessage = data
+          ? `Product option with attribute ID ${parsed.attributeId} has been successfully added to configurable product with SKU ${parsed.sku}. Configurable product option id is ${data}`
           : `Failed to add product option with attribute ID ${parsed.attributeId} to configurable product with SKU ${parsed.sku}.`;
+
         return `
         <meta>
           <name>Add Configurable Product Option</name>
           <endpoint>${endpoint}</endpoint>
-          <sku>${parsed.sku}</sku>
-          <attributeId>${parsed.attributeId}</attributeId>
-          <label>${parsed.label}</label>
-          <optionIds>${parsed.optionIds.join(", ")}</optionIds>
-          <position>${parsed.position}</position>
-          <isUseDefault>${parsed.isUseDefault}</isUseDefault>
         </meta>
+
         <data>
-          ${successMessage}          
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -98,7 +98,7 @@ function registerLinkConfigurableChildTool(server: McpServer, client: AdobeComme
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
+        const contextMessage = data
           ? `Product with SKU ${parsed.childSku} has been successfully linked to configurable product with SKU ${parsed.sku}.`
           : `Failed to link product with SKU ${parsed.childSku} to configurable product with SKU ${parsed.sku}.`;
 
@@ -106,12 +106,15 @@ function registerLinkConfigurableChildTool(server: McpServer, client: AdobeComme
         <meta>
           <name>Link Configurable Child</name>
           <endpoint>${endpoint}</endpoint>
-          <parentSku>${parsed.sku}</parentSku>
-          <childSku>${parsed.childSku}</childSku>
         </meta>
+
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -135,19 +138,23 @@ function registerUnlinkConfigurableChildTool(server: McpServer, client: AdobeCom
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
+        const contextMessage = data
           ? `Product with SKU ${parsed.childSku} has been successfully unlinked from configurable product with SKU ${parsed.sku}.`
           : `Failed to unlink product with SKU ${parsed.childSku} from configurable product with SKU ${parsed.sku}.`;
+
         return `
         <meta>
           <name>Unlink Configurable Child</name>
           <endpoint>${endpoint}</endpoint>
-          <parentSku>${parsed.sku}</parentSku>
-          <childSku>${parsed.childSku}</childSku>
         </meta>
+
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -173,7 +180,6 @@ function registerGetConfigurableProductChildrenTool(server: McpServer, client: A
         <meta>
           <name>Get Configurable Product Children</name>
           <endpoint>${endpoint}</endpoint>
-          <sku>${parsed.sku}</sku>
         </meta>
         <data>
           Child SKUs: ${skus}
@@ -202,7 +208,6 @@ function registerGetConfigurableProductOptionsAllTool(server: McpServer, client:
         <meta>
           <name>Get Configurable Product Options All</name>
           <endpoint>${endpoint}</endpoint>
-          <sku>${parsed.sku}</sku>
         </meta>
         <data>
           ${data?.map((item: ConfigurableProductOption) => JSON.stringify(item)).join("\n")}
@@ -231,8 +236,6 @@ function registerGetConfigurableProductOptionByIdTool(server: McpServer, client:
         <meta>
           <name>Get Configurable Product Option By ID</name>
           <endpoint>${endpoint}</endpoint>
-          <sku>${parsed.sku}</sku>
-          <id>${parsed.id}</id>
         </meta>
         <data>
           ${JSON.stringify(data)}
@@ -260,19 +263,23 @@ function registerDeleteConfigurableProductOptionTool(server: McpServer, client: 
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
+        const contextMessage = data
           ? `Configurable option with ID ${parsed.id} has been successfully deleted from configurable product with SKU ${parsed.sku}.`
           : `Failed to delete configurable option with ID ${parsed.id} from configurable product with SKU ${parsed.sku}.`;
+
         return `
         <meta>
           <name>Delete Configurable Product Option</name>
           <endpoint>${endpoint}</endpoint>
-          <sku>${parsed.sku}</sku>
-          <id>${parsed.id}</id>
         </meta>
+
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -297,24 +304,23 @@ function registerUpdateConfigurableProductOptionTool(server: McpServer, client: 
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
+        const contextMessage = data
           ? `Configurable option with ID ${parsed.id} has been successfully updated for configurable product with SKU ${parsed.sku}.`
           : `Failed to update configurable option with ID ${parsed.id} for configurable product with SKU ${parsed.sku}.`;
+
         return `
         <meta>
           <name>Update Configurable Product Option</name>
           <endpoint>${endpoint}</endpoint>
-          <sku>${parsed.sku}</sku>
-          <id>${parsed.id}</id>
-          <attributeId>${parsed.attributeId}</attributeId>
-          <label>${parsed.label}</label>
-          <optionIds>${parsed.optionIds.join(", ")}</optionIds>
-          <position>${parsed.position}</position>
-          <isUseDefault>${parsed.isUseDefault}</isUseDefault>
         </meta>
+
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }

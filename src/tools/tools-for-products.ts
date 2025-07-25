@@ -185,9 +185,10 @@ function registerDeleteProductTool(server: McpServer, client: AdobeCommerceClien
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
+        const contextMessage = data
           ? `Product with SKU ${parsed.sku} has been successfully deleted.`
           : `Failed to delete product with SKU ${parsed.sku}.`;
+        
         return `
         <meta>
           <name>Delete Product</name>
@@ -195,8 +196,12 @@ function registerDeleteProductTool(server: McpServer, client: AdobeCommerceClien
         </meta>
 
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -220,6 +225,10 @@ function registerAssignProductToWebsiteTool(server: McpServer, client: AdobeComm
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const contextMessage = data
+          ? `Product with SKU ${parsed.sku} has been successfully assigned to website ${parsed.website_id}.`
+          : `Failed to assign product with SKU ${parsed.sku} to website ${parsed.website_id}.`;
+        
         return `
         <meta>
           <name>Assign Product to Website</name>
@@ -229,8 +238,12 @@ function registerAssignProductToWebsiteTool(server: McpServer, client: AdobeComm
         </meta>
 
         <data>
-          ${JSON.stringify({ success: data, sku: parsed.sku, website_id: parsed.website_id })}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -254,6 +267,10 @@ function registerRemoveProductFromWebsiteTool(server: McpServer, client: AdobeCo
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const contextMessage = data
+          ? `Product with SKU ${parsed.sku} has been successfully removed from website ${parsed.website_id}.`
+          : `Failed to remove product with SKU ${parsed.sku} from website ${parsed.website_id}.`;
+        
         return `
         <meta>
           <name>Remove Product from Website</name>
@@ -263,8 +280,12 @@ function registerRemoveProductFromWebsiteTool(server: McpServer, client: AdobeCo
         </meta>
 
         <data>
-          ${JSON.stringify({ success: data, sku: parsed.sku, website_id: parsed.website_id })}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }

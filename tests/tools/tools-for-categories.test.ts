@@ -4,7 +4,7 @@ import { CommerceParams } from "../../src/adobe/types/params";
 import { registerCategoriesTools } from "../../src/tools/tools-for-categories";
 import { registerProductTools } from "../../src/tools/tools-for-products";
 import type { MockMcpServer } from "../utils/mock-mcp-server";
-import { createMockMcpServer, extractToolResponseText, parseToolResponse } from "../utils/mock-mcp-server";
+import { createMockMcpServer, extractToolResponseText, parseToolResponse, extractContextContent } from "../utils/mock-mcp-server";
 import { CategoryFixtures } from "./fixtures/category-fixtures";
 import { ProductFixtures } from "./fixtures/product-fixtures";
 
@@ -1087,13 +1087,15 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       expect(moveParsed.meta.name).toBe("Move Category");
       expect(moveParsed.meta.endpoint).toContain(`/categories/${subCategory!.id}/move`);
-      expect(moveParsed.data).toBeDefined();
+      expect(moveParsed.data.length).toBe(1);
 
-      const moveResponse = moveParsed.data[0];
-      expect(typeof moveResponse).toBe("string");
-      expect(moveResponse).toContain("successfully moved");
-      expect(moveResponse).toContain(subCategory!.id!.toString());
-      expect(moveResponse).toContain(electronicsCategory!.id!.toString());
+      // Parse the boolean result from data
+      const moveResultData = JSON.parse(moveParsed.data[0]);
+      expect(moveResultData).toBe(true);
+
+      // Verify the context message
+      const contextContent = extractContextContent(moveText);
+      expect(contextContent).toBe(`Category with ID ${subCategory!.id} has been successfully moved to parent category with ID ${electronicsCategory!.id}.`);
 
       // Verify the move by retrieving Sub Category and checking its new parent
       const getCResult = await mockServer.callTool("get-category-by-id", {
@@ -1201,12 +1203,15 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
 
       expect(parsed.meta.name).toBe("Delete Category");
       expect(parsed.meta.endpoint).toContain(`/categories/${categoryId}`);
-      expect(parsed.data).toBeDefined();
+      expect(parsed.data.length).toBe(1);
 
-      const deleteResult = parsed.data[0];
-      expect(typeof deleteResult).toBe("string");
-      expect(deleteResult).toContain("successfully deleted");
-      expect(deleteResult).toContain(categoryId.toString());
+      // Parse the boolean result from data
+      const deleteResultData = JSON.parse(parsed.data[0]);
+      expect(deleteResultData).toBe(true);
+
+      // Verify the context message
+      const contextContent = extractContextContent(responseText);
+      expect(contextContent).toBe(`Category with ID ${categoryId} has been successfully deleted.`);
     }, 30000);
   });
 
@@ -1242,13 +1247,15 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const parsed = parseToolResponse(responseText);
       expect(parsed.meta.name).toBe("Assign Product to Category");
       expect(parsed.meta.endpoint).toContain(`/categories/${testCategory!.id}/products`);
-      expect(parsed.data).toBeDefined();
+      expect(parsed.data.length).toBe(1);
 
-      const assignResult = parsed.data[0];
-      expect(typeof assignResult).toBe("string");
-      expect(assignResult).toContain("successfully assigned");
-      expect(assignResult).toContain(testProductSku);
-      expect(assignResult).toContain(testCategory!.id!.toString());
+      // Parse the boolean result from data
+      const assignResultData = JSON.parse(parsed.data[0]);
+      expect(assignResultData).toBe(true);
+
+      // Verify the context message
+      const contextContent = extractContextContent(responseText);
+      expect(contextContent).toBe(`Product with SKU ${testProductSku} has been successfully assigned to category with ID ${testCategory!.id}.`);
     }, 30000);
 
     test("should update product position in category", async () => {
@@ -1282,13 +1289,15 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const parsed = parseToolResponse(responseText);
       expect(parsed.meta.name).toBe("Update Product in Category");
       expect(parsed.meta.endpoint).toContain(`/categories/${testCategory!.id}/products`);
-      expect(parsed.data).toBeDefined();
+      expect(parsed.data.length).toBe(1);
 
-      const updateResult = parsed.data[0];
-      expect(typeof updateResult).toBe("string");
-      expect(updateResult).toContain("successfully updated");
-      expect(updateResult).toContain(testProductSku);
-      expect(updateResult).toContain(testCategory!.id!.toString());
+      // Parse the boolean result from data
+      const updateResultData = JSON.parse(parsed.data[0]);
+      expect(updateResultData).toBe(true);
+
+      // Verify the context message
+      const contextContent = extractContextContent(responseText);
+      expect(contextContent).toBe(`Product with SKU ${testProductSku} has been successfully updated in category with ID ${testCategory!.id}.`);
     }, 30000);
 
     test("should remove product from category", async () => {
@@ -1320,9 +1329,17 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const assignText = extractToolResponseText(assignResult);
       const assignParsed = parseToolResponse(assignText);
       expect(assignParsed.meta.name).toBe("Assign Product to Category");
-      expect(assignParsed.data[0]).toContain("successfully assigned");
-      expect(assignParsed.data[0]).toContain(testProductSku);
-      expect(assignParsed.data[0]).toContain(testCategory!.id!.toString());
+      expect(assignParsed.data.length).toBe(1);
+      
+      // Parse the boolean result from data
+      const assignResultData = JSON.parse(assignParsed.data[0]);
+      expect(assignResultData).toBe(true);
+      
+      // Verify the context message
+      expect(assignText).toContain("<context>");
+      expect(assignText).toContain("successfully assigned");
+      expect(assignText).toContain(testProductSku);
+      expect(assignText).toContain(testCategory!.id!.toString());
 
       // Now remove the product from the category
       const removeData = {
@@ -1337,13 +1354,15 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const parsed = parseToolResponse(responseText);
       expect(parsed.meta.name).toBe("Remove Product from Category");
       expect(parsed.meta.endpoint).toContain(`/categories/${testCategory!.id}/products/${testProductSku}`);
-      expect(parsed.data).toBeDefined();
+      expect(parsed.data.length).toBe(1);
 
-      const removeResult = parsed.data[0];
-      expect(typeof removeResult).toBe("string");
-      expect(removeResult).toContain("successfully removed");
-      expect(removeResult).toContain(testProductSku);
-      expect(removeResult).toContain(testCategory!.id!.toString());
+      // Parse the boolean result from data
+      const removeResultData = JSON.parse(parsed.data[0]);
+      expect(removeResultData).toBe(true);
+
+      // Verify the context message
+      const contextContent = extractContextContent(responseText);
+      expect(contextContent).toBe(`Product with SKU ${testProductSku} has been successfully removed from category with ID ${testCategory!.id}.`);
     }, 30000);
 
     test("should assign multiple products and retrieve category products", async () => {
@@ -1382,8 +1401,15 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const assignText1 = extractToolResponseText(assignResult1);
       const assignParsed1 = parseToolResponse(assignText1);
       expect(assignParsed1.meta.name).toBe("Assign Product to Category");
-      expect(assignParsed1.data[0]).toContain("successfully assigned");
-      expect(assignParsed1.data[0]).toContain(testProductSku);
+      expect(assignParsed1.data.length).toBe(1);
+      
+      // Parse the boolean result from data
+      const assignResult1Data = JSON.parse(assignParsed1.data[0]);
+      expect(assignResult1Data).toBe(true);
+      
+      // Verify the context message
+      const contextContent1 = extractContextContent(assignText1);
+      expect(contextContent1).toBe(`Product with SKU ${testProductSku} has been successfully assigned to category with ID ${testCategory!.id}.`);
 
       // Assign second product to the category
       const assignData2 = {
@@ -1398,8 +1424,15 @@ describe("Categories Tools - Functional Tests with Per-Test Fixtures", () => {
       const assignText2 = extractToolResponseText(assignResult2);
       const assignParsed2 = parseToolResponse(assignText2);
       expect(assignParsed2.meta.name).toBe("Assign Product to Category");
-      expect(assignParsed2.data[0]).toContain("successfully assigned");
-      expect(assignParsed2.data[0]).toContain(secondProductSku);
+      expect(assignParsed2.data.length).toBe(1);
+      
+      // Parse the boolean result from data
+      const assignResult2Data = JSON.parse(assignParsed2.data[0]);
+      expect(assignResult2Data).toBe(true);
+      
+      // Verify the context message
+      const contextContent2 = extractContextContent(assignText2);
+      expect(contextContent2).toBe(`Product with SKU ${secondProductSku} has been successfully assigned to category with ID ${testCategory!.id}.`);
 
       // Now retrieve all products in the category
       const getProductsResult = await mockServer.callTool("get-category-products", {

@@ -200,9 +200,10 @@ function registerDeleteProductAttributeTool(server: McpServer, client: AdobeComm
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
+        const contextMessage = data
           ? `Product attribute "${parsed.attributeCode}" has been successfully deleted.`
           : `Failed to delete product attribute "${parsed.attributeCode}".`;
+
         return `
         <meta>
           <name>Delete Product Attribute</name>
@@ -210,8 +211,12 @@ function registerDeleteProductAttributeTool(server: McpServer, client: AdobeComm
         </meta>
 
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -269,9 +274,10 @@ function registerAddProductAttributeOptionTool(server: McpServer, client: AdobeC
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
-          ? `Option "${parsed.label}" has been successfully added to attribute "${parsed.attributeCode} with id ${data}".`
+        const contextMessage = data
+          ? `Option "${parsed.label}" has been successfully added to attribute "${parsed.attributeCode}" with id ${data}.`
           : `Failed to add option "${parsed.label}" to attribute "${parsed.attributeCode}".`;
+
         return `
         <meta>
           <name>Add Product Attribute Option</name>
@@ -279,8 +285,12 @@ function registerAddProductAttributeOptionTool(server: McpServer, client: AdobeC
         </meta>
 
         <data>
-          ${successMessage}        
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -310,9 +320,10 @@ function registerUpdateProductAttributeOptionTool(server: McpServer, client: Ado
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
+        const contextMessage = data
           ? `Option "${parsed.optionId}" has been successfully updated for attribute "${parsed.attributeCode}".`
           : `Failed to update option "${parsed.optionId}" for attribute "${parsed.attributeCode}".`;
+
         return `
         <meta>
           <name>Update Product Attribute Option</name>
@@ -320,8 +331,12 @@ function registerUpdateProductAttributeOptionTool(server: McpServer, client: Ado
         </meta>
 
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
@@ -345,9 +360,10 @@ function registerDeleteProductAttributeOptionTool(server: McpServer, client: Ado
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data
+        const contextMessage = data
           ? `Option "${parsed.optionId}" has been successfully deleted from attribute "${parsed.attributeCode}".`
           : `Failed to delete option "${parsed.optionId}" from attribute "${parsed.attributeCode}".`;
+
         return `
         <meta>
           <name>Delete Product Attribute Option</name>
@@ -355,8 +371,12 @@ function registerDeleteProductAttributeOptionTool(server: McpServer, client: Ado
         </meta>
 
         <data>
-          ${successMessage}
+          ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
