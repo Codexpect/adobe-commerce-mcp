@@ -5,7 +5,14 @@ import { entityIdSchema, storeIdSchema } from "../../../core/validation-schemas"
  * Validates option IDs for attribute options
  * Ensures IDs are non-empty strings
  */
-export const optionIdSchema = z.string().min(1, "Option ID cannot be empty").describe("The option ID.");
+export const optionIdSchema = z
+  .number()
+  .int()
+  .positive("Option ID must be a positive integer")
+  .describe(
+    "Option ID for the attribute option. " +
+      "This is the numeric ID of the specific option value (e.g., 1 for 'Red', 2 for 'Blue' in a color attribute)."
+  );
 
 /**
  * Validates labels and names throughout the system

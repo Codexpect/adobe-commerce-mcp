@@ -109,6 +109,7 @@ export interface ProductAttribute {
   is_filterable?: boolean;
   is_filterable_in_search?: boolean;
   options?: Array<{
+    id?: number;
     label: string;
     value?: string;
     sort_order?: number;
@@ -150,4 +151,16 @@ export interface AttributeGroup {
 export interface ProductWebsiteLink {
   sku: string;
   website_id: number;
+}
+
+export interface ConfigurableProductOption {
+  id?: number;
+  attribute_id: number;
+  label?: string;
+  position?: number;
+  is_use_default?: boolean;
+  values: Array<{
+    value_index: number;
+  }>;
+  product_id?: number;
 }

@@ -7,4 +7,6 @@ export default {
     "^.+\\.(ts|tsx)$": "ts-jest",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  // Run tests sequentially to avoid conflicts with shared resources
+  maxWorkers: 1,
 };

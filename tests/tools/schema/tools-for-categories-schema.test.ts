@@ -693,14 +693,14 @@ describe("Categories Tools - Schema Validation Tests", () => {
         category: {
           name: "Test",
         },
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
 
       expect(() => assignSchema.parse({
         categoryId: 0,
         productLink: {
           sku: "test",
         },
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
 
       // Empty SKUs
       expect(() => assignSchema.parse({
@@ -708,7 +708,7 @@ describe("Categories Tools - Schema Validation Tests", () => {
         productLink: {
           sku: "",
         },
-      })).toThrow("Product SKU cannot be empty");
+      })).toThrow("SKU cannot be empty");
     });
 
     test("should validate attribute codes consistently", () => {
@@ -741,30 +741,30 @@ describe("Categories Tools - Schema Validation Tests", () => {
       // Zero IDs should be rejected
       expect(() => getByIdSchema.parse({
         categoryId: 0,
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
 
       expect(() => deleteSchema.parse({
         categoryId: 0,
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
 
       expect(() => moveSchema.parse({
         categoryId: 0,
         parentId: 1,
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
 
       // Negative IDs should be rejected
       expect(() => getByIdSchema.parse({
         categoryId: -1,
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
 
       expect(() => deleteSchema.parse({
         categoryId: -1,
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
 
       expect(() => moveSchema.parse({
         categoryId: -1,
         parentId: 1,
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
     });
 
     test("SECURITY: Empty strings properly rejected for AI agent safety", () => {
@@ -786,14 +786,14 @@ describe("Categories Tools - Schema Validation Tests", () => {
         category: {
           name: "Test",
         },
-      })).toThrow("Entity ID must be a positive number");
+      })).toThrow("Entity ID must be a positive integer");
 
       expect(() => assignSchema.parse({
         categoryId: 1,
         productLink: {
           sku: "", // AI agents must not use empty SKUs
         },
-      })).toThrow("Product SKU cannot be empty");
+      })).toThrow("SKU cannot be empty");
     });
   });
 }); 

@@ -6,7 +6,8 @@ import { z } from "zod";
  */
 export const entityIdSchema = z
   .number()
-  .positive("Entity ID must be a positive number")
+  .int()
+  .positive("Entity ID must be a positive integer")
   .describe("Unique identifier for Adobe Commerce entities (categories, products, customers, orders, etc.).");
 
 /**
@@ -25,45 +26,33 @@ export const attributeCodeSchema = z
  */
 export const productSkuSchema = z
   .string()
-  .min(1, "Product SKU cannot be empty")
-  .describe("Product SKU (Stock Keeping Unit).");
+  .min(1, "SKU cannot be empty")
+  .regex(/^[a-zA-Z0-9_-]+$/, "SKU can only contain letters, numbers, hyphens, and underscores")
+  .describe("Stock Keeping Unit - unique identifier for the product (e.g., 'PROD-001', 'product_123').");
 
 /**
  * Validates sort directions
  * Ensures only valid sort directions are used
  */
-export const sortDirectionSchema = z
-  .enum(["ASC", "DESC"])
-  .describe("Sort direction: ASC (ascending) or DESC (descending).");
+export const sortDirectionSchema = z.enum(["ASC", "DESC"]).describe("Sort direction: ASC (ascending) or DESC (descending).");
 
 /**
  * Validates store IDs for multi-store configurations
  * Ensures positive numbers to match valid Magento store IDs
  */
-export const storeIdSchema = z
-  .number()
-  .positive("Store ID must be a positive number")
-  .describe("Store ID for multi-store configurations.");
+export const storeIdSchema = z.number().positive("Store ID must be a positive number").describe("Store ID for multi-store configurations.");
 
 /**
  * Validates website IDs
  * Ensures IDs are positive integers for website references
  */
-export const websiteIdSchema = z
-  .number()
-  .int()
-  .positive("Website ID must be a positive integer")
-  .describe("Website ID (e.g., 1)");
+export const websiteIdSchema = z.number().int().positive("Website ID must be a positive integer").describe("Website ID (e.g., 1)");
 
 /**
  * Validates store group IDs
  * Ensures IDs are positive integers for store group references
  */
-export const storeGroupIdSchema = z
-  .number()
-  .int()
-  .positive("Store Group ID must be a positive integer")
-  .describe("Store Group ID (e.g., 1)");
+export const storeGroupIdSchema = z.number().int().positive("Store Group ID must be a positive integer").describe("Store Group ID (e.g., 1)");
 
 /**
  * Validates store codes
@@ -93,4 +82,4 @@ export const storeGroupCodeSchema = z
   .string()
   .min(1, "Store group code cannot be empty")
   .regex(/^[a-z0-9_]+$/, "Store group code can only contain lowercase letters, numbers, and underscores")
-  .describe("Store group code (e.g., 'main_website_store')"); 
+  .describe("Store group code (e.g., 'main_website_store')");

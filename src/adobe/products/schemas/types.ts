@@ -31,17 +31,19 @@ import {
   updateAttributeGroupInputSchema,
 } from "./attribute-sets/attribute-groups";
 
-import {
-  createProductInputSchema,
-  deleteProductInputSchema,
-  getProductBySkuInputSchema,
-  updateProductInputSchema,
-} from "./products/products";
+import { createProductInputSchema, deleteProductInputSchema, getProductBySkuInputSchema, updateProductInputSchema } from "./products/products";
 
 import {
-  assignProductToWebsiteInputSchema,
-  removeProductFromWebsiteInputSchema,
-} from "./websites/websites";
+  addConfigurableProductOptionInputSchema,
+  deleteConfigurableProductOptionInputSchema,
+  getConfigurableProductChildrenInputSchema,
+  getConfigurableProductOptionByIdInputSchema,
+  getConfigurableProductOptionsAllInputSchema,
+  linkConfigurableChildInputSchema,
+  unlinkConfigurableChildInputSchema,
+  updateConfigurableProductOptionInputSchema,
+} from "./products/configurable-products";
+import { assignProductToWebsiteInputSchema, removeProductFromWebsiteInputSchema } from "./websites/websites";
 
 /**
  * TypeScript type definitions for all product attribute-related schemas
@@ -85,3 +87,13 @@ export type CreateAttributeGroupInput = z.infer<ReturnType<typeof z.object<typeo
 export type UpdateAttributeGroupInput = z.infer<ReturnType<typeof z.object<typeof updateAttributeGroupInputSchema>>>;
 export type DeleteAttributeGroupInput = z.infer<ReturnType<typeof z.object<typeof deleteAttributeGroupInputSchema>>>;
 export type AssignAttributeToSetGroupInput = z.infer<ReturnType<typeof z.object<typeof assignAttributeToSetGroupInputSchema>>>;
+
+// Configurable Product Types
+export type AddConfigurableProductOptionInput = z.infer<ReturnType<typeof z.object<typeof addConfigurableProductOptionInputSchema>>>;
+export type UpdateConfigurableProductOptionInput = z.infer<ReturnType<typeof z.object<typeof updateConfigurableProductOptionInputSchema>>>;
+export type DeleteConfigurableProductOptionInput = z.infer<ReturnType<typeof z.object<typeof deleteConfigurableProductOptionInputSchema>>>;
+export type LinkConfigurableChildInput = z.infer<ReturnType<typeof z.object<typeof linkConfigurableChildInputSchema>>>;
+export type UnlinkConfigurableChildInput = z.infer<ReturnType<typeof z.object<typeof unlinkConfigurableChildInputSchema>>>;
+export type GetConfigurableProductChildrenInput = z.infer<ReturnType<typeof z.object<typeof getConfigurableProductChildrenInputSchema>>>;
+export type GetConfigurableProductOptionsAllInput = z.infer<ReturnType<typeof z.object<typeof getConfigurableProductOptionsAllInputSchema>>>;
+export type GetConfigurableProductOptionByIdInput = z.infer<ReturnType<typeof z.object<typeof getConfigurableProductOptionByIdInputSchema>>>;

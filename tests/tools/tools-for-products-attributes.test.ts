@@ -519,6 +519,7 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
       expect(parsed.data.length).toBe(1);
       
       const optionId = JSON.parse(parsed.data[0]);
+      console.log(optionId);
       expect(optionId).toBeTruthy();
     }, 45000);
 
@@ -547,7 +548,7 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
       // Update the option
       const result = await mockServer.callTool("update-product-attribute-option", {
         attributeCode: selectAttr!.attribute_code,
-        optionId: optionToUpdate!.value,
+        optionId: parseInt(optionToUpdate!.value),
         label: "Updated Option Label",
         sortOrder: 15,
         isDefault: true,
@@ -606,7 +607,7 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
       // Delete the option
       const result = await mockServer.callTool("delete-product-attribute-option", {
         attributeCode: selectAttr!.attribute_code,
-        optionId: optionIdToDelete,
+        optionId: parseInt(optionIdToDelete),
       });
 
       const responseText = extractToolResponseText(result);
@@ -643,7 +644,7 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
       // Try to update a non-existent option
       const result = await mockServer.callTool("update-product-attribute-option", {
         attributeCode: selectAttr!.attribute_code,
-        optionId: "999999", // Non-existent option ID
+        optionId: 999999, // Non-existent option ID
         label: "This Should Fail",
         sortOrder: 20,
         isDefault: false,
@@ -665,7 +666,7 @@ describe("Product Attributes Tools - Functional Tests with Per-Test Fixtures", (
       // Try to delete a non-existent option
       const result = await mockServer.callTool("delete-product-attribute-option", {
         attributeCode: selectAttr!.attribute_code,
-        optionId: "999999", // Non-existent option ID
+        optionId: 999999, // Non-existent option ID
       });
 
       const responseText = extractToolResponseText(result);

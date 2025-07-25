@@ -479,22 +479,22 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
     const validInputs = [
       {
         attributeCode: "color",
-        optionId: "123",
+        optionId: 123,
         label: "Updated Red",
       },
       {
         attributeCode: "size",
-        optionId: "456",
+        optionId: 456,
         sortOrder: 5,
       },
       {
         attributeCode: "test",
-        optionId: "789",
+        optionId: 789,
         isDefault: true,
       },
       {
         attributeCode: "test",
-        optionId: "101",
+        optionId: 101,
         storeLabels: [
           {
             storeId: 1,
@@ -504,7 +504,7 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
       },
       {
         attributeCode: "test",
-        optionId: "102",
+        optionId: 102,
         label: "Full Update",
         sortOrder: 10,
         isDefault: false,
@@ -520,44 +520,45 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
     const invalidInputs = [
       {}, // Missing required fields
       { attributeCode: "test" }, // Missing optionId
-      { optionId: "123" }, // Missing attributeCode
-      { attributeCode: "", optionId: "123" }, // Empty attributeCode now rejected
-      { attributeCode: "test", optionId: "" }, // Empty optionId now rejected
-      { attributeCode: 123, optionId: "123" }, // Wrong type for attributeCode
-      { attributeCode: "test", optionId: 123 }, // Wrong type for optionId
+      { optionId: 123 }, // Missing attributeCode
+      { attributeCode: "", optionId: 123 }, // Empty attributeCode now rejected
+      { attributeCode: "test", optionId: 0 }, // Zero optionId now rejected
+      { attributeCode: "test", optionId: -1 }, // Negative optionId now rejected
+      { attributeCode: 123, optionId: 123 }, // Wrong type for attributeCode
+      { attributeCode: "test", optionId: "123" }, // Wrong type for optionId (string instead of number)
       {
         attributeCode: "test",
-        optionId: "123",
+        optionId: 123,
         label: "",
       }, // Empty label now rejected
       {
         attributeCode: "test",
-        optionId: "123",
+        optionId: 123,
         label: 123,
       }, // Wrong type for label
       {
         attributeCode: "test",
-        optionId: "123",
+        optionId: 123,
         sortOrder: "invalid",
       }, // Wrong type for sortOrder
       {
         attributeCode: "test",
-        optionId: "123",
+        optionId: 123,
         isDefault: "invalid",
       }, // Wrong type for isDefault
       {
         attributeCode: "test",
-        optionId: "123",
+        optionId: 123,
         storeLabels: "invalid",
       }, // storeLabels must be array
       {
         attributeCode: "test",
-        optionId: "123",
+        optionId: 123,
         storeLabels: [{}],
       }, // storeLabel missing required fields
       {
         attributeCode: "test",
-        optionId: "123",
+        optionId: 123,
         storeLabels: [{ storeId: 1, label: "" }],
       }, // Empty store label now rejected
     ];
@@ -567,20 +568,21 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
 
   describe("Delete Product Attribute Option Schema", () => {
     const validInputs = [
-      { attributeCode: "color", optionId: "123" },
-      { attributeCode: "size", optionId: "456" },
-      { attributeCode: "test_attribute", optionId: "option_id_789" },
+      { attributeCode: "color", optionId: 123 },
+      { attributeCode: "size", optionId: 456 },
+      { attributeCode: "test_attribute", optionId: 789 },
     ];
 
     const invalidInputs = [
       {}, // Missing required fields
       { attributeCode: "test" }, // Missing optionId
-      { optionId: "123" }, // Missing attributeCode
-      { attributeCode: "", optionId: "123" }, // Empty attributeCode now rejected
-      { attributeCode: "test", optionId: "" }, // Empty optionId now rejected
-      { attributeCode: 123, optionId: "123" }, // Wrong type for attributeCode
-      { attributeCode: "test", optionId: 123 }, // Wrong type for optionId
-      { wrongField1: "test", wrongField2: "123" }, // Wrong field names
+      { optionId: 123 }, // Missing attributeCode
+      { attributeCode: "", optionId: 123 }, // Empty attributeCode now rejected
+      { attributeCode: "test", optionId: 0 }, // Zero optionId now rejected
+      { attributeCode: "test", optionId: -1 }, // Negative optionId now rejected
+      { attributeCode: 123, optionId: 123 }, // Wrong type for attributeCode
+      { attributeCode: "test", optionId: "123" }, // Wrong type for optionId (string instead of number)
+      { wrongField1: "test", wrongField2: 123 }, // Wrong field names
     ];
 
     testSchema(deleteProductAttributeOptionInputSchema, validInputs, invalidInputs, "Delete Product Attribute Option");

@@ -1,32 +1,32 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { z } from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
-import { 
-  createProductAttribute, 
-  getProductsAttributes,
-  getProductAttributeByCode,
-  updateProductAttribute,
-  deleteProductAttribute,
-  getProductAttributeOptions,
+import {
   addProductAttributeOption,
+  createProductAttribute,
+  deleteProductAttribute,
+  deleteProductAttributeOption,
+  getProductAttributeByCode,
+  getProductAttributeOptions,
+  getProductsAttributes,
+  updateProductAttribute,
   updateProductAttributeOption,
-  deleteProductAttributeOption
 } from "../adobe/products/api-products-attributes";
-import { 
+import {
+  mapAddProductAttributeOptionInputToApiPayload,
   mapCreateProductAttributeInputToApiPayload,
   mapUpdateProductAttributeInputToApiPayload,
-  mapAddProductAttributeOptionInputToApiPayload,
-  mapUpdateProductAttributeOptionInputToApiPayload
+  mapUpdateProductAttributeOptionInputToApiPayload,
 } from "../adobe/products/mapping/attribute-mapping";
-import { 
-  createProductAttributeInputSchema,
-  getProductAttributeByCodeInputSchema,
-  updateProductAttributeInputSchema,
-  deleteProductAttributeInputSchema,
-  getProductAttributeOptionsInputSchema,
+import {
   addProductAttributeOptionInputSchema,
+  createProductAttributeInputSchema,
+  deleteProductAttributeInputSchema,
+  deleteProductAttributeOptionInputSchema,
+  getProductAttributeByCodeInputSchema,
+  getProductAttributeOptionsInputSchema,
+  updateProductAttributeInputSchema,
   updateProductAttributeOptionInputSchema,
-  deleteProductAttributeOptionInputSchema
 } from "../adobe/products/schemas";
 import { ProductAttribute } from "../adobe/products/types/product";
 import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
@@ -200,7 +200,9 @@ function registerDeleteProductAttributeTool(server: McpServer, client: AdobeComm
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data ? `Product attribute "${parsed.attributeCode}" has been successfully deleted.` : `Failed to delete product attribute "${parsed.attributeCode}".`;
+        const successMessage = data
+          ? `Product attribute "${parsed.attributeCode}" has been successfully deleted.`
+          : `Failed to delete product attribute "${parsed.attributeCode}".`;
         return `
         <meta>
           <name>Delete Product Attribute</name>
@@ -267,6 +269,9 @@ function registerAddProductAttributeOptionTool(server: McpServer, client: AdobeC
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data
+          ? `Option "${parsed.label}" has been successfully added to attribute "${parsed.attributeCode} with id ${data}".`
+          : `Failed to add option "${parsed.label}" to attribute "${parsed.attributeCode}".`;
         return `
         <meta>
           <name>Add Product Attribute Option</name>
@@ -274,7 +279,7 @@ function registerAddProductAttributeOptionTool(server: McpServer, client: AdobeC
         </meta>
 
         <data>
-          ${JSON.stringify(data)}
+          ${successMessage}        
         </data>
       `;
       });
@@ -296,10 +301,18 @@ function registerUpdateProductAttributeOptionTool(server: McpServer, client: Ado
     async (args) => {
       const parsed = z.object(updateProductAttributeOptionInputSchema).parse(args);
       const option = mapUpdateProductAttributeOptionInputToApiPayload(parsed);
-      const result = await updateProductAttributeOption(client, parsed.attributeCode, parsed.optionId, option as NonNullable<ProductAttribute["options"]>[0]);
+      const result = await updateProductAttributeOption(
+        client,
+        parsed.attributeCode,
+        parsed.optionId,
+        option as NonNullable<ProductAttribute["options"]>[0]
+      );
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const successMessage = data
+          ? `Option "${parsed.optionId}" has been successfully updated for attribute "${parsed.attributeCode}".`
+          : `Failed to update option "${parsed.optionId}" for attribute "${parsed.attributeCode}".`;
         return `
         <meta>
           <name>Update Product Attribute Option</name>
@@ -307,7 +320,7 @@ function registerUpdateProductAttributeOptionTool(server: McpServer, client: Ado
         </meta>
 
         <data>
-          ${JSON.stringify(data)}
+          ${successMessage}
         </data>
       `;
       });
@@ -332,7 +345,9 @@ function registerDeleteProductAttributeOptionTool(server: McpServer, client: Ado
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
-        const successMessage = data ? `Option "${parsed.optionId}" has been successfully deleted from attribute "${parsed.attributeCode}".` : `Failed to delete option "${parsed.optionId}" from attribute "${parsed.attributeCode}".`;
+        const successMessage = data
+          ? `Option "${parsed.optionId}" has been successfully deleted from attribute "${parsed.attributeCode}".`
+          : `Failed to delete option "${parsed.optionId}" from attribute "${parsed.attributeCode}".`;
         return `
         <meta>
           <name>Delete Product Attribute Option</name>
