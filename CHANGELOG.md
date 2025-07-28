@@ -5,7 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.0.3] - 2025-01-27
+
+### Added
+
+- **Configurable Products Management**: Comprehensive tools for managing configurable products and their variants
+
+  - `add-configurable-product-option` tool: Define which attribute and options are used in a configurable product, creating framework for product variants
+  - `link-configurable-child` tool: Link a child product to a configurable product by SKU, making it a variant of the parent
+  - `unlink-configurable-child` tool: Unlink a child product from a configurable product by SKU, removing it as a variant
+  - `get-configurable-product-children` tool: Retrieve all child products for a configurable product by SKU
+  - `get-configurable-product-options-all` tool: Retrieve all configurable options for a configurable product by SKU
+  - `get-configurable-product-option-by-id` tool: Retrieve a specific configurable option for a configurable product by SKU and option ID
+  - `update-configurable-product-option` tool: Update an existing configurable option for a configurable product by SKU and option ID
+  - `delete-configurable-product-option` tool: Remove a configurable option from a configurable product by SKU and option ID
+  - New configurable product interfaces: `ConfigurableProductOption` with properties for managing product variants
+  - New validation schemas for configurable product operations including option management and child product linking
+  - Comprehensive test coverage for all configurable product operations including functional tests and schema validation
+
+### Changed
+
+- **Validation Schemas**: Enhanced validation for entityId, productSku, sortDirection, storeId, websiteId, and storeGroupId with positive integer validation and regex patterns
+- **API Function Signatures**: Standardized quotation marks and added type annotations for optionId parameters across product API functions
+- **Tool Response Messages**: Enhanced all tool responses to include context messages for better user feedback on success/failure operations
 
 ## [0.0.2] - 25.07.2025
 
