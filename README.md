@@ -76,6 +76,23 @@ All registered MCP tools are organized by resource type below:
 | update-configurable-product-option    | Update an existing configurable option for a configurable product by SKU and option ID.                          |
 | delete-configurable-product-option    | Remove a configurable option from a configurable product by SKU and option ID.                                   |
 
+### Pricing
+
+| Tool ID               | Description                                                           |
+| --------------------- | --------------------------------------------------------------------- |
+| set-base-prices       | Set base prices for multiple products efficiently.                    |
+| get-base-prices       | Retrieve base prices for multiple products.                           |
+| set-special-prices    | Set special prices with date ranges for multiple products.            |
+| delete-special-prices | Delete special prices for multiple products.                          |
+| get-special-prices    | Retrieve special prices for multiple products.                        |
+| set-tier-prices       | Set tier prices for quantity-based discounts on multiple products.    |
+| replace-tier-prices   | Replace all existing tier prices with new ones for multiple products. |
+| delete-tier-prices    | Delete specific tier prices for multiple products.                    |
+| get-tier-prices       | Retrieve tier prices for multiple products.                           |
+| set-costs             | Set cost values for multiple products.                                |
+| delete-costs          | Delete cost values for multiple products.                             |
+| get-costs             | Retrieve cost values for multiple products.                           |
+
 ### Categories
 
 | Tool ID                        | Description                                                                            |
