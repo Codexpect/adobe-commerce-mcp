@@ -1,37 +1,12 @@
 import { z } from "zod";
 import {
   createProductInputSchema,
-  updateProductInputSchema,
-  getProductBySkuInputSchema,
   deleteProductInputSchema,
+  getProductBySkuInputSchema,
+  updateProductInputSchema,
 } from "../../../src/adobe/products/schemas/products/products";
 import { searchCriteriaInputSchema } from "../../../src/adobe/search-criteria/schema";
-
-/**
- * Helper function to test Zod schemas with valid and invalid inputs
- */
-const testSchema = (
-  schema: Record<string, z.ZodTypeAny>,
-  validInputs: unknown[],
-  invalidInputs: unknown[],
-  schemaName: string
-) => {
-  const zodSchema = z.object(schema);
-
-  describe(`${schemaName} Schema`, () => {
-    test("should accept valid inputs", () => {
-      validInputs.forEach((input) => {
-        expect(() => zodSchema.parse(input)).not.toThrow();
-      });
-    });
-
-    test("should reject invalid inputs", () => {
-      invalidInputs.forEach((input) => {
-        expect(() => zodSchema.parse(input)).toThrow();
-      });
-    });
-  });
-};
+import { testSchema } from "../../utils/schema-test-utils";
 
 describe("Products Tools - Schema Validation Tests", () => {
   describe("Search Products Schema", () => {
@@ -328,12 +303,7 @@ describe("Products Tools - Schema Validation Tests", () => {
   });
 
   describe("Get Product By SKU Schema", () => {
-    const validInputs = [
-      { sku: "PROD-001" },
-      { sku: "product_123" },
-      { sku: "test-product-456" },
-      { sku: "product_with_underscores" },
-    ];
+    const validInputs = [{ sku: "PROD-001" }, { sku: "product_123" }, { sku: "test-product-456" }, { sku: "product_with_underscores" }];
 
     const invalidInputs = [
       {}, // Missing sku
@@ -350,12 +320,7 @@ describe("Products Tools - Schema Validation Tests", () => {
   });
 
   describe("Delete Product Schema", () => {
-    const validInputs = [
-      { sku: "PROD-001" },
-      { sku: "product_123" },
-      { sku: "test-product-456" },
-      { sku: "product_with_underscores" },
-    ];
+    const validInputs = [{ sku: "PROD-001" }, { sku: "product_123" }, { sku: "test-product-456" }, { sku: "product_with_underscores" }];
 
     const invalidInputs = [
       {}, // Missing sku
@@ -378,56 +343,68 @@ describe("Products Tools - Schema Validation Tests", () => {
 
       // Very long but valid names
       const longName = "A".repeat(255);
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: longName,
-        price: 999.99,
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: longName,
+          price: 999.99,
+        })
+      ).not.toThrow();
 
       // Very high prices
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Luxury Product",
-        price: 999999.99,
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Luxury Product",
+          price: 999999.99,
+        })
+      ).not.toThrow();
 
       // Very high weights
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Heavy Product",
-        price: 999.99,
-        weight: 999999.99,
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Heavy Product",
+          price: 999.99,
+          weight: 999999.99,
+        })
+      ).not.toThrow();
 
       // Maximum page size
       expect(() => searchSchema.parse({ pageSize: 10 })).not.toThrow();
 
       // Large attribute set IDs
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        attribute_set_id: 999999,
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          attribute_set_id: 999999,
+        })
+      ).not.toThrow();
 
       // Multiple custom attributes
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        custom_attributes: Array.from({ length: 10 }, (_, i) => ({
-          attribute_code: `attr_${i}`,
-          value: `value_${i}`,
-        })),
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          custom_attributes: Array.from({ length: 10 }, (_, i) => ({
+            attribute_code: `attr_${i}`,
+            value: `value_${i}`,
+          })),
+        })
+      ).not.toThrow();
 
       // Multiple website IDs
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        website_ids: Array.from({ length: 10 }, (_, i) => i + 1),
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          website_ids: Array.from({ length: 10 }, (_, i) => i + 1),
+        })
+      ).not.toThrow();
     });
 
     test("should reject extreme invalid values", () => {
@@ -436,41 +413,53 @@ describe("Products Tools - Schema Validation Tests", () => {
       const searchSchema = z.object(searchCriteriaInputSchema);
 
       // Negative prices
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: -999999.99,
-      })).toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: -999999.99,
+        })
+      ).toThrow();
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        price: -999999.99,
-      })).toThrow();
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          price: -999999.99,
+        })
+      ).toThrow();
 
       // Zero prices
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 0,
-      })).toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 0,
+        })
+      ).toThrow();
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        price: 0,
-      })).toThrow();
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          price: 0,
+        })
+      ).toThrow();
 
       // Negative weights
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        weight: -1,
-      })).toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          weight: -1,
+        })
+      ).toThrow();
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        weight: -1,
-      })).toThrow();
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          weight: -1,
+        })
+      ).toThrow();
 
       // Values exceeding limits
       expect(() => searchSchema.parse({ pageSize: 11 })).toThrow();
@@ -485,23 +474,29 @@ describe("Products Tools - Schema Validation Tests", () => {
       const searchSchema = z.object(searchCriteriaInputSchema);
 
       // Numbers as strings where numbers are expected
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: "999.99",
-      })).toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: "999.99",
+        })
+      ).toThrow();
 
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        weight: "0.5",
-      })).toThrow();
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          weight: "0.5",
+        })
+      ).toThrow();
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        price: "999.99",
-      })).toThrow();
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          price: "999.99",
+        })
+      ).toThrow();
 
       expect(() => searchSchema.parse({ page: "1" })).toThrow();
       expect(() => searchSchema.parse({ pageSize: "10" })).toThrow();
@@ -521,55 +516,69 @@ describe("Products Tools - Schema Validation Tests", () => {
       console.log("✅ SECURITY: Empty string validations properly reject invalid inputs");
 
       // Empty SKUs
-      expect(() => createSchema.parse({
-        sku: "",
-        name: "Test Product",
-        price: 999.99,
-      })).toThrow("SKU cannot be empty");
+      expect(() =>
+        createSchema.parse({
+          sku: "",
+          name: "Test Product",
+          price: 999.99,
+        })
+      ).toThrow("SKU cannot be empty");
 
-      expect(() => updateSchema.parse({
-        sku: "",
-        name: "Updated Product",
-      })).toThrow("SKU cannot be empty");
+      expect(() =>
+        updateSchema.parse({
+          sku: "",
+          name: "Updated Product",
+        })
+      ).toThrow("SKU cannot be empty");
 
-      expect(() => getSchema.parse({
-        sku: "",
-      })).toThrow("SKU cannot be empty");
+      expect(() =>
+        getSchema.parse({
+          sku: "",
+        })
+      ).toThrow("SKU cannot be empty");
 
       // Empty product names
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "",
-        price: 999.99,
-      })).toThrow("Product name is required");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "",
+          price: 999.99,
+        })
+      ).toThrow("Product name is required");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        name: "",
-      })).toThrow("Product name is required");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          name: "",
+        })
+      ).toThrow("Product name is required");
 
       // Empty category IDs in category_links
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        category_links: [
-          {
-            category_id: "",
-            position: 1,
-          },
-        ],
-      })).toThrow("Category ID cannot be empty");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          category_links: [
+            {
+              category_id: "",
+              position: 1,
+            },
+          ],
+        })
+      ).toThrow("Category ID cannot be empty");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        category_links: [
-          {
-            category_id: "",
-            position: 1,
-          },
-        ],
-      })).toThrow("Category ID cannot be empty");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          category_links: [
+            {
+              category_id: "",
+              position: 1,
+            },
+          ],
+        })
+      ).toThrow("Category ID cannot be empty");
     });
 
     test("should validate SKU patterns consistently", () => {
@@ -578,26 +587,34 @@ describe("Products Tools - Schema Validation Tests", () => {
       const getSchema = z.object(getProductBySkuInputSchema);
 
       // Test that skuSchema is used consistently
-      expect(() => createSchema.parse({
-        sku: "PROD@001",
-        name: "Test Product",
-        price: 999.99,
-      })).toThrow("SKU can only contain letters, numbers, hyphens, and underscores");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD@001",
+          name: "Test Product",
+          price: 999.99,
+        })
+      ).toThrow("SKU can only contain letters, numbers, hyphens, and underscores");
 
-      expect(() => createSchema.parse({
-        sku: "PROD 001",
-        name: "Test Product",
-        price: 999.99,
-      })).toThrow("SKU can only contain letters, numbers, hyphens, and underscores");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD 001",
+          name: "Test Product",
+          price: 999.99,
+        })
+      ).toThrow("SKU can only contain letters, numbers, hyphens, and underscores");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD@001",
-        name: "Updated Product",
-      })).toThrow("SKU can only contain letters, numbers, hyphens, and underscores");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD@001",
+          name: "Updated Product",
+        })
+      ).toThrow("SKU can only contain letters, numbers, hyphens, and underscores");
 
-      expect(() => getSchema.parse({
-        sku: "PROD@001",
-      })).toThrow("SKU can only contain letters, numbers, hyphens, and underscores");
+      expect(() =>
+        getSchema.parse({
+          sku: "PROD@001",
+        })
+      ).toThrow("SKU can only contain letters, numbers, hyphens, and underscores");
     });
 
     test("should validate attribute codes consistently", () => {
@@ -605,49 +622,57 @@ describe("Products Tools - Schema Validation Tests", () => {
       const updateSchema = z.object(updateProductInputSchema);
 
       // Test that attributeCodeSchema is used consistently
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        custom_attributes: [
-          {
-            attribute_code: "test@invalid",
-            value: "test",
-          },
-        ],
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          custom_attributes: [
+            {
+              attribute_code: "test@invalid",
+              value: "test",
+            },
+          ],
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        custom_attributes: [
-          {
-            attribute_code: "test-invalid",
-            value: "test",
-          },
-        ],
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          custom_attributes: [
+            {
+              attribute_code: "test-invalid",
+              value: "test",
+            },
+          ],
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        custom_attributes: [
-          {
-            attribute_code: "test@invalid",
-            value: "test",
-          },
-        ],
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          custom_attributes: [
+            {
+              attribute_code: "test@invalid",
+              value: "test",
+            },
+          ],
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        custom_attributes: [
-          {
-            attribute_code: "test-invalid",
-            value: "test",
-          },
-        ],
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          custom_attributes: [
+            {
+              attribute_code: "test-invalid",
+              value: "test",
+            },
+          ],
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
     });
 
     test("should prevent zero or negative values where inappropriate", () => {
@@ -655,80 +680,104 @@ describe("Products Tools - Schema Validation Tests", () => {
       const updateSchema = z.object(updateProductInputSchema);
 
       // Zero prices should be rejected
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 0,
-      })).toThrow("Price must be positive");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 0,
+        })
+      ).toThrow("Price must be positive");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        price: 0,
-      })).toThrow("Price must be positive");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          price: 0,
+        })
+      ).toThrow("Price must be positive");
 
       // Negative prices should be rejected
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: -1,
-      })).toThrow("Price must be positive");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: -1,
+        })
+      ).toThrow("Price must be positive");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        price: -1,
-      })).toThrow("Price must be positive");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          price: -1,
+        })
+      ).toThrow("Price must be positive");
 
       // Zero attribute set IDs should be rejected
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        attribute_set_id: 0,
-      })).toThrow("Entity ID must be a positive number");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          attribute_set_id: 0,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        attribute_set_id: 0,
-      })).toThrow("Entity ID must be a positive number");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          attribute_set_id: 0,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
       // Negative attribute set IDs should be rejected
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        attribute_set_id: -1,
-      })).toThrow("Entity ID must be a positive number");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          attribute_set_id: -1,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        attribute_set_id: -1,
-      })).toThrow("Entity ID must be a positive number");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          attribute_set_id: -1,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
       // Zero website IDs should be rejected
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        website_ids: [0, 1],
-      })).toThrow("Website ID must be positive");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          website_ids: [0, 1],
+        })
+      ).toThrow("Website ID must be a positive integer");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        website_ids: [0, 1],
-      })).toThrow("Website ID must be positive");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          website_ids: [0, 1],
+        })
+      ).toThrow("Website ID must be a positive integer");
 
       // Negative website IDs should be rejected
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "Test Product",
-        price: 999.99,
-        website_ids: [-1, 1],
-      })).toThrow("Website ID must be positive");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "Test Product",
+          price: 999.99,
+          website_ids: [-1, 1],
+        })
+      ).toThrow("Website ID must be a positive integer");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        website_ids: [-1, 1],
-      })).toThrow("Website ID must be positive");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          website_ids: [-1, 1],
+        })
+      ).toThrow("Website ID must be a positive integer");
     });
 
     test("SECURITY: Empty strings properly rejected for AI agent safety", () => {
@@ -739,31 +788,41 @@ describe("Products Tools - Schema Validation Tests", () => {
       const getSchema = z.object(getProductBySkuInputSchema);
 
       // Test critical fields
-      expect(() => createSchema.parse({
-        sku: "", // AI agents must not create empty SKUs
-        name: "Test Product",
-        price: 999.99,
-      })).toThrow("SKU cannot be empty");
+      expect(() =>
+        createSchema.parse({
+          sku: "", // AI agents must not create empty SKUs
+          name: "Test Product",
+          price: 999.99,
+        })
+      ).toThrow("SKU cannot be empty");
 
-      expect(() => updateSchema.parse({
-        sku: "", // AI agents must not use empty SKUs
-        name: "Updated Product",
-      })).toThrow("SKU cannot be empty");
+      expect(() =>
+        updateSchema.parse({
+          sku: "", // AI agents must not use empty SKUs
+          name: "Updated Product",
+        })
+      ).toThrow("SKU cannot be empty");
 
-      expect(() => getSchema.parse({
-        sku: "", // AI agents must not query with empty SKUs
-      })).toThrow("SKU cannot be empty");
+      expect(() =>
+        getSchema.parse({
+          sku: "", // AI agents must not query with empty SKUs
+        })
+      ).toThrow("SKU cannot be empty");
 
-      expect(() => createSchema.parse({
-        sku: "PROD-001",
-        name: "", // AI agents must not create empty names
-        price: 999.99,
-      })).toThrow("Product name is required");
+      expect(() =>
+        createSchema.parse({
+          sku: "PROD-001",
+          name: "", // AI agents must not create empty names
+          price: 999.99,
+        })
+      ).toThrow("Product name is required");
 
-      expect(() => updateSchema.parse({
-        sku: "PROD-001",
-        name: "", // AI agents must not update with empty names
-      })).toThrow("Product name is required");
+      expect(() =>
+        updateSchema.parse({
+          sku: "PROD-001",
+          name: "", // AI agents must not update with empty names
+        })
+      ).toThrow("Product name is required");
     });
   });
-}); 
+});

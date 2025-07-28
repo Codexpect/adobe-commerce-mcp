@@ -1,43 +1,18 @@
 import { z } from "zod";
 import {
-  createAttributeSetInputSchema,
-  updateAttributeSetInputSchema,
-  getAttributeSetByIdInputSchema,
-  getAttributesFromSetInputSchema,
-  deleteAttributeSetInputSchema,
-  deleteAttributeFromSetInputSchema,
   assignAttributeToSetGroupInputSchema,
   createAttributeGroupInputSchema,
-  updateAttributeGroupInputSchema,
+  createAttributeSetInputSchema,
+  deleteAttributeFromSetInputSchema,
   deleteAttributeGroupInputSchema,
+  deleteAttributeSetInputSchema,
+  getAttributeSetByIdInputSchema,
+  getAttributesFromSetInputSchema,
+  updateAttributeGroupInputSchema,
+  updateAttributeSetInputSchema,
 } from "../../../src/adobe/products/schemas";
 import { searchCriteriaInputSchema } from "../../../src/adobe/search-criteria/schema";
-
-/**
- * Helper function to test Zod schemas with valid and invalid inputs
- */
-const testSchema = (
-  schema: Record<string, z.ZodTypeAny>,
-  validInputs: unknown[],
-  invalidInputs: unknown[],
-  schemaName: string
-) => {
-  const zodSchema = z.object(schema);
-
-  describe(`${schemaName} Schema`, () => {
-    test("should accept valid inputs", () => {
-      validInputs.forEach((input) => {
-        expect(() => zodSchema.parse(input)).not.toThrow();
-      });
-    });
-
-    test("should reject invalid inputs", () => {
-      invalidInputs.forEach((input) => {
-        expect(() => zodSchema.parse(input)).toThrow();
-      });
-    });
-  });
-};
+import { testSchema } from "../../utils/schema-test-utils";
 
 describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
   describe("Attribute Set Schemas", () => {
@@ -103,8 +78,8 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
       const invalidInputs = [
         {}, // Missing attributeSetId
         { attributeSetId: "invalid" }, // Wrong type for attributeSetId
-                 { attributeSetId: 0 }, // Zero attributeSetId (now properly rejected)
-         { attributeSetId: -1 }, // Negative attributeSetId (now properly rejected)
+        { attributeSetId: 0 }, // Zero attributeSetId (now properly rejected)
+        { attributeSetId: -1 }, // Negative attributeSetId (now properly rejected)
         { attributeSetId: null }, // Null attributeSetId
         {
           attributeSetId: 1,
@@ -128,11 +103,7 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
     });
 
     describe("Get Attribute Set By ID Schema", () => {
-      const validInputs = [
-        { attributeSetId: 1 },
-        { attributeSetId: 4 },
-        { attributeSetId: 999 },
-      ];
+      const validInputs = [{ attributeSetId: 1 }, { attributeSetId: 4 }, { attributeSetId: 999 }];
 
       const invalidInputs = [
         {}, // Missing attributeSetId
@@ -148,11 +119,7 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
     });
 
     describe("Get Attributes From Set Schema", () => {
-      const validInputs = [
-        { attributeSetId: 1 },
-        { attributeSetId: 4 },
-        { attributeSetId: 999 },
-      ];
+      const validInputs = [{ attributeSetId: 1 }, { attributeSetId: 4 }, { attributeSetId: 999 }];
 
       const invalidInputs = [
         {}, // Missing attributeSetId
@@ -167,11 +134,7 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
     });
 
     describe("Delete Attribute Set Schema", () => {
-      const validInputs = [
-        { attributeSetId: 1 },
-        { attributeSetId: 4 },
-        { attributeSetId: 999 },
-      ];
+      const validInputs = [{ attributeSetId: 1 }, { attributeSetId: 4 }, { attributeSetId: 999 }];
 
       const invalidInputs = [
         {}, // Missing attributeSetId
@@ -397,23 +360,29 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
 
       // Very long but valid names
       const longName = "A".repeat(255);
-      expect(() => createSetSchema.parse({
-        attributeSetName: longName,
-      })).not.toThrow();
+      expect(() =>
+        createSetSchema.parse({
+          attributeSetName: longName,
+        })
+      ).not.toThrow();
 
       // Large but valid IDs
-      expect(() => updateSetSchema.parse({
-        attributeSetId: 999999,
-        sortOrder: 999999,
-      })).not.toThrow();
+      expect(() =>
+        updateSetSchema.parse({
+          attributeSetId: 999999,
+          sortOrder: 999999,
+        })
+      ).not.toThrow();
 
       // Large sort orders
-      expect(() => assignSchema.parse({
-        attributeSetId: 1,
-        attributeGroupId: 1,
-        attributeCode: "test",
-        sortOrder: 999999,
-      })).not.toThrow();
+      expect(() =>
+        assignSchema.parse({
+          attributeSetId: 1,
+          attributeGroupId: 1,
+          attributeCode: "test",
+          sortOrder: 999999,
+        })
+      ).not.toThrow();
     });
 
     test("should reject extreme invalid values", () => {
@@ -421,15 +390,19 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
       const updateSetSchema = z.object(updateAttributeSetInputSchema);
 
       // Negative sort orders
-      expect(() => createSetSchema.parse({
-        attributeSetName: "Test",
-        sortOrder: -1,
-      })).toThrow();
+      expect(() =>
+        createSetSchema.parse({
+          attributeSetName: "Test",
+          sortOrder: -1,
+        })
+      ).toThrow();
 
-      expect(() => updateSetSchema.parse({
-        attributeSetId: 1,
-        sortOrder: -1,
-      })).toThrow();
+      expect(() =>
+        updateSetSchema.parse({
+          attributeSetId: 1,
+          sortOrder: -1,
+        })
+      ).toThrow();
     });
   });
 
@@ -440,22 +413,28 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
       const assignSchema = z.object(assignAttributeToSetGroupInputSchema);
 
       // Numbers as strings where numbers are expected
-      expect(() => createSetSchema.parse({
-        attributeSetName: "Test",
-        sortOrder: "10",
-      })).toThrow();
+      expect(() =>
+        createSetSchema.parse({
+          attributeSetName: "Test",
+          sortOrder: "10",
+        })
+      ).toThrow();
 
-      expect(() => createGroupSchema.parse({
-        attributeSetId: "1",
-        attributeGroupName: "Test",
-      })).toThrow();
+      expect(() =>
+        createGroupSchema.parse({
+          attributeSetId: "1",
+          attributeGroupName: "Test",
+        })
+      ).toThrow();
 
-      expect(() => assignSchema.parse({
-        attributeSetId: "1",
-        attributeGroupId: "1",
-        attributeCode: "test",
-        sortOrder: "10",
-      })).toThrow();
+      expect(() =>
+        assignSchema.parse({
+          attributeSetId: "1",
+          attributeGroupId: "1",
+          attributeCode: "test",
+          sortOrder: "10",
+        })
+      ).toThrow();
     });
   });
 
@@ -468,21 +447,27 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
       console.log("✅ SECURITY: Empty string validations properly reject invalid inputs");
 
       // Empty attribute set names
-      expect(() => createSetSchema.parse({
-        attributeSetName: "",
-      })).toThrow();
+      expect(() =>
+        createSetSchema.parse({
+          attributeSetName: "",
+        })
+      ).toThrow();
 
       // Empty attribute group names
-      expect(() => createGroupSchema.parse({
-        attributeSetId: 1,
-        attributeGroupName: "",
-      })).toThrow();
+      expect(() =>
+        createGroupSchema.parse({
+          attributeSetId: 1,
+          attributeGroupName: "",
+        })
+      ).toThrow();
 
       // Empty attribute codes
-      expect(() => deleteAttrSchema.parse({
-        attributeSetId: 1,
-        attributeCode: "",
-      })).toThrow();
+      expect(() =>
+        deleteAttrSchema.parse({
+          attributeSetId: 1,
+          attributeCode: "",
+        })
+      ).toThrow();
     });
 
     test("should validate attribute codes consistently", () => {
@@ -490,43 +475,55 @@ describe("Product Attribute Sets and Groups - Schema Validation Tests", () => {
       const assignSchema = z.object(assignAttributeToSetGroupInputSchema);
 
       // Test that attributeCodeSchema is used consistently
-      expect(() => deleteAttrSchema.parse({
-        attributeSetId: 1,
-        attributeCode: "test@invalid",
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        deleteAttrSchema.parse({
+          attributeSetId: 1,
+          attributeCode: "test@invalid",
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => deleteAttrSchema.parse({
-        attributeSetId: 1,
-        attributeCode: "test-invalid",
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        deleteAttrSchema.parse({
+          attributeSetId: 1,
+          attributeCode: "test-invalid",
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => assignSchema.parse({
-        attributeSetId: 1,
-        attributeGroupId: 1,
-        attributeCode: "test@invalid",
-        sortOrder: 1,
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        assignSchema.parse({
+          attributeSetId: 1,
+          attributeGroupId: 1,
+          attributeCode: "test@invalid",
+          sortOrder: 1,
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => assignSchema.parse({
-        attributeSetId: 1,
-        attributeGroupId: 1,
-        attributeCode: "test-invalid",
-        sortOrder: 1,
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        assignSchema.parse({
+          attributeSetId: 1,
+          attributeGroupId: 1,
+          attributeCode: "test-invalid",
+          sortOrder: 1,
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
     });
 
     test("should prevent zero or negative IDs where inappropriate", () => {
       const updateSetSchema = z.object(updateAttributeSetInputSchema);
       const deleteSetSchema = z.object(deleteAttributeSetInputSchema);
 
-             // Zero IDs should be rejected for updates/deletes
-       expect(() => updateSetSchema.parse({
-         attributeSetId: 0,
-       })).toThrow("Entity ID must be a positive number");
+      // Zero IDs should be rejected for updates/deletes
+      expect(() =>
+        updateSetSchema.parse({
+          attributeSetId: 0,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-       expect(() => deleteSetSchema.parse({
-         attributeSetId: 0,
-       })).toThrow("Entity ID must be a positive number");
+      expect(() =>
+        deleteSetSchema.parse({
+          attributeSetId: 0,
+        })
+      ).toThrow("Entity ID must be a positive integer");
     });
   });
-}); 
+});

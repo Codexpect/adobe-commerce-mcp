@@ -10,6 +10,7 @@ export * from "./attribute-sets/attribute-groups";
 export * from "./attribute-sets/attribute-sets";
 
 // Product management
+export * from "./products/configurable-products";
 export * from "./products/products";
 
 // Product website assignment
@@ -26,6 +27,16 @@ export * from "./types";
  * - updateProductInputSchema: Modify existing products
  * - getProductBySkuInputSchema: Retrieve product by SKU
  * - deleteProductInputSchema: Remove products
+ *
+ * Configurable Products:
+ * - addConfigurableProductOptionInputSchema: Define attributes and options for configurable products
+ * - updateConfigurableProductOptionInputSchema: Update existing configurable product options
+ * - deleteConfigurableProductOptionInputSchema: Remove configurable product options
+ * - linkConfigurableChildInputSchema: Link child products as variants
+ * - unlinkConfigurableChildInputSchema: Remove child products from variants
+ * - getConfigurableProductChildrenInputSchema: Retrieve all child products for configurable product
+ * - getConfigurableProductOptionsAllInputSchema: Retrieve all configurable options for product
+ * - getConfigurableProductOptionByIdInputSchema: Retrieve specific configurable option by ID
  *
  * Website Assignment:
  * - assignProductToWebsiteInputSchema: Assign product to website

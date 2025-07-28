@@ -168,6 +168,17 @@ export class CombinedProductFixtures {
       ],
       description: "Select attribute for main color",
     },
+    SELECT_CONFIGURABLE_ATTRIBUTE: {
+      type: "singleselect",
+      defaultFrontendLabel: "Configurable Attribute",
+      scope: "global",
+      options: [
+        { label: "Option 1", sortOrder: 1, isDefault: true },
+        { label: "Option 2", sortOrder: 2, isDefault: false },
+        { label: "Option 3", sortOrder: 3, isDefault: false },
+      ],
+      description: "Select attribute for configurable attribute",
+    },
     SELECT_SIZE_TYPE: {
       type: "singleselect",
       defaultFrontendLabel: "Size Type",
@@ -217,7 +228,7 @@ export class CombinedProductFixtures {
   // Attribute code mapping - centralized to avoid duplication
   private static readonly ATTRIBUTE_CODE_MAP: Record<string, string> = {
     BOOLEAN_FEATURED: "is_featured",
-    BOOLEAN_NEW: "is_new", 
+    BOOLEAN_NEW: "is_new",
     BOOLEAN_SALE: "is_sale",
     TEXT_COLOR: "color",
     TEXT_SIZE: "size",
@@ -239,6 +250,7 @@ export class CombinedProductFixtures {
     SELECT_CATEGORY: "primary_category",
     SELECT_COLOR: "main_color",
     SELECT_SIZE_TYPE: "size_type",
+    SELECT_CONFIGURABLE_ATTRIBUTE: "configurable_attribute",
     MULTISELECT_TAGS: "tags",
     MULTISELECT_CATEGORIES: "categories",
     MULTISELECT_FEATURES: "features",
@@ -461,7 +473,7 @@ export class CombinedProductFixtures {
       ],
     },
     PRODUCT_WITH_SINGLESELECT: {
-      attributes: ["SELECT_CATEGORY", "SELECT_COLOR", "SELECT_SIZE_TYPE"],
+      attributes: ["SELECT_CATEGORY", "SELECT_COLOR", "SELECT_SIZE_TYPE", "SELECT_CONFIGURABLE_ATTRIBUTE"],
       products: [
         {
           name: "singleselect_product",
@@ -478,6 +490,7 @@ export class CombinedProductFixtures {
               { attribute_code: "primary_category", value: "Category B" },
               { attribute_code: "main_color", value: "Blue" },
               { attribute_code: "size_type", value: "Large" },
+              { attribute_code: "configurable_attribute", value: "Option 1" },
             ],
           },
         },
@@ -548,7 +561,7 @@ export class CombinedProductFixtures {
 
     console.log(`🔧 Creating scenario: ${scenarioName} with ${scenario.attributes.length} attributes and ${scenario.products.length} products`);
 
-        // Convert scenario names to actual definitions
+    // Convert scenario names to actual definitions
     const attributes: CustomAttributeDefinition[] = scenario.attributes.map((name) => {
       return {
         name: CombinedProductFixtures.ATTRIBUTE_CODE_MAP[name] || name.toLowerCase().replace(/_/g, "_"),
@@ -580,7 +593,7 @@ export class CombinedProductFixtures {
         throw new Error(`Unknown test scenario: ${scenarioName}`);
       }
 
-            // Add attributes
+      // Add attributes
       for (const attrName of scenario.attributes) {
         const attrKey = CombinedProductFixtures.ATTRIBUTE_CODE_MAP[attrName] || attrName.toLowerCase().replace(/_/g, "_");
         if (!allAttributes.has(attrKey)) {
@@ -642,7 +655,7 @@ export class CombinedProductFixtures {
           // Handle select/multiselect attributes by replacing placeholder values with option_ids
           if (actualCode) {
             const attribute = createdAttributes.get(attr.attribute_code);
-            if (attribute && (attribute.frontend_input === 'select' || attribute.frontend_input === 'multiselect')) {
+            if (attribute && (attribute.frontend_input === "select" || attribute.frontend_input === "multiselect")) {
               const optionIds = this.getOptionIdsForAttribute(attribute, attr.value);
               if (optionIds) {
                 updatedAttr = { ...updatedAttr, value: optionIds };
@@ -676,24 +689,26 @@ export class CombinedProductFixtures {
     }
 
     // Only handle string values for select/multiselect attributes
-    if (typeof value !== 'string') {
+    if (typeof value !== "string") {
       return undefined;
     }
 
     // Handle multiselect (comma-separated values)
-    if (attribute.frontend_input === 'multiselect') {
-      const labels = value.split(',').map((label: string) => label.trim());
-      const optionIds = labels.map((label: string) => {
-        const option = attribute.options?.find(opt => opt.label === label);
-        return option?.value;
-      }).filter(id => id !== undefined);
-      
-      return optionIds.length > 0 ? optionIds.join(',') : undefined;
+    if (attribute.frontend_input === "multiselect") {
+      const labels = value.split(",").map((label: string) => label.trim());
+      const optionIds = labels
+        .map((label: string) => {
+          const option = attribute.options?.find((opt) => opt.label === label);
+          return option?.value;
+        })
+        .filter((id) => id !== undefined);
+
+      return optionIds.length > 0 ? optionIds.join(",") : undefined;
     }
 
     // Handle singleselect
-    if (attribute.frontend_input === 'select') {
-      const option = attribute.options?.find(opt => opt.label === value);
+    if (attribute.frontend_input === "select") {
+      const option = attribute.options?.find((opt) => opt.label === value);
       return option?.value;
     }
 

@@ -3,7 +3,7 @@ import { CommerceParams } from "../../src/adobe/types/params";
 import { registerProductAttributeSetsTools } from "../../src/tools/tools-for-products-attribute-sets";
 import { registerProductAttributesTools } from "../../src/tools/tools-for-products-attributes";
 import type { MockMcpServer } from "../utils/mock-mcp-server";
-import { createMockMcpServer, extractToolResponseText, parseToolResponse } from "../utils/mock-mcp-server";
+import { createMockMcpServer, extractToolResponseText, parseToolResponse, extractContextContent } from "../utils/mock-mcp-server";
 import { ProductAttributeSetsFixtures } from "./fixtures/product-attribute-sets-fixtures";
 
 describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixtures", () => {
@@ -541,8 +541,18 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
       });
 
       const deleteResponseText = extractToolResponseText(deleteResult);
-      expect(deleteResponseText).toContain("Delete Attribute Set");
-      expect(deleteResponseText).toContain("has been successfully deleted");
+      const deleteParsed = parseToolResponse(deleteResponseText);
+      
+      expect(deleteParsed.meta.name).toBe("Delete Attribute Set");
+      expect(deleteParsed.data.length).toBe(1);
+      
+      // Parse the boolean result from data
+      const deleteResultData = JSON.parse(deleteParsed.data[0]);
+      expect(deleteResultData).toBe(true);
+      
+      // Verify the context message
+      const contextContent = extractContextContent(deleteResponseText);
+      expect(contextContent).toBe(`Attribute set with ID ${createdAttributeSet.attribute_set_id} has been successfully deleted.`);
     }, 60000);
 
     test("should update an attribute set name", async () => {
@@ -620,8 +630,18 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
       });
 
       const deleteResponseText = extractToolResponseText(deleteResult);
-      expect(deleteResponseText).toContain("Delete Attribute Group");
-      expect(deleteResponseText).toContain("has been successfully deleted");
+      const deleteParsed = parseToolResponse(deleteResponseText);
+      
+      expect(deleteParsed.meta.name).toBe("Delete Attribute Group");
+      expect(deleteParsed.data.length).toBe(1);
+      
+      // Parse the boolean result from data
+      const deleteResultData = JSON.parse(deleteParsed.data[0]);
+      expect(deleteResultData).toBe(true);
+      
+      // Verify the context message
+      const contextContent = extractContextContent(deleteResponseText);
+      expect(contextContent).toBe(`Attribute group with ID ${createdAttributeGroup.attribute_group_id} has been successfully deleted.`);
     }, 45000);
 
     test("should update an attribute group name", async () => {
@@ -715,8 +735,18 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
         sortOrder: 10,
       });
       const assignText = extractToolResponseText(assignResult);
-      expect(assignText).toContain("Assign Attribute to Set and Group");
-      expect(assignText).toContain("has been successfully assigned");
+      const assignParsed = parseToolResponse(assignText);
+      
+      expect(assignParsed.meta.name).toBe("Assign Attribute to Set and Group");
+      expect(assignParsed.data.length).toBe(1);
+      
+      // Parse the boolean result from data
+      const assignResultData = JSON.parse(assignParsed.data[0]);
+      expect(assignResultData).toBe(true);
+      
+      // Verify the context message
+      const contextContent = extractContextContent(assignText);
+      expect(contextContent).toBe(`Attribute "${testAttributeCode}" has been successfully assigned to attribute set with ID ${electronicsSet.attribute_set_id} and group with ID ${attributeGroupId}.`);
 
       // 5. Clean up - delete the attribute and set
       await mockServer.callTool("delete-product-attribute", {
@@ -781,8 +811,18 @@ describe("Products Attribute Sets Tools - Functional Tests with Per-Test Fixture
         attributeCode: testAttributeCode,
       });
       const deleteText = extractToolResponseText(deleteResult);
-      expect(deleteText).toContain("Delete Attribute From Set");
-      expect(deleteText).toContain("has been successfully removed");
+      const deleteParsed = parseToolResponse(deleteText);
+      
+      expect(deleteParsed.meta.name).toBe("Delete Attribute From Set");
+      expect(deleteParsed.data.length).toBe(1);
+      
+      // Parse the boolean result from data
+      const deleteResultData = JSON.parse(deleteParsed.data[0]);
+      expect(deleteResultData).toBe(true);
+      
+      // Verify the context message
+      const contextContent = extractContextContent(deleteText);
+      expect(contextContent).toBe(`Attribute "${testAttributeCode}" has been successfully removed from attribute set with ID ${electronicsSet.attribute_set_id}.`);
     }, 45000);
   });
 

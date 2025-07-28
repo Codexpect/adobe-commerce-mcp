@@ -56,17 +56,24 @@ export async function deleteProductAttribute(client: AdobeCommerceClient, attrib
   }
 }
 
-export async function getProductAttributeOptions(client: AdobeCommerceClient, attributeCode: string): Promise<ApiResponse<ProductAttribute['options']>> {
+export async function getProductAttributeOptions(
+  client: AdobeCommerceClient,
+  attributeCode: string
+): Promise<ApiResponse<ProductAttribute["options"]>> {
   const endpoint = `/products/attributes/${attributeCode}/options`;
   try {
-    const data = await client.get<ProductAttribute['options']>(endpoint);
-    return apiSuccessResponse<ProductAttribute['options']>(endpoint, data);
+    const data = await client.get<ProductAttribute["options"]>(endpoint);
+    return apiSuccessResponse<ProductAttribute["options"]>(endpoint, data);
   } catch (error) {
-    return apiErrorResponse<ProductAttribute['options']>(endpoint, error);
+    return apiErrorResponse<ProductAttribute["options"]>(endpoint, error);
   }
 }
 
-export async function addProductAttributeOption(client: AdobeCommerceClient, attributeCode: string, option: NonNullable<ProductAttribute['options']>[0]): Promise<ApiResponse<string>> {
+export async function addProductAttributeOption(
+  client: AdobeCommerceClient,
+  attributeCode: string,
+  option: NonNullable<ProductAttribute["options"]>[0]
+): Promise<ApiResponse<string>> {
   const endpoint = `/products/attributes/${attributeCode}/options`;
   try {
     const data = await client.post(endpoint, { option });
@@ -76,7 +83,12 @@ export async function addProductAttributeOption(client: AdobeCommerceClient, att
   }
 }
 
-export async function updateProductAttributeOption(client: AdobeCommerceClient, attributeCode: string, optionId: string, option: NonNullable<ProductAttribute['options']>[0]): Promise<ApiResponse<boolean>> {
+export async function updateProductAttributeOption(
+  client: AdobeCommerceClient,
+  attributeCode: string,
+  optionId: number,
+  option: NonNullable<ProductAttribute["options"]>[0]
+): Promise<ApiResponse<boolean>> {
   const endpoint = `/products/attributes/${attributeCode}/options/${optionId}`;
   try {
     await client.put(endpoint, { option });
@@ -86,7 +98,11 @@ export async function updateProductAttributeOption(client: AdobeCommerceClient, 
   }
 }
 
-export async function deleteProductAttributeOption(client: AdobeCommerceClient, attributeCode: string, optionId: string): Promise<ApiResponse<boolean>> {
+export async function deleteProductAttributeOption(
+  client: AdobeCommerceClient,
+  attributeCode: string,
+  optionId: number
+): Promise<ApiResponse<boolean>> {
   const endpoint = `/products/attributes/${attributeCode}/options/${optionId}`;
   try {
     await client.delete(endpoint);

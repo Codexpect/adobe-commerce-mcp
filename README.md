@@ -63,6 +63,19 @@ All registered MCP tools are organized by resource type below:
 | delete-attribute-group  | Delete an attribute group by its ID.                                |
 | update-attribute-group  | Update an attribute group by its ID in a given attribute set.       |
 
+### Configurable Products
+
+| Tool ID                               | Description                                                                                                      |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| add-configurable-product-option       | Define which attribute and options are used in a configurable product. Creates framework for product variants.   |
+| link-configurable-child               | Link a child product to a configurable product by SKU. The child product becomes a variant of the parent.        |
+| unlink-configurable-child             | Unlink a child product from a configurable product by SKU. The child product remains but is no longer a variant. |
+| get-configurable-product-children     | Retrieve all child products for a configurable product by SKU.                                                   |
+| get-configurable-product-options-all  | Retrieve all configurable options for a configurable product by SKU.                                             |
+| get-configurable-product-option-by-id | Retrieve a specific configurable option for a configurable product by SKU and option ID.                         |
+| update-configurable-product-option    | Update an existing configurable option for a configurable product by SKU and option ID.                          |
+| delete-configurable-product-option    | Remove a configurable option from a configurable product by SKU and option ID.                                   |
+
 ### Categories
 
 | Tool ID                        | Description                                                                            |
