@@ -38,21 +38,21 @@ export const sortDirectionSchema = z.enum(["ASC", "DESC"]).describe("Sort direct
 
 /**
  * Validates store IDs for multi-store configurations
- * Ensures positive numbers to match valid Magento store IDs
+ * Ensures non-negative numbers to match valid Magento store IDs (0 is valid for default store)
  */
-export const storeIdSchema = z.number().positive("Store ID must be a positive number").describe("Store ID for multi-store configurations.");
+export const storeIdSchema = z.number().int().min(0, "Store ID must be a non-negative integer").describe("Store ID for multi-store configurations (0 for default store).");
 
 /**
  * Validates website IDs
- * Ensures IDs are positive integers for website references
+ * Ensures IDs are non-negative integers for website references (0 is valid for default website)
  */
-export const websiteIdSchema = z.number().int().positive("Website ID must be a positive integer").describe("Website ID (e.g., 1)");
+export const websiteIdSchema = z.number().int().min(0, "Website ID must be a non-negative integer").describe("Website ID (0 for default website, e.g., 1)");
 
 /**
  * Validates store group IDs
- * Ensures IDs are positive integers for store group references
+ * Ensures IDs are non-negative integers for store group references (0 is valid for default store group)
  */
-export const storeGroupIdSchema = z.number().int().positive("Store Group ID must be a positive integer").describe("Store Group ID (e.g., 1)");
+export const storeGroupIdSchema = z.number().int().min(0, "Store Group ID must be a non-negative integer").describe("Store Group ID (0 for default store group, e.g., 1)");
 
 /**
  * Validates store codes

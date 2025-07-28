@@ -16,6 +16,12 @@ export * from "./products/products";
 // Product website assignment
 export * from "./websites/websites";
 
+// Product pricing management
+export * from "./pricing/base-prices";
+export * from "./pricing/costs";
+export * from "./pricing/special-prices";
+export * from "./pricing/tier-prices";
+
 // TypeScript type definitions
 export * from "./types";
 
@@ -64,6 +70,19 @@ export * from "./types";
  * - createAttributeGroupInputSchema: Create logical sections within sets
  * - updateAttributeGroupInputSchema: Modify group properties
  * - deleteAttributeGroupInputSchema: Remove empty groups
+ *
+ * Product Pricing:
+ * - setSpecialPricesInputSchema: Set special prices with scheduling
+ * - getSpecialPricesInputSchema: Retrieve special price information
+ * - deleteSpecialPricesInputSchema: Remove special prices
+ * - setTierPricesInputSchema: Set tier prices for quantity discounts
+ * - getTierPricesInputSchema: Retrieve tier price information
+ * - deleteTierPricesInputSchema: Remove tier prices
+ * - setBasePricesInputSchema: Set base product prices
+ * - getBasePricesInputSchema: Retrieve base price information
+ * - setCostsInputSchema: Set product cost values
+ * - getCostsInputSchema: Retrieve cost information
+ * - deleteCostsInputSchema: Remove cost values
  *
  * Common Validation:
  * - attributeCodeSchema: Validates attribute identifiers

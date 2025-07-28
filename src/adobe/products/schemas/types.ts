@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Import all schemas to generate types
 import {
   createProductAttributeInputSchema,
   deleteProductAttributeInputSchema,
@@ -33,6 +32,10 @@ import {
 
 import { createProductInputSchema, deleteProductInputSchema, getProductBySkuInputSchema, updateProductInputSchema } from "./products/products";
 
+import { getBasePricesInputSchema, setBasePricesInputSchema } from "./pricing/base-prices";
+import { deleteCostsInputSchema, getCostsInputSchema, setCostsInputSchema } from "./pricing/costs";
+import { deleteSpecialPricesInputSchema, getSpecialPricesInputSchema, setSpecialPricesInputSchema } from "./pricing/special-prices";
+import { deleteTierPricesInputSchema, getTierPricesInputSchema, replaceTierPricesInputSchema, setTierPricesInputSchema } from "./pricing/tier-prices";
 import {
   addConfigurableProductOptionInputSchema,
   deleteConfigurableProductOptionInputSchema,
@@ -97,3 +100,23 @@ export type UnlinkConfigurableChildInput = z.infer<ReturnType<typeof z.object<ty
 export type GetConfigurableProductChildrenInput = z.infer<ReturnType<typeof z.object<typeof getConfigurableProductChildrenInputSchema>>>;
 export type GetConfigurableProductOptionsAllInput = z.infer<ReturnType<typeof z.object<typeof getConfigurableProductOptionsAllInputSchema>>>;
 export type GetConfigurableProductOptionByIdInput = z.infer<ReturnType<typeof z.object<typeof getConfigurableProductOptionByIdInputSchema>>>;
+
+// Base Prices
+export type SetBasePricesInput = z.infer<ReturnType<typeof z.object<typeof setBasePricesInputSchema>>>;
+export type GetBasePricesInput = z.infer<ReturnType<typeof z.object<typeof getBasePricesInputSchema>>>;
+
+// Special Prices
+export type SetSpecialPricesInput = z.infer<ReturnType<typeof z.object<typeof setSpecialPricesInputSchema>>>;
+export type DeleteSpecialPricesInput = z.infer<ReturnType<typeof z.object<typeof deleteSpecialPricesInputSchema>>>;
+export type GetSpecialPricesInput = z.infer<ReturnType<typeof z.object<typeof getSpecialPricesInputSchema>>>;
+
+// Tier Prices
+export type SetTierPricesInput = z.infer<ReturnType<typeof z.object<typeof setTierPricesInputSchema>>>;
+export type ReplaceTierPricesInput = z.infer<ReturnType<typeof z.object<typeof replaceTierPricesInputSchema>>>;
+export type DeleteTierPricesInput = z.infer<ReturnType<typeof z.object<typeof deleteTierPricesInputSchema>>>;
+export type GetTierPricesInput = z.infer<ReturnType<typeof z.object<typeof getTierPricesInputSchema>>>;
+
+// Costs
+export type SetCostsInput = z.infer<ReturnType<typeof z.object<typeof setCostsInputSchema>>>;
+export type DeleteCostsInput = z.infer<ReturnType<typeof z.object<typeof deleteCostsInputSchema>>>;
+export type GetCostsInput = z.infer<ReturnType<typeof z.object<typeof getCostsInputSchema>>>;

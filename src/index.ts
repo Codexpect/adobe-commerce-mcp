@@ -3,12 +3,13 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { initAdobeCommerceClient } from "./adobe/adobe-commerce-client.js";
 import { registerCategoriesTools } from "./tools/tools-for-categories.js";
 import { registerCmsBlockTools, registerCmsPageTool } from "./tools/tools-for-cms.js";
+import { registerConfigurableProductTools } from "./tools/tools-for-configurable-products.js";
 import { registerCustomerTools } from "./tools/tools-for-customers.js";
 import { registerOrderTools } from "./tools/tools-for-orders.js";
+import { registerPricingTools } from "./tools/tools-for-pricing.js";
 import { registerProductAttributeSetsTools } from "./tools/tools-for-products-attribute-sets.js";
 import { registerProductAttributesTools } from "./tools/tools-for-products-attributes.js";
 import { registerProductTools } from "./tools/tools-for-products.js";
-import { registerConfigurableProductTools } from "./tools/tools-for-configurable-products.js";
 import { registerStoreTools } from "./tools/tools-for-stores.js";
 
 const server = new McpServer({
@@ -31,6 +32,7 @@ async function main() {
   registerProductAttributeSetsTools(server, client);
   registerProductTools(server, client);
   registerConfigurableProductTools(server, client);
+  registerPricingTools(server, client);
   registerStoreTools(server, client);
 
   const transport = new StdioServerTransport();
