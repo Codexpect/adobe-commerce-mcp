@@ -1,56 +1,18 @@
 import { z } from "zod";
-import { 
-  createProductAttributeInputSchema,
-  getProductAttributeByCodeInputSchema,
-  updateProductAttributeInputSchema,
-  deleteProductAttributeInputSchema,
-  getProductAttributeOptionsInputSchema,
+import {
   addProductAttributeOptionInputSchema,
+  createProductAttributeInputSchema,
+  deleteProductAttributeInputSchema,
+  deleteProductAttributeOptionInputSchema,
+  getProductAttributeByCodeInputSchema,
+  getProductAttributeOptionsInputSchema,
+  updateProductAttributeInputSchema,
   updateProductAttributeOptionInputSchema,
-  deleteProductAttributeOptionInputSchema
 } from "../../../src/adobe/products/schemas";
 import { searchCriteriaInputSchema } from "../../../src/adobe/search-criteria/schema";
+import { testSchema } from "../../utils/schema-test-utils";
 
 describe("Product Attributes Tools - Schema Validation Tests", () => {
-  // Helper function to test schema validation
-  const testSchema = (schema: Record<string, z.ZodTypeAny>, validInputs: unknown[], invalidInputs: unknown[], schemaName: string) => {
-    const zodSchema = z.object(schema);
-    
-    describe(`${schemaName} Schema`, () => {
-      test("should accept valid inputs", () => {
-        validInputs.forEach((input) => {
-          expect(() => zodSchema.parse(input)).not.toThrow();
-        });
-      });
-      
-      describe("should reject invalid inputs", () => {
-        invalidInputs.forEach((input, index) => {
-          const description = getInputDescription(input);
-          test(`case ${index + 1}: ${description}`, () => {
-            expect(() => zodSchema.parse(input)).toThrow();
-          });
-        });
-      });
-    });
-  };
-
-  /**
-   * Helper function to create a readable description of an input object
-   */
-  const getInputDescription = (input: unknown): string => {
-    if (typeof input === 'object' && input !== null) {
-      const obj = input as Record<string, unknown>;
-      const entries = Object.entries(obj).map(([key, value]) => {
-        if (Array.isArray(value)) {
-          return `${key}: [${value.join(', ')}]`;
-        }
-        return `${key}: ${value}`;
-      });
-      return `{ ${entries.join(', ')} }`;
-    }
-    return String(input);
-  };
-
   describe("Search Products Attributes Schema", () => {
     const validInputs = [
       {}, // Empty object should work
@@ -392,11 +354,7 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
   });
 
   describe("Delete Product Attribute Schema", () => {
-    const validInputs = [
-      { attributeCode: "test_attribute" },
-      { attributeCode: "another_test" },
-      { attributeCode: "attribute_123" },
-    ];
+    const validInputs = [{ attributeCode: "test_attribute" }, { attributeCode: "another_test" }, { attributeCode: "attribute_123" }];
 
     const invalidInputs = [
       {}, // Missing attributeCode
@@ -409,11 +367,7 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
   });
 
   describe("Get Product Attribute Options Schema", () => {
-    const validInputs = [
-      { attributeCode: "color" },
-      { attributeCode: "size" },
-      { attributeCode: "test_select_attribute" },
-    ];
+    const validInputs = [{ attributeCode: "color" }, { attributeCode: "size" }, { attributeCode: "test_select_attribute" }];
 
     const invalidInputs = [
       {}, // Missing attributeCode
@@ -615,32 +569,38 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
       const addOptionSchema = z.object(addProductAttributeOptionInputSchema);
 
       // Very long strings (within reasonable limits)
-      expect(() => createSchema.parse({
-        type: "text",
-        attributeCode: "a".repeat(30), // Reasonable length
-        defaultFrontendLabel: "A".repeat(100),
-        scope: "global",
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          type: "text",
+          attributeCode: "a".repeat(30), // Reasonable length
+          defaultFrontendLabel: "A".repeat(100),
+          scope: "global",
+        })
+      ).not.toThrow();
 
       // Maximum page size
       expect(() => searchSchema.parse({ pageSize: 10 })).not.toThrow();
 
       // Large sort order values
-      expect(() => addOptionSchema.parse({
-        attributeCode: "test",
-        label: "Test",
-        sortOrder: 999999,
-      })).not.toThrow();
+      expect(() =>
+        addOptionSchema.parse({
+          attributeCode: "test",
+          label: "Test",
+          sortOrder: 999999,
+        })
+      ).not.toThrow();
 
       // Multiple store labels
-      expect(() => addOptionSchema.parse({
-        attributeCode: "test",
-        label: "Test",
-        storeLabels: Array.from({ length: 10 }, (_, i) => ({
-          storeId: i + 1,
-          label: `Store ${i + 1} Label`,
-        })),
-      })).not.toThrow();
+      expect(() =>
+        addOptionSchema.parse({
+          attributeCode: "test",
+          label: "Test",
+          storeLabels: Array.from({ length: 10 }, (_, i) => ({
+            storeId: i + 1,
+            label: `Store ${i + 1} Label`,
+          })),
+        })
+      ).not.toThrow();
     });
 
     test("should reject extreme invalid values", () => {
@@ -673,4 +633,4 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
       expect(() => addOptionSchema.parse({ attributeCode: "test", label: "Test", isDefault: "true" })).toThrow();
     });
   });
-}); 
+});

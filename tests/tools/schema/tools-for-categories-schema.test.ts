@@ -1,65 +1,20 @@
 import { z } from "zod";
 import {
-  getCategoryTreeInputSchema,
-  getCategoryByIdInputSchema,
+  assignProductToCategoryInputSchema,
   createCategoryInputSchema,
-  updateCategoryInputSchema,
   deleteCategoryInputSchema,
-  moveCategoryInputSchema,
   getCategoryAttributeByCodeInputSchema,
   getCategoryAttributeOptionsInputSchema,
+  getCategoryByIdInputSchema,
   getCategoryProductsInputSchema,
-  assignProductToCategoryInputSchema,
-  updateProductInCategoryInputSchema,
+  getCategoryTreeInputSchema,
+  moveCategoryInputSchema,
   removeProductFromCategoryInputSchema,
+  updateCategoryInputSchema,
+  updateProductInCategoryInputSchema,
 } from "../../../src/adobe/categories/schemas";
 import { searchCriteriaInputSchema } from "../../../src/adobe/search-criteria/schema";
-
-/**
- * Helper function to test Zod schemas with valid and invalid inputs
- */
-const testSchema = (
-  schema: Record<string, z.ZodTypeAny>,
-  validInputs: unknown[],
-  invalidInputs: unknown[],
-  schemaName: string
-) => {
-  const zodSchema = z.object(schema);
-
-  describe(`${schemaName} Schema`, () => {
-    test("should accept valid inputs", () => {
-      validInputs.forEach((input) => {
-        expect(() => zodSchema.parse(input)).not.toThrow();
-      });
-    });
-
-    describe("should reject invalid inputs", () => {
-      invalidInputs.forEach((input, index) => {
-        const description = getInputDescription(input);
-        test(`case ${index + 1}: ${description}`, () => {
-          expect(() => zodSchema.parse(input)).toThrow();
-        });
-      });
-    });
-  });
-};
-
-/**
- * Helper function to create a readable description of an input object
- */
-const getInputDescription = (input: unknown): string => {
-  if (typeof input === 'object' && input !== null) {
-    const obj = input as Record<string, unknown>;
-    const entries = Object.entries(obj).map(([key, value]) => {
-      if (Array.isArray(value)) {
-        return `${key}: [${value.join(', ')}]`;
-      }
-      return `${key}: ${value}`;
-    });
-    return `{ ${entries.join(', ')} }`;
-  }
-  return String(input);
-};
+import { testSchema } from "../../utils/schema-test-utils";
 
 describe("Categories Tools - Schema Validation Tests", () => {
   describe("Search Categories Schema", () => {
@@ -131,11 +86,7 @@ describe("Categories Tools - Schema Validation Tests", () => {
   });
 
   describe("Get Category By ID Schema", () => {
-    const validInputs = [
-      { categoryId: 1 },
-      { categoryId: 1, storeId: 1 },
-      { categoryId: 999, storeId: 2 },
-    ];
+    const validInputs = [{ categoryId: 1 }, { categoryId: 1, storeId: 1 }, { categoryId: 999, storeId: 2 }];
 
     const invalidInputs = [
       {}, // Missing categoryId
@@ -335,11 +286,7 @@ describe("Categories Tools - Schema Validation Tests", () => {
   });
 
   describe("Delete Category Schema", () => {
-    const validInputs = [
-      { categoryId: 1 },
-      { categoryId: 4 },
-      { categoryId: 999 },
-    ];
+    const validInputs = [{ categoryId: 1 }, { categoryId: 4 }, { categoryId: 999 }];
 
     const invalidInputs = [
       {}, // Missing categoryId
@@ -414,11 +361,7 @@ describe("Categories Tools - Schema Validation Tests", () => {
   });
 
   describe("Get Category Attribute Options Schema", () => {
-    const validInputs = [
-      { attributeCode: "is_active" },
-      { attributeCode: "include_in_menu" },
-      { attributeCode: "test_select_attribute" },
-    ];
+    const validInputs = [{ attributeCode: "is_active" }, { attributeCode: "include_in_menu" }, { attributeCode: "test_select_attribute" }];
 
     const invalidInputs = [
       {}, // Missing attributeCode
@@ -434,11 +377,7 @@ describe("Categories Tools - Schema Validation Tests", () => {
   });
 
   describe("Get Category Products Schema", () => {
-    const validInputs = [
-      { categoryId: 1 },
-      { categoryId: 4 },
-      { categoryId: 999 },
-    ];
+    const validInputs = [{ categoryId: 1 }, { categoryId: 4 }, { categoryId: 999 }];
 
     const invalidInputs = [
       {}, // Missing categoryId
@@ -590,28 +529,34 @@ describe("Categories Tools - Schema Validation Tests", () => {
 
       // Very long but valid names
       const longName = "A".repeat(255);
-      expect(() => createSchema.parse({
-        category: {
-          name: longName,
-        },
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: longName,
+          },
+        })
+      ).not.toThrow();
 
       // Large but valid IDs
-      expect(() => moveSchema.parse({
-        categoryId: 999999,
-        parentId: 999999,
-      })).not.toThrow();
+      expect(() =>
+        moveSchema.parse({
+          categoryId: 999999,
+          parentId: 999999,
+        })
+      ).not.toThrow();
 
       // Maximum page size
       expect(() => searchSchema.parse({ pageSize: 10 })).not.toThrow();
 
       // Large position values
-      expect(() => createSchema.parse({
-        category: {
-          name: "Test",
-          position: 999999,
-        },
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: "Test",
+            position: 999999,
+          },
+        })
+      ).not.toThrow();
     });
 
     test("should reject extreme invalid values", () => {
@@ -620,25 +565,31 @@ describe("Categories Tools - Schema Validation Tests", () => {
       const moveSchema = z.object(moveCategoryInputSchema);
 
       // Negative positions are now valid
-      expect(() => createSchema.parse({
-        category: {
-          name: "Test",
-          position: -1,
-        },
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: "Test",
+            position: -1,
+          },
+        })
+      ).not.toThrow();
 
-      expect(() => createSchema.parse({
-        category: {
-          name: "Test",
-          position: -999999,
-        },
-      })).not.toThrow();
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: "Test",
+            position: -999999,
+          },
+        })
+      ).not.toThrow();
 
       // Negative IDs
-      expect(() => moveSchema.parse({
-        categoryId: -1,
-        parentId: 1,
-      })).toThrow();
+      expect(() =>
+        moveSchema.parse({
+          categoryId: -1,
+          parentId: 1,
+        })
+      ).toThrow();
 
       // Values exceeding limits
       expect(() => searchSchema.parse({ pageSize: 11 })).toThrow();
@@ -653,35 +604,43 @@ describe("Categories Tools - Schema Validation Tests", () => {
       const moveSchema = z.object(moveCategoryInputSchema);
 
       // Numbers as strings where numbers are expected
-      expect(() => createSchema.parse({
-        category: {
-          name: "Test",
-          position: "10",
-        },
-      })).toThrow();
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: "Test",
+            position: "10",
+          },
+        })
+      ).toThrow();
 
-      expect(() => moveSchema.parse({
-        categoryId: "1",
-        parentId: "2",
-      })).toThrow();
+      expect(() =>
+        moveSchema.parse({
+          categoryId: "1",
+          parentId: "2",
+        })
+      ).toThrow();
 
       expect(() => searchSchema.parse({ page: "1" })).toThrow();
       expect(() => searchSchema.parse({ pageSize: "10" })).toThrow();
 
       // Booleans as strings where booleans are expected
-      expect(() => createSchema.parse({
-        category: {
-          name: "Test",
-          is_active: "true",
-        },
-      })).toThrow();
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: "Test",
+            is_active: "true",
+          },
+        })
+      ).toThrow();
 
-      expect(() => createSchema.parse({
-        category: {
-          name: "Test",
-          include_in_menu: "false",
-        },
-      })).toThrow();
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: "Test",
+            include_in_menu: "false",
+          },
+        })
+      ).toThrow();
     });
   });
 
@@ -694,41 +653,51 @@ describe("Categories Tools - Schema Validation Tests", () => {
       console.log("✅ SECURITY: Empty string validations properly reject invalid inputs");
 
       // Empty category names
-      expect(() => createSchema.parse({
-        category: {
-          name: "",
-        },
-      })).toThrow("Category name cannot be empty");
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: "",
+          },
+        })
+      ).toThrow("Category name cannot be empty");
 
-      expect(() => updateSchema.parse({
-        categoryId: "1",
-        category: {
-          name: "",
-        },
-      })).toThrow("Category name cannot be empty");
+      expect(() =>
+        updateSchema.parse({
+          categoryId: "1",
+          category: {
+            name: "",
+          },
+        })
+      ).toThrow("Category name cannot be empty");
 
       // Zero category IDs (now that we use numbers)
-      expect(() => updateSchema.parse({
-        categoryId: 0,
-        category: {
-          name: "Test",
-        },
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        updateSchema.parse({
+          categoryId: 0,
+          category: {
+            name: "Test",
+          },
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-      expect(() => assignSchema.parse({
-        categoryId: 0,
-        productLink: {
-          sku: "test",
-        },
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        assignSchema.parse({
+          categoryId: 0,
+          productLink: {
+            sku: "test",
+          },
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
       // Empty SKUs
-      expect(() => assignSchema.parse({
-        categoryId: 1,
-        productLink: {
-          sku: "",
-        },
-      })).toThrow("SKU cannot be empty");
+      expect(() =>
+        assignSchema.parse({
+          categoryId: 1,
+          productLink: {
+            sku: "",
+          },
+        })
+      ).toThrow("SKU cannot be empty");
     });
 
     test("should validate attribute codes consistently", () => {
@@ -736,21 +705,29 @@ describe("Categories Tools - Schema Validation Tests", () => {
       const getOptionsSchema = z.object(getCategoryAttributeOptionsInputSchema);
 
       // Test that attributeCodeSchema is used consistently
-      expect(() => getAttrSchema.parse({
-        attributeCode: "test@invalid",
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        getAttrSchema.parse({
+          attributeCode: "test@invalid",
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => getAttrSchema.parse({
-        attributeCode: "test-invalid",
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        getAttrSchema.parse({
+          attributeCode: "test-invalid",
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => getOptionsSchema.parse({
-        attributeCode: "test@invalid",
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        getOptionsSchema.parse({
+          attributeCode: "test@invalid",
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
 
-      expect(() => getOptionsSchema.parse({
-        attributeCode: "test-invalid",
-      })).toThrow("Attribute code can only contain letters, numbers, and underscores");
+      expect(() =>
+        getOptionsSchema.parse({
+          attributeCode: "test-invalid",
+        })
+      ).toThrow("Attribute code can only contain letters, numbers, and underscores");
     });
 
     test("should prevent zero or negative IDs where inappropriate", () => {
@@ -759,32 +736,44 @@ describe("Categories Tools - Schema Validation Tests", () => {
       const moveSchema = z.object(moveCategoryInputSchema);
 
       // Zero IDs should be rejected
-      expect(() => getByIdSchema.parse({
-        categoryId: 0,
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        getByIdSchema.parse({
+          categoryId: 0,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-      expect(() => deleteSchema.parse({
-        categoryId: 0,
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        deleteSchema.parse({
+          categoryId: 0,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-      expect(() => moveSchema.parse({
-        categoryId: 0,
-        parentId: 1,
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        moveSchema.parse({
+          categoryId: 0,
+          parentId: 1,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
       // Negative IDs should be rejected
-      expect(() => getByIdSchema.parse({
-        categoryId: -1,
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        getByIdSchema.parse({
+          categoryId: -1,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-      expect(() => deleteSchema.parse({
-        categoryId: -1,
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        deleteSchema.parse({
+          categoryId: -1,
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-      expect(() => moveSchema.parse({
-        categoryId: -1,
-        parentId: 1,
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        moveSchema.parse({
+          categoryId: -1,
+          parentId: 1,
+        })
+      ).toThrow("Entity ID must be a positive integer");
     });
 
     test("SECURITY: Empty strings properly rejected for AI agent safety", () => {
@@ -795,25 +784,31 @@ describe("Categories Tools - Schema Validation Tests", () => {
       const assignSchema = z.object(assignProductToCategoryInputSchema);
 
       // Test critical fields
-      expect(() => createSchema.parse({
-        category: {
-          name: "", // AI agents must not create empty names
-        },
-      })).toThrow("Category name cannot be empty");
+      expect(() =>
+        createSchema.parse({
+          category: {
+            name: "", // AI agents must not create empty names
+          },
+        })
+      ).toThrow("Category name cannot be empty");
 
-      expect(() => updateSchema.parse({
-        categoryId: 0, // AI agents must not use zero/invalid IDs
-        category: {
-          name: "Test",
-        },
-      })).toThrow("Entity ID must be a positive integer");
+      expect(() =>
+        updateSchema.parse({
+          categoryId: 0, // AI agents must not use zero/invalid IDs
+          category: {
+            name: "Test",
+          },
+        })
+      ).toThrow("Entity ID must be a positive integer");
 
-      expect(() => assignSchema.parse({
-        categoryId: 1,
-        productLink: {
-          sku: "", // AI agents must not use empty SKUs
-        },
-      })).toThrow("SKU cannot be empty");
+      expect(() =>
+        assignSchema.parse({
+          categoryId: 1,
+          productLink: {
+            sku: "", // AI agents must not use empty SKUs
+          },
+        })
+      ).toThrow("SKU cannot be empty");
     });
   });
-}); 
+});

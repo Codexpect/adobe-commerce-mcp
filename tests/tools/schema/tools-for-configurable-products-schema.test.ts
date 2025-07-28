@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   addConfigurableProductOptionInputSchema,
   deleteConfigurableProductOptionInputSchema,
@@ -9,47 +8,7 @@ import {
   unlinkConfigurableChildInputSchema,
   updateConfigurableProductOptionInputSchema,
 } from "../../../src/adobe/products/schemas/products/configurable-products";
-
-/**
- * Helper function to test Zod schemas with valid and invalid inputs
- */
-const testSchema = (schema: Record<string, z.ZodTypeAny>, validInputs: unknown[], invalidInputs: unknown[], schemaName: string) => {
-  const zodSchema = z.object(schema);
-
-  describe(`${schemaName} Schema`, () => {
-    test("should accept valid inputs", () => {
-      validInputs.forEach((input) => {
-        expect(() => zodSchema.parse(input)).not.toThrow();
-      });
-    });
-
-    describe("should reject invalid inputs", () => {
-      invalidInputs.forEach((input, index) => {
-        const description = getInputDescription(input);
-        test(`case ${index + 1}: ${description}`, () => {
-          expect(() => zodSchema.parse(input)).toThrow();
-        });
-      });
-    });
-  });
-};
-
-/**
- * Helper function to create a readable description of an input object
- */
-const getInputDescription = (input: unknown): string => {
-  if (typeof input === 'object' && input !== null) {
-    const obj = input as Record<string, unknown>;
-    const entries = Object.entries(obj).map(([key, value]) => {
-      if (Array.isArray(value)) {
-        return `${key}: [${value.join(', ')}]`;
-      }
-      return `${key}: ${value}`;
-    });
-    return `{ ${entries.join(', ')} }`;
-  }
-  return String(input);
-};
+import { testSchema } from "../../utils/schema-test-utils";
 
 describe("Configurable Products Tools - Schema Validation Tests", () => {
   describe("Add Configurable Product Option Schema", () => {
@@ -366,4 +325,4 @@ describe("Configurable Products Tools - Schema Validation Tests", () => {
 
     testSchema(deleteConfigurableProductOptionInputSchema, validInputs, invalidInputs, "Delete Configurable Product Option");
   });
-}); 
+});
