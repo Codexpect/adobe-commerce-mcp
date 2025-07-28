@@ -20,12 +20,32 @@ const testSchema = (schema: Record<string, z.ZodTypeAny>, validInputs: unknown[]
       });
     });
 
-    test("should reject invalid inputs", () => {
-      invalidInputs.forEach((input) => {
-        expect(() => zodSchema.parse(input)).toThrow();
+    describe("should reject invalid inputs", () => {
+      invalidInputs.forEach((input, index) => {
+        const description = getInputDescription(input);
+        test(`case ${index + 1}: ${description}`, () => {
+          expect(() => zodSchema.parse(input)).toThrow();
+        });
       });
     });
   });
+};
+
+/**
+ * Helper function to create a readable description of an input object
+ */
+const getInputDescription = (input: unknown): string => {
+  if (typeof input === 'object' && input !== null) {
+    const obj = input as Record<string, unknown>;
+    const entries = Object.entries(obj).map(([key, value]) => {
+      if (Array.isArray(value)) {
+        return `${key}: [${value.join(', ')}]`;
+      }
+      return `${key}: ${value}`;
+    });
+    return `{ ${entries.join(', ')} }`;
+  }
+  return String(input);
 };
 
 describe("Products Tools - Schema Validation Tests", () => {

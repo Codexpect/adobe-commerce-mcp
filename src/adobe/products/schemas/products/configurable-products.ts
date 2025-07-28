@@ -19,7 +19,7 @@ import { optionIdSchema } from "../common/validation-schemas";
 export const addConfigurableProductOptionInputSchema = {
   sku: productSkuSchema,
   attributeId: entityIdSchema.describe("The ID of the attribute to use for configuration."),
-  optionIds: z.array(optionIdSchema).describe("The option IDs to use for this configuration."),
+  optionIds: z.array(optionIdSchema).min(1, "At least one option ID is required").describe("The option IDs to use for this configuration."),
   label: z
     .string()
     .optional()
@@ -53,7 +53,7 @@ export const addConfigurableProductOptionInputSchema = {
  */
 export const linkConfigurableChildInputSchema = {
   sku: productSkuSchema,
-  childSku: z.string().min(1, "Child SKU cannot be empty").describe("The SKU of the child product to link."),
+  childSku: productSkuSchema.describe("The SKU of the child product to link."),
 };
 
 /**
@@ -133,7 +133,7 @@ export const updateConfigurableProductOptionInputSchema = {
   sku: productSkuSchema,
   id: entityIdSchema,
   attributeId: entityIdSchema.describe("The ID of the attribute to use for configuration."),
-  optionIds: z.array(optionIdSchema).describe("The option IDs to use for this configuration."),
+  optionIds: z.array(optionIdSchema).min(1, "At least one option ID is required").describe("The option IDs to use for this configuration."),
   label: z
     .string()
     .optional()

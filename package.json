@@ -14,7 +14,7 @@
   "description": "Adobe Commerce MCP Tools",
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
-    "test": "jest --passWithNoTests ./tests --config jest.config.ts --runInBand",
+    "test": "jest --passWithNoTests ./tests --config jest.config.ts --runInBand --maxWorkers=2",
     "test:parallel": "jest --passWithNoTests ./tests --config jest.config.ts",
     "lint": "eslint src",
     "lint:fix": "npm run lint -- --fix"
