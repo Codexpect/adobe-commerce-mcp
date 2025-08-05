@@ -11,6 +11,7 @@ import { registerProductAttributeSetsTools } from "./tools/tools-for-products-at
 import { registerProductAttributesTools } from "./tools/tools-for-products-attributes.js";
 import { registerProductTools } from "./tools/tools-for-products.js";
 import { registerStoreTools } from "./tools/tools-for-stores.js";
+import { registerInventoryTools } from "./tools/tools-for-inventory.js";
 
 const server = new McpServer({
   name: "adobe-commerce",
@@ -34,6 +35,7 @@ async function main() {
   registerConfigurableProductTools(server, client);
   registerPricingTools(server, client);
   registerStoreTools(server, client);
+  registerInventoryTools(server, client);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

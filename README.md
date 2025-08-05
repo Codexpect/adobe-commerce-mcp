@@ -272,3 +272,13 @@ cp tests/env.test.example .env.test
 ```
 
 Then configure your test environment variables in `.env.test`.
+
+---
+
+TODO
+
+config
+- IS MSI enabled?
+- can manage stock?
+- if you update stock of simple, update in stock for config
+- simple of configurable should be not visible
