@@ -1,9 +1,8 @@
-import { z } from "zod";
 import { productSkuSchema, websiteIdSchema } from "../../../core/validation-schemas";
 
 /**
  * Schema for assigning product to website
- * 
+ *
  * Required fields:
  * - sku: Product SKU to assign
  * - website_id: Website ID to assign product to
@@ -11,11 +10,11 @@ import { productSkuSchema, websiteIdSchema } from "../../../core/validation-sche
 export const assignProductToWebsiteInputSchema = {
   sku: productSkuSchema,
   website_id: websiteIdSchema,
-} as const;
+};
 
 /**
  * Schema for removing product from website
- * 
+ *
  * Required fields:
  * - sku: Product SKU to unassign
  * - website_id: Website ID to remove product from
@@ -23,4 +22,4 @@ export const assignProductToWebsiteInputSchema = {
 export const removeProductFromWebsiteInputSchema = {
   sku: productSkuSchema,
   website_id: websiteIdSchema,
-} as const; 
+};

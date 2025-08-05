@@ -12,6 +12,25 @@ import {
   isProductSalableForRequestedQtyInputSchema,
   getProductSalableQuantityInputSchema,
 } from "./salability/salability";
+import {
+  createStockInputSchema,
+  updateStockInputSchema,
+  getStockByIdInputSchema,
+  deleteStockInputSchema,
+  resolveStockInputSchema,
+} from "./stocks/stocks";
+import {
+  createSourceInputSchema,
+  updateSourceInputSchema,
+  getSourceByCodeInputSchema,
+} from "./sources/sources";
+import {
+  createStockSourceLinksInputSchema,
+  deleteStockSourceLinksInputSchema,
+} from "./stock-source-links/stock-source-links";
+import {
+  sourceSelectionAlgorithmInputSchema,
+} from "./source-selection/source-selection";
 
 /**
  * TypeScript type definitions for all inventory schemas
@@ -34,3 +53,22 @@ export type AreProductsSalableForRequestedQtyInput = z.infer<ReturnType<typeof z
 export type IsProductSalableInput = z.infer<ReturnType<typeof z.object<typeof isProductSalableInputSchema>>>;
 export type IsProductSalableForRequestedQtyInput = z.infer<ReturnType<typeof z.object<typeof isProductSalableForRequestedQtyInputSchema>>>;
 export type GetProductSalableQuantityInput = z.infer<ReturnType<typeof z.object<typeof getProductSalableQuantityInputSchema>>>;
+
+// Stocks
+export type CreateStockInput = z.infer<ReturnType<typeof z.object<typeof createStockInputSchema>>>;
+export type UpdateStockInput = z.infer<ReturnType<typeof z.object<typeof updateStockInputSchema>>>;
+export type GetStockByIdInput = z.infer<ReturnType<typeof z.object<typeof getStockByIdInputSchema>>>;
+export type DeleteStockInput = z.infer<ReturnType<typeof z.object<typeof deleteStockInputSchema>>>;
+export type ResolveStockInput = z.infer<ReturnType<typeof z.object<typeof resolveStockInputSchema>>>;
+
+// Sources
+export type CreateSourceInput = z.infer<ReturnType<typeof z.object<typeof createSourceInputSchema>>>;
+export type UpdateSourceInput = z.infer<ReturnType<typeof z.object<typeof updateSourceInputSchema>>>;
+export type GetSourceByCodeInput = z.infer<ReturnType<typeof z.object<typeof getSourceByCodeInputSchema>>>;
+
+// Stock-Source Links
+export type CreateStockSourceLinksInput = z.infer<ReturnType<typeof z.object<typeof createStockSourceLinksInputSchema>>>;
+export type DeleteStockSourceLinksInput = z.infer<ReturnType<typeof z.object<typeof deleteStockSourceLinksInputSchema>>>;
+
+// Source Selection
+export type SourceSelectionAlgorithmInput = z.infer<ReturnType<typeof z.object<typeof sourceSelectionAlgorithmInputSchema>>>;

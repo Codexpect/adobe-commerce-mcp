@@ -70,3 +70,38 @@ export const inventoryPageSizeSchema = z
  * Current page schema
  */
 export const currentPageSchema = z.number().int().min(1, "Page must be at least 1").default(1).describe("Current page number");
+
+/**
+ * Source code schema for inventory sources
+ */
+export const sourceCodeSchema = z
+  .string()
+  .min(1, "Source code is required")
+  .regex(/^[a-zA-Z0-9_-]+$/, "Source code can only contain letters, numbers, hyphens, and underscores")
+  .describe("Unique code of the source (e.g., 'default', 'warehouse_1')");
+
+/**
+ * Sales channel type schema
+ * Currently only supports 'website' type
+ */
+export const salesChannelTypeSchema = z
+  .literal("website")
+  .describe("Sales channel type (currently only 'website' is supported)");
+
+/**
+ * Sales channel code schema
+ * Reuses the website code schema since sales channels are typically website-based
+ */
+export const salesChannelCodeSchema = z
+  .string()
+  .min(1, "Sales channel code cannot be empty")
+  .regex(/^[a-z0-9_]+$/, "Sales channel code can only contain lowercase letters, numbers, and underscores")
+  .describe("Sales channel code (e.g., 'base', 'main')");
+
+/**
+ * Sales channel schema combining type and code
+ */
+export const salesChannelSchema = z.object({
+  type: salesChannelTypeSchema,
+  code: salesChannelCodeSchema,
+}).describe("Sales channel configuration with type and code");

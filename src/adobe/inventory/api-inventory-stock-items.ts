@@ -195,4 +195,4 @@ export async function getProductSalableQuantity(client: AdobeCommerceClient, sku
   } catch (error) {
     return apiErrorResponse<number>(endpoint, error);
   }
-}
+} 

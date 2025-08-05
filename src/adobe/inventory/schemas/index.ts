@@ -10,6 +10,18 @@ export * from "./stock-status/stock-status";
 // Salability checks
 export * from "./salability/salability";
 
+// Stocks management
+export * from "./stocks/stocks";
+
+// Sources management
+export * from "./sources/sources";
+
+// Stock-Source Links management
+export * from "./stock-source-links/stock-source-links";
+
+// Source Selection algorithms
+export * from "./source-selection/source-selection";
+
 // TypeScript type definitions
 export * from "./types";
 
@@ -30,4 +42,23 @@ export * from "./types";
  * - isProductSalableInputSchema: Check if single product is salable
  * - isProductSalableForRequestedQtyInputSchema: Check salability for quantity
  * - getProductSalableQuantityInputSchema: Get salable quantity for product
+ *
+ * Stocks:
+ * - createStockInputSchema: Create new stock
+ * - updateStockInputSchema: Update existing stock
+ * - getStockByIdInputSchema: Get stock by ID
+ * - deleteStockInputSchema: Delete stock
+ * - resolveStockInputSchema: Resolve stock by sales channel
+ *
+ * Sources:
+ * - createSourceInputSchema: Create new inventory source
+ * - updateSourceInputSchema: Update existing source
+ * - getSourceByCodeInputSchema: Get source by code
+ *
+ * Stock-Source Links:
+ * - createStockSourceLinksInputSchema: Create stock-source links
+ * - deleteStockSourceLinksInputSchema: Delete stock-source links
+ *
+ * Source Selection:
+ * - sourceSelectionAlgorithmInputSchema: Run source selection algorithm
  */
