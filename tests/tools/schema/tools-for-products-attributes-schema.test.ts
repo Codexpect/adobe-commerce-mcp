@@ -97,6 +97,25 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
           },
         ],
       },
+      {
+        type: "singleselect",
+        attributeCode: "test_default_store",
+        defaultFrontendLabel: "Test Default Store",
+        scope: "global",
+        options: [
+          {
+            label: "Option 1",
+            sortOrder: 1,
+            isDefault: true,
+            storeLabels: [
+              {
+                storeId: 0,
+                label: "Default Store Label",
+              },
+            ],
+          },
+        ],
+      },
     ];
 
     const invalidInputs = [
@@ -237,25 +256,6 @@ describe("Product Attributes Tools - Schema Validation Tests", () => {
                 label: "Test",
               },
             ], // Wrong type for storeId
-          },
-        ],
-      },
-      {
-        type: "singleselect",
-        attributeCode: "test",
-        defaultFrontendLabel: "Test",
-        scope: "global",
-        options: [
-          {
-            label: "Test",
-            sortOrder: 1,
-            isDefault: true,
-            storeLabels: [
-              {
-                storeId: 0, // Zero or negative storeId now rejected
-                label: "Test",
-              },
-            ],
           },
         ],
       },

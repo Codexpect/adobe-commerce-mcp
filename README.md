@@ -76,6 +76,23 @@ All registered MCP tools are organized by resource type below:
 | update-configurable-product-option    | Update an existing configurable option for a configurable product by SKU and option ID.                          |
 | delete-configurable-product-option    | Remove a configurable option from a configurable product by SKU and option ID.                                   |
 
+### Pricing
+
+| Tool ID               | Description                                                           |
+| --------------------- | --------------------------------------------------------------------- |
+| set-base-prices       | Set base prices for multiple products efficiently.                    |
+| get-base-prices       | Retrieve base prices for multiple products.                           |
+| set-special-prices    | Set special prices with date ranges for multiple products.            |
+| delete-special-prices | Delete special prices for multiple products.                          |
+| get-special-prices    | Retrieve special prices for multiple products.                        |
+| set-tier-prices       | Set tier prices for quantity-based discounts on multiple products.    |
+| replace-tier-prices   | Replace all existing tier prices with new ones for multiple products. |
+| delete-tier-prices    | Delete specific tier prices for multiple products.                    |
+| get-tier-prices       | Retrieve tier prices for multiple products.                           |
+| set-costs             | Set cost values for multiple products.                                |
+| delete-costs          | Delete cost values for multiple products.                             |
+| get-costs             | Retrieve cost values for multiple products.                           |
+
 ### Categories
 
 | Tool ID                        | Description                                                                            |
@@ -188,3 +205,70 @@ adobe-commerce-mcp/
 ├── tsconfig.json
 └── README.md
 ```
+
+## Testing
+
+### Prerequisites
+
+To run the test suite, you need access to a Magento/Adobe Commerce instance with the following configuration:
+
+#### Required Website Structure
+
+The test environment requires a multi-website setup with the following structure:
+
+**Websites:**
+
+- Website ID 0: `admin` - Admin website
+- Website ID 1: `base` - Main Website (default)
+- Website ID 2: `second_website` - Second website for testing
+
+**Store Groups:**
+
+- Group ID 0: `Default` - Default store group
+- Group ID 1: `Main Website Store` - Main website store group
+- Group ID 2: `Second Store` - Second store group
+
+**Store Views:**
+
+- Store ID 0: `admin` - Admin store view
+- Store ID 1: `default` - Default store view
+- Store ID 2: `second_store_view_pl` - Second store view (PL)
+- Store ID 3: `second_store_view_en` - Second store view (EN)
+
+#### Configuration Requirements
+
+- **Pricing Scope**: Set to "Website" based pricing
+- **API Access**: Valid REST API credentials with appropriate permissions
+- **Test Data**: Clean test environment with sample products, categories, and attributes
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run specific test suites
+npm test -- --testPathPattern=products
+npm test -- --testPathPattern=categories
+```
+
+### Test Structure
+
+Tests are organized in the `tests/` directory:
+
+- `tests/tools/` - Tool-specific test suites
+- `tests/utils/` - Test utilities and mocks
+- `tests/fixtures/` - Test data fixtures
+
+### Environment Setup
+
+Create a `.env.test` file based on `tests/env.test.example`:
+
+```bash
+cp tests/env.test.example .env.test
+```
+
+Then configure your test environment variables in `.env.test`.

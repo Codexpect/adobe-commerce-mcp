@@ -86,7 +86,7 @@ describe("Categories Tools - Schema Validation Tests", () => {
   });
 
   describe("Get Category By ID Schema", () => {
-    const validInputs = [{ categoryId: 1 }, { categoryId: 1, storeId: 1 }, { categoryId: 999, storeId: 2 }];
+    const validInputs = [{ categoryId: 1 }, { categoryId: 1, storeId: 1 }, { categoryId: 999, storeId: 2 }, { categoryId: 1, storeId: 0 }];
 
     const invalidInputs = [
       {}, // Missing categoryId
@@ -95,7 +95,6 @@ describe("Categories Tools - Schema Validation Tests", () => {
       { categoryId: "invalid" }, // Wrong type
       { categoryId: null }, // Null value
       { storeId: 1 }, // Missing categoryId
-      { categoryId: 1, storeId: 0 }, // Zero store ID
       { categoryId: 1, storeId: -1 }, // Negative store ID
       { categoryId: 1, storeId: "invalid" }, // Wrong type for storeId
     ];

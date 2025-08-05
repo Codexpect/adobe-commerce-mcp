@@ -115,6 +115,12 @@ describe("Products Tools - Schema Validation Tests", () => {
         price: 19.99,
         weight: 0,
       },
+      {
+        sku: "default-website-product",
+        name: "Default Website Product",
+        price: 49.99,
+        website_ids: [0, 1], // 0 is now valid for default website
+      },
     ];
 
     const invalidInputs = [
@@ -164,12 +170,7 @@ describe("Products Tools - Schema Validation Tests", () => {
         price: 999.99,
         custom_attributes: [{ attribute_code: "test@invalid", value: "test" }], // Invalid attribute_code pattern
       },
-      {
-        sku: "PROD-001",
-        name: "iPhone 15 Pro",
-        price: 999.99,
-        website_ids: [0, 1], // Zero website_id
-      },
+
       {
         sku: "PROD-001",
         name: "iPhone 15 Pro",
@@ -239,6 +240,10 @@ describe("Products Tools - Schema Validation Tests", () => {
         sku: "simple-product",
         // Only SKU required for updates
       },
+      {
+        sku: "default-website-product",
+        website_ids: [0, 1], // 0 is now valid for default website
+      },
     ];
 
     const invalidInputs = [
@@ -277,10 +282,7 @@ describe("Products Tools - Schema Validation Tests", () => {
         sku: "PROD-001",
         custom_attributes: [{ attribute_code: "test@invalid", value: "test" }], // Invalid attribute_code pattern
       },
-      {
-        sku: "PROD-001",
-        website_ids: [0, 1], // Zero website_id
-      },
+
       {
         sku: "PROD-001",
         website_ids: [-1, 1], // Negative website_id
@@ -745,7 +747,7 @@ describe("Products Tools - Schema Validation Tests", () => {
         })
       ).toThrow("Entity ID must be a positive integer");
 
-      // Zero website IDs should be rejected
+      // Zero website IDs are now valid (default website)
       expect(() =>
         createSchema.parse({
           sku: "PROD-001",
@@ -753,14 +755,14 @@ describe("Products Tools - Schema Validation Tests", () => {
           price: 999.99,
           website_ids: [0, 1],
         })
-      ).toThrow("Website ID must be a positive integer");
+      ).not.toThrow();
 
       expect(() =>
         updateSchema.parse({
           sku: "PROD-001",
           website_ids: [0, 1],
         })
-      ).toThrow("Website ID must be a positive integer");
+      ).not.toThrow();
 
       // Negative website IDs should be rejected
       expect(() =>
@@ -770,14 +772,14 @@ describe("Products Tools - Schema Validation Tests", () => {
           price: 999.99,
           website_ids: [-1, 1],
         })
-      ).toThrow("Website ID must be a positive integer");
+      ).toThrow("Website ID must be a non-negative integer");
 
       expect(() =>
         updateSchema.parse({
           sku: "PROD-001",
           website_ids: [-1, 1],
         })
-      ).toThrow("Website ID must be a positive integer");
+      ).toThrow("Website ID must be a non-negative integer");
     });
 
     test("SECURITY: Empty strings properly rejected for AI agent safety", () => {
