@@ -10,9 +10,6 @@ import type {
   StockStatus,
 } from "./types/inventory";
 
-/**
- * Get stock item information for a specific product
- */
 export async function getStockItem(client: AdobeCommerceClient, productSku: string, scopeId?: number): Promise<ApiResponse<StockItem>> {
   const params = new URLSearchParams();
   if (scopeId !== undefined) {
@@ -29,9 +26,6 @@ export async function getStockItem(client: AdobeCommerceClient, productSku: stri
   }
 }
 
-/**
- * Update stock item information for a product
- */
 export async function updateStockItem(
   client: AdobeCommerceClient,
   productSku: string,
@@ -48,9 +42,6 @@ export async function updateStockItem(
   }
 }
 
-/**
- * Get products with low inventory quantity
- */
 export async function getLowStockItems(
   client: AdobeCommerceClient,
   scopeId: number,
@@ -80,9 +71,6 @@ export async function getLowStockItems(
   }
 }
 
-/**
- * Get stock status for a specific product
- */
 export async function getStockStatus(client: AdobeCommerceClient, productSku: string, scopeId?: number): Promise<ApiResponse<StockStatus>> {
   const params = new URLSearchParams();
   if (scopeId !== undefined) {
@@ -99,9 +87,6 @@ export async function getStockStatus(client: AdobeCommerceClient, productSku: st
   }
 }
 
-/**
- * Check if products are salable for given SKUs and stock
- */
 export async function areProductsSalable(
   client: AdobeCommerceClient,
   skus: string[],
@@ -124,9 +109,6 @@ export async function areProductsSalable(
   }
 }
 
-/**
- * Check if products are salable for requested quantities
- */
 export async function areProductsSalableForRequestedQty(
   client: AdobeCommerceClient,
   skuRequests: Array<{ sku: string; qty: number }>,
@@ -150,9 +132,6 @@ export async function areProductsSalableForRequestedQty(
   }
 }
 
-/**
- * Check if a specific product is salable
- */
 export async function isProductSalable(client: AdobeCommerceClient, sku: string, stockId: number): Promise<ApiResponse<IsProductSalableResult>> {
   const endpoint = `/inventory/is-product-salable/${encodeURIComponent(sku)}/${stockId}`;
 
@@ -164,9 +143,6 @@ export async function isProductSalable(client: AdobeCommerceClient, sku: string,
   }
 }
 
-/**
- * Check if a product is salable for a specific quantity
- */
 export async function isProductSalableForRequestedQty(
   client: AdobeCommerceClient,
   sku: string,
@@ -183,9 +159,6 @@ export async function isProductSalableForRequestedQty(
   }
 }
 
-/**
- * Get salable quantity for a product
- */
 export async function getProductSalableQuantity(client: AdobeCommerceClient, sku: string, stockId: number): Promise<ApiResponse<number>> {
   const endpoint = `/inventory/get-product-salable-quantity/${encodeURIComponent(sku)}/${stockId}`;
 
@@ -195,4 +168,4 @@ export async function getProductSalableQuantity(client: AdobeCommerceClient, sku
   } catch (error) {
     return apiErrorResponse<number>(endpoint, error);
   }
-} 
+}

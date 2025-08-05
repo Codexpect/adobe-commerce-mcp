@@ -209,7 +209,7 @@ export function mapUpdateSourceInputToApiPayload(input: UpdateSourceInput): Part
  * Maps create stock-source links input to API payload
  * Transforms user-friendly input into Adobe Commerce API format
  */
-export function mapCreateStockSourceLinksInputToApiPayload(input: CreateStockSourceLinksInput): { links: StockSourceLink[] } {
+export function mapCreateStockSourceLinksInputToApiPayload(input: CreateStockSourceLinksInput): StockSourceLink[] {
   const { links } = input;
 
   const stockSourceLinks: StockSourceLink[] = links.map((link) => ({
@@ -218,14 +218,14 @@ export function mapCreateStockSourceLinksInputToApiPayload(input: CreateStockSou
     priority: link.priority,
   }));
 
-  return { links: stockSourceLinks };
+  return stockSourceLinks;
 }
 
 /**
  * Maps delete stock-source links input to API payload
  * Transforms user-friendly input into Adobe Commerce API format
  */
-export function mapDeleteStockSourceLinksInputToApiPayload(input: DeleteStockSourceLinksInput): { links: StockSourceLink[] } {
+export function mapDeleteStockSourceLinksInputToApiPayload(input: DeleteStockSourceLinksInput): StockSourceLink[] {
   const { links } = input;
 
   const stockSourceLinks: StockSourceLink[] = links.map((link) => ({
@@ -234,7 +234,7 @@ export function mapDeleteStockSourceLinksInputToApiPayload(input: DeleteStockSou
     priority: link.priority,
   }));
 
-  return { links: stockSourceLinks };
+  return stockSourceLinks;
 }
 
 /**

@@ -37,6 +37,16 @@ export const requestedQuantitySchema = z
 export const stockStatusSchema = z.number().int().min(0).max(1).describe("Stock status: 0=out of stock, 1=in stock");
 
 /**
+ * Source status enum schema
+ */
+export const sourceStatusSchema = z
+  .number()
+  .int()
+  .min(1)
+  .max(2)
+  .describe("Source item status: 1=enabled, 2=disabled");
+
+/**
  * Backorders enum schema
  */
 export const backordersSchema = z

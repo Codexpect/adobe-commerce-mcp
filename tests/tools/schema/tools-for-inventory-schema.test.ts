@@ -387,6 +387,7 @@ describe("Inventory Tools - Schema Validation Tests", () => {
           name: "US Warehouse",
           enabled: true,
           country_id: "US",
+          postcode: "10001",
         },
         {
           source_code: "store_nyc",
@@ -409,6 +410,7 @@ describe("Inventory Tools - Schema Validation Tests", () => {
           name: "EU Warehouse",
           enabled: true,
           country_id: "DE",
+          postcode: "80331",
           region: "Bavaria",
           city: "Munich",
           use_default_carrier_config: true,
@@ -421,21 +423,22 @@ describe("Inventory Tools - Schema Validation Tests", () => {
 
       const invalidInputs = [
         {}, // Missing required fields
-        { name: "US Warehouse", enabled: true, country_id: "US" }, // Missing source_code
-        { source_code: "warehouse_us", enabled: true, country_id: "US" }, // Missing name
-        { source_code: "warehouse_us", name: "US Warehouse", country_id: "US" }, // Missing enabled
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true }, // Missing country_id
-        { source_code: "", name: "US Warehouse", enabled: true, country_id: "US" }, // Empty source_code
-        { source_code: "warehouse_us", name: "", enabled: true, country_id: "US" }, // Empty name
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "" }, // Empty country_id
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "USA" }, // Invalid country_id length
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", email: "invalid-email" }, // Invalid email
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", latitude: 100 }, // Invalid latitude
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", longitude: 200 }, // Invalid longitude
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", region_id: -1 }, // Negative region_id
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", carrier_links: [{ carrier_code: "ups" }] }, // Missing position
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", carrier_links: [{ position: 1 }] }, // Missing carrier_code
-        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", carrier_links: [{ carrier_code: "ups", position: -1 }] }, // Negative position
+        { name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001" }, // Missing source_code
+        { source_code: "warehouse_us", enabled: true, country_id: "US", postcode: "10001" }, // Missing name
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, postcode: "10001" }, // Missing country_id
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US" }, // Missing postcode
+        { source_code: "", name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001" }, // Empty source_code
+        { source_code: "warehouse_us", name: "", enabled: true, country_id: "US", postcode: "10001" }, // Empty name
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "", postcode: "10001" }, // Empty country_id
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", postcode: "" }, // Empty postcode
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "USA", postcode: "10001" }, // Invalid country_id length
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001", email: "invalid-email" }, // Invalid email
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001", latitude: 100 }, // Invalid latitude
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001", longitude: 200 }, // Invalid longitude
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001", region_id: -1 }, // Negative region_id
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001", carrier_links: [{ carrier_code: "ups" }] }, // Missing position
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001", carrier_links: [{ position: 1 }] }, // Missing carrier_code
+        { source_code: "warehouse_us", name: "US Warehouse", enabled: true, country_id: "US", postcode: "10001", carrier_links: [{ carrier_code: "ups", position: -1 }] }, // Negative position
       ];
 
       testSchema(createSourceInputSchema, validInputs, invalidInputs, "Create Source");
@@ -443,25 +446,29 @@ describe("Inventory Tools - Schema Validation Tests", () => {
 
     describe("Update Source Schema", () => {
       const validInputs = [
-        { source_code: "warehouse_us", name: "Updated US Warehouse" },
-        { source_code: "store_nyc", enabled: false },
-        { source_code: "warehouse_eu", email: "new@example.com", contact_name: "Jane Doe" },
-        { source_code: "warehouse_us", latitude: 40.7128, longitude: -74.0060 },
+        { source_code: "warehouse_us", name: "Updated US Warehouse", country_id: "US", postcode: "10001" },
+        { source_code: "store_nyc", enabled: false, country_id: "US", postcode: "10001" },
+        { source_code: "warehouse_eu", email: "new@example.com", contact_name: "Jane Doe", country_id: "DE", postcode: "80331" },
+        { source_code: "warehouse_us", latitude: 40.7128, longitude: -74.0060, country_id: "US", postcode: "10001" },
       ];
 
       const invalidInputs = [
         {}, // Missing required source_code
-        { name: "Updated US Warehouse" }, // Missing source_code
-        { source_code: "", name: "Updated US Warehouse" }, // Empty source_code
-        { source_code: "warehouse_us", name: "" }, // Empty name
-        { source_code: "warehouse_us", email: "invalid-email" }, // Invalid email
-        { source_code: "warehouse_us", latitude: 100 }, // Invalid latitude
-        { source_code: "warehouse_us", longitude: 200 }, // Invalid longitude
-        { source_code: "warehouse_us", region_id: -1 }, // Negative region_id
-        { source_code: "warehouse_us", country_id: "USA" }, // Invalid country_id length
-        { source_code: "warehouse_us", carrier_links: [{ carrier_code: "ups" }] }, // Missing position
-        { source_code: "warehouse_us", carrier_links: [{ position: 1 }] }, // Missing carrier_code
-        { source_code: "warehouse_us", carrier_links: [{ carrier_code: "ups", position: -1 }] }, // Negative position
+        { name: "Updated US Warehouse", country_id: "US", postcode: "10001" }, // Missing source_code
+        { source_code: "", name: "Updated US Warehouse", country_id: "US", postcode: "10001" }, // Empty source_code
+        { source_code: "warehouse_us", name: "", country_id: "US", postcode: "10001" }, // Empty name
+        { source_code: "warehouse_us" }, // Missing country_id and postcode
+        { source_code: "warehouse_us", country_id: "US" }, // Missing postcode
+        { source_code: "warehouse_us", postcode: "10001" }, // Missing country_id
+        { source_code: "warehouse_us", email: "invalid-email", country_id: "US", postcode: "10001" }, // Invalid email
+        { source_code: "warehouse_us", latitude: 100, country_id: "US", postcode: "10001" }, // Invalid latitude
+        { source_code: "warehouse_us", longitude: 200, country_id: "US", postcode: "10001" }, // Invalid longitude
+        { source_code: "warehouse_us", region_id: -1, country_id: "US", postcode: "10001" }, // Negative region_id
+        { source_code: "warehouse_us", country_id: "USA", postcode: "10001" }, // Invalid country_id length
+        { source_code: "warehouse_us", country_id: "US", postcode: "" }, // Empty postcode
+        { source_code: "warehouse_us", carrier_links: [{ carrier_code: "ups" }], country_id: "US", postcode: "10001" }, // Missing position
+        { source_code: "warehouse_us", carrier_links: [{ position: 1 }], country_id: "US", postcode: "10001" }, // Missing carrier_code
+        { source_code: "warehouse_us", carrier_links: [{ carrier_code: "ups", position: -1 }], country_id: "US", postcode: "10001" }, // Negative position
       ];
 
       testSchema(updateSourceInputSchema, validInputs, invalidInputs, "Update Source");
@@ -626,6 +633,7 @@ describe("Inventory Tools - Schema Validation Tests", () => {
           name: "Test Source",
           enabled: true,
           country_id: "US",
+          postcode: "10001",
         })
       ).toThrow("Source code is required");
 
@@ -633,6 +641,8 @@ describe("Inventory Tools - Schema Validation Tests", () => {
         updateSourceSchema.parse({
           source_code: "", // AI agents must not update with empty source codes
           name: "Updated Source",
+          country_id: "US",
+          postcode: "10001",
         })
       ).toThrow("Source code is required");
 
@@ -698,6 +708,7 @@ describe("Inventory Tools - Schema Validation Tests", () => {
           name: "Test Source",
           enabled: true,
           country_id: "US",
+          postcode: "10001",
         })
       ).not.toThrow();
 
@@ -708,6 +719,7 @@ describe("Inventory Tools - Schema Validation Tests", () => {
           name: "Test Source",
           enabled: true,
           country_id: "US",
+          postcode: "10001",
           latitude: 90, // Maximum valid latitude
           longitude: 180, // Maximum valid longitude
         })
@@ -719,6 +731,7 @@ describe("Inventory Tools - Schema Validation Tests", () => {
           name: "Test Source",
           enabled: true,
           country_id: "US",
+          postcode: "10001",
           latitude: -90, // Minimum valid latitude
           longitude: -180, // Minimum valid longitude
         })
@@ -731,6 +744,7 @@ describe("Inventory Tools - Schema Validation Tests", () => {
           name: "Test Source",
           enabled: true,
           country_id: "US",
+          postcode: "10001",
           latitude: 91, // Invalid latitude
         })
       ).toThrow("Number must be less than or equal to 90");
@@ -741,6 +755,7 @@ describe("Inventory Tools - Schema Validation Tests", () => {
           name: "Test Source",
           enabled: true,
           country_id: "US",
+          postcode: "10001",
           longitude: 181, // Invalid longitude
         })
       ).toThrow("Number must be less than or equal to 180");

@@ -1,25 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
-import {
-  getSources,
-  getSourceByCode,
-  createSource,
-  updateSource,
-} from "../adobe/inventory/api-inventory-sources";
+import { createSource, getSourceByCode, getSources, updateSource } from "../adobe/inventory/api-inventory-sources";
+import { mapCreateSourceInputToApiPayload, mapUpdateSourceInputToApiPayload } from "../adobe/inventory/mapping/inventory-mapping";
+import { createSourceInputSchema, getSourceByCodeInputSchema, updateSourceInputSchema } from "../adobe/inventory/schemas";
 import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
-import {
-  createSourceInputSchema,
-  updateSourceInputSchema,
-  getSourceByCodeInputSchema,
-} from "../adobe/inventory/schemas";
-import { mapCreateSourceInputToApiPayload, mapUpdateSourceInputToApiPayload } from "../adobe/inventory/mapping/inventory-mapping";
 import { toolTextResponse } from "./tool-response";
 
-/**
- * Register source management tools
- */
 export function registerInventorySourceTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchSourcesTool(server, client);
   registerGetSourceByCodeTool(server, client);
@@ -27,9 +15,6 @@ export function registerInventorySourceTools(server: McpServer, client: AdobeCom
   registerUpdateSourceTool(server, client);
 }
 
-/**
- * Search sources
- */
 function registerSearchSourcesTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
     "search-sources",
@@ -58,7 +43,7 @@ function registerSearchSourcesTool(server: McpServer, client: AdobeCommerceClien
         </meta>
 
         <data>
-          ${data?.map(source => JSON.stringify(source)).join("\n")}
+          ${data?.map((source) => JSON.stringify(source)).join("\n")}
         </data>
       `;
       });
@@ -66,9 +51,6 @@ function registerSearchSourcesTool(server: McpServer, client: AdobeCommerceClien
   );
 }
 
-/**
- * Get source by code
- */
 function registerGetSourceByCodeTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
     "get-source-by-code",
@@ -101,9 +83,6 @@ function registerGetSourceByCodeTool(server: McpServer, client: AdobeCommerceCli
   );
 }
 
-/**
- * Create source
- */
 function registerCreateSourceTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
     "create-source",
@@ -122,6 +101,8 @@ function registerCreateSourceTool(server: McpServer, client: AdobeCommerceClient
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const contextMessage = data && data > 0 ? `Source has been successfully created.` : `Failed to create source.`;
+
         return `
         <meta>
           <name>Create Source</name>
@@ -131,15 +112,16 @@ function registerCreateSourceTool(server: McpServer, client: AdobeCommerceClient
         <data>
           ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
   );
 }
 
-/**
- * Update source
- */
 function registerUpdateSourceTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
     "update-source",
@@ -158,6 +140,8 @@ function registerUpdateSourceTool(server: McpServer, client: AdobeCommerceClient
 
       return toolTextResponse(result, (resp) => {
         const { data, endpoint } = resp;
+        const contextMessage = data && data > 0 ? `Source has been successfully updated.` : `Failed to update source.`;
+
         return `
         <meta>
           <name>Update Source</name>
@@ -167,8 +151,12 @@ function registerUpdateSourceTool(server: McpServer, client: AdobeCommerceClient
         <data>
           ${JSON.stringify(data)}
         </data>
+
+        <context>
+          ${contextMessage}
+        </context>
       `;
       });
     }
   );
-} 
+}

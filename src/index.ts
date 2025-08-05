@@ -5,13 +5,14 @@ import { registerCategoriesTools } from "./tools/tools-for-categories.js";
 import { registerCmsBlockTools, registerCmsPageTool } from "./tools/tools-for-cms.js";
 import { registerConfigurableProductTools } from "./tools/tools-for-configurable-products.js";
 import { registerCustomerTools } from "./tools/tools-for-customers.js";
+import { registerSourceItemTools } from "./tools/tools-for-inventory-source-items.js";
+import { registerInventoryTools } from "./tools/tools-for-inventory.js";
 import { registerOrderTools } from "./tools/tools-for-orders.js";
 import { registerPricingTools } from "./tools/tools-for-pricing.js";
 import { registerProductAttributeSetsTools } from "./tools/tools-for-products-attribute-sets.js";
 import { registerProductAttributesTools } from "./tools/tools-for-products-attributes.js";
 import { registerProductTools } from "./tools/tools-for-products.js";
 import { registerStoreTools } from "./tools/tools-for-stores.js";
-import { registerInventoryTools } from "./tools/tools-for-inventory.js";
 
 const server = new McpServer({
   name: "adobe-commerce",
@@ -36,6 +37,7 @@ async function main() {
   registerPricingTools(server, client);
   registerStoreTools(server, client);
   registerInventoryTools(server, client);
+  registerSourceItemTools(server, client);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

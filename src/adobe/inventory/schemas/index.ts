@@ -22,6 +22,9 @@ export * from "./stock-source-links/stock-source-links";
 // Source Selection algorithms
 export * from "./source-selection/source-selection";
 
+// Source Items management
+export * from "./source-items/source-items";
+
 // TypeScript type definitions
 export * from "./types";
 
@@ -61,4 +64,8 @@ export * from "./types";
  *
  * Source Selection:
  * - sourceSelectionAlgorithmInputSchema: Run source selection algorithm
+ *
+ * Source Items:
+ * - createSourceItemInputSchema: Create new source items
+ * - deleteSourceItemInputSchema: Remove source items
  */

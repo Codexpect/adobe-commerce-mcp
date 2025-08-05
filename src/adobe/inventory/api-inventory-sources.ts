@@ -5,13 +5,7 @@ import type { ApiResponse } from "../types/api-response";
 import { apiErrorResponse, apiSuccessResponse } from "../types/api-response";
 import type { Source, SourceSearchResults } from "./types/inventory";
 
-/**
- * Get all sources
- */
-export async function getSources(
-  client: AdobeCommerceClient,
-  options: SearchCriteria = {}
-): Promise<ApiResponse<Source[]>> {
+export async function getSources(client: AdobeCommerceClient, options: SearchCriteria = {}): Promise<ApiResponse<Source[]>> {
   const searchCriteria = buildSearchCriteriaQuery(options);
   const endpoint = `/inventory/sources?${searchCriteria}`;
   try {
@@ -22,13 +16,7 @@ export async function getSources(
   }
 }
 
-/**
- * Get source by code
- */
-export async function getSourceByCode(
-  client: AdobeCommerceClient,
-  sourceCode: string
-): Promise<ApiResponse<Source>> {
+export async function getSourceByCode(client: AdobeCommerceClient, sourceCode: string): Promise<ApiResponse<Source>> {
   const endpoint = `/inventory/sources/${encodeURIComponent(sourceCode)}`;
   try {
     const data = await client.get<Source>(endpoint);
@@ -38,35 +26,22 @@ export async function getSourceByCode(
   }
 }
 
-/**
- * Create new source
- */
-export async function createSource(
-  client: AdobeCommerceClient,
-  source: Source
-): Promise<ApiResponse<Source>> {
+export async function createSource(client: AdobeCommerceClient, source: Source): Promise<ApiResponse<number>> {
   const endpoint = `/inventory/sources`;
   try {
-    const data = await client.post(endpoint, { source });
-    return apiSuccessResponse<Source>(endpoint, data as Source);
+    await client.post(endpoint, { source });
+    return apiSuccessResponse<number>(endpoint, 1);
   } catch (error) {
-    return apiErrorResponse<Source>(endpoint, error);
+    return apiErrorResponse<number>(endpoint, error);
   }
 }
 
-/**
- * Update source
- */
-export async function updateSource(
-  client: AdobeCommerceClient,
-  sourceCode: string,
-  source: Source
-): Promise<ApiResponse<Source>> {
+export async function updateSource(client: AdobeCommerceClient, sourceCode: string, source: Source): Promise<ApiResponse<number>> {
   const endpoint = `/inventory/sources/${encodeURIComponent(sourceCode)}`;
   try {
-    const data = await client.put(endpoint, { source });
-    return apiSuccessResponse<Source>(endpoint, data as Source);
+    await client.put(endpoint, { source });
+    return apiSuccessResponse<number>(endpoint, 1);
   } catch (error) {
-    return apiErrorResponse<Source>(endpoint, error);
+    return apiErrorResponse<number>(endpoint, error);
   }
-} 
+}

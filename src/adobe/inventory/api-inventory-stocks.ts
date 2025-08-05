@@ -5,13 +5,7 @@ import type { ApiResponse } from "../types/api-response";
 import { apiErrorResponse, apiSuccessResponse } from "../types/api-response";
 import type { Stock, StockSearchResults } from "./types/inventory";
 
-/**
- * Get all stocks
- */
-export async function getStocks(
-  client: AdobeCommerceClient,
-  options: SearchCriteria = {}
-): Promise<ApiResponse<Stock[]>> {
+export async function getStocks(client: AdobeCommerceClient, options: SearchCriteria = {}): Promise<ApiResponse<Stock[]>> {
   const searchCriteria = buildSearchCriteriaQuery(options);
   const endpoint = `/inventory/stocks?${searchCriteria}`;
   try {
@@ -22,13 +16,7 @@ export async function getStocks(
   }
 }
 
-/**
- * Get stock by ID
- */
-export async function getStockById(
-  client: AdobeCommerceClient,
-  stockId: number
-): Promise<ApiResponse<Stock>> {
+export async function getStockById(client: AdobeCommerceClient, stockId: number): Promise<ApiResponse<Stock>> {
   const endpoint = `/inventory/stocks/${stockId}`;
   try {
     const data = await client.get<Stock>(endpoint);
@@ -38,13 +26,7 @@ export async function getStockById(
   }
 }
 
-/**
- * Create new stock
- */
-export async function createStock(
-  client: AdobeCommerceClient,
-  stock: Stock
-): Promise<ApiResponse<number>> {
+export async function createStock(client: AdobeCommerceClient, stock: Stock): Promise<ApiResponse<number>> {
   const endpoint = `/inventory/stocks`;
   try {
     const data = await client.post(endpoint, { stock });
@@ -54,14 +36,7 @@ export async function createStock(
   }
 }
 
-/**
- * Update stock
- */
-export async function updateStock(
-  client: AdobeCommerceClient,
-  stockId: number,
-  stock: Stock
-): Promise<ApiResponse<number>> {
+export async function updateStock(client: AdobeCommerceClient, stockId: number, stock: Stock): Promise<ApiResponse<number>> {
   const endpoint = `/inventory/stocks/${stockId}`;
   try {
     const data = await client.put(endpoint, { stock });
@@ -71,13 +46,7 @@ export async function updateStock(
   }
 }
 
-/**
- * Delete stock
- */
-export async function deleteStock(
-  client: AdobeCommerceClient,
-  stockId: number
-): Promise<ApiResponse<boolean>> {
+export async function deleteStock(client: AdobeCommerceClient, stockId: number): Promise<ApiResponse<boolean>> {
   const endpoint = `/inventory/stocks/${stockId}`;
   try {
     await client.delete(endpoint);
@@ -87,14 +56,7 @@ export async function deleteStock(
   }
 }
 
-/**
- * Resolve stock by sales channel
- */
-export async function resolveStock(
-  client: AdobeCommerceClient,
-  type: string,
-  code: string
-): Promise<ApiResponse<Stock>> {
+export async function resolveStock(client: AdobeCommerceClient, type: string, code: string): Promise<ApiResponse<Stock>> {
   const endpoint = `/inventory/stock-resolver/${encodeURIComponent(type)}/${encodeURIComponent(code)}`;
   try {
     const data = await client.get<Stock>(endpoint);
@@ -102,4 +64,4 @@ export async function resolveStock(
   } catch (error) {
     return apiErrorResponse<Stock>(endpoint, error);
   }
-} 
+}

@@ -9,13 +9,14 @@ import { sourceCodeSchema } from "../common/validation-schemas";
  * - name: Human-readable name for the source
  * - enabled: Whether the source is active
  * - country_id: ISO country code for the source location
+ * - postcode: Postal/ZIP code for the source location
  *
  * Optional fields:
  * - email: Contact email for the source
  * - contact_name: Name of the contact person
  * - description: Detailed description of the source
  * - latitude/longitude: Geographic coordinates
- * - address fields: Full address information
+ * - address fields: Full address information (except postcode)
  */
 export const createSourceInputSchema = {
   source_code: sourceCodeSchema.describe("Unique identifier for the source (e.g., 'warehouse_us', 'store_nyc')."),
@@ -31,7 +32,7 @@ export const createSourceInputSchema = {
   region: z.string().optional().describe("Region name if source has custom region."),
   city: z.string().optional().describe("City name for the source location."),
   street: z.string().optional().describe("Street address for the source location."),
-  postcode: z.string().optional().describe("Postal/ZIP code for the source location."),
+  postcode: z.string().min(1, "Postcode is required").describe("Postal/ZIP code for the source location."),
   phone: z.string().optional().describe("Contact phone number for the source."),
   fax: z.string().optional().describe("Fax number for the source."),
   use_default_carrier_config: z.boolean().optional().describe("Whether to use default carrier configuration."),
@@ -51,6 +52,8 @@ export const createSourceInputSchema = {
  *
  * Required fields:
  * - source_code: Unique identifier of the source to update
+ * - country_id: ISO country code for the source location
+ * - postcode: Postal/ZIP code for the source location
  *
  * Optional fields:
  * - All other fields from create schema can be updated
@@ -64,12 +67,12 @@ export const updateSourceInputSchema = {
   description: z.string().optional().describe("Updated description of the source."),
   latitude: z.number().min(-90).max(90).optional().describe("Updated latitude coordinate."),
   longitude: z.number().min(-180).max(180).optional().describe("Updated longitude coordinate."),
-  country_id: z.string().length(2, "Country ID must be a 2-letter ISO code").optional().describe("Updated ISO country code."),
+  country_id: z.string().length(2, "Country ID must be a 2-letter ISO code").describe("Updated ISO country code."),
   region_id: z.number().int().min(0).optional().describe("Updated region ID."),
   region: z.string().optional().describe("Updated region name."),
   city: z.string().optional().describe("Updated city name."),
   street: z.string().optional().describe("Updated street address."),
-  postcode: z.string().optional().describe("Updated postal code."),
+  postcode: z.string().min(1, "Postcode is required").describe("Updated postal code."),
   phone: z.string().optional().describe("Updated phone number."),
   fax: z.string().optional().describe("Updated fax number."),
   use_default_carrier_config: z.boolean().optional().describe("Updated carrier configuration setting."),
