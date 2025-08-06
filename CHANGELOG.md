@@ -5,6 +5,72 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.4] - 2025-01-27
+
+### Added
+
+- **Comprehensive Inventory Management**: Complete Multi-Source Inventory (MSI) and Single Stock System support
+
+  #### MSI Source Items Management
+
+  - `search-msi-source-items` tool: Search for source items with flexible filters and pagination
+  - `create-msi-source-item` tool: Create a new source item with product SKU, source code, and quantity
+  - `delete-msi-source-item` tool: Delete a source item by SKU and source code
+  - `are-products-salable-msi` tool: Check if multiple products are salable for given SKUs and stock ID
+  - `are-products-salable-for-requested-qty-msi` tool: Check if products are salable for specific requested quantities
+  - `is-product-salable-msi` tool: Check if a specific product is salable for a given stock
+  - `is-product-salable-for-requested-qty-msi` tool: Check if a product is salable for a specific requested quantity
+  - `get-product-salable-quantity-msi` tool: Get the salable quantity for a specific product and stock
+
+  #### MSI Stocks Management
+
+  - `search-msi-stocks` tool: Search for stocks with flexible filters and pagination
+  - `get-msi-stock-by-id` tool: Get stock data by given stockId
+  - `create-msi-stock` tool: Save Stock data
+  - `update-msi-stock` tool: Save Stock data
+  - `delete-msi-stock` tool: Delete the Stock data by stockId
+  - `resolve-msi-stock` tool: Resolve Stock by Sales Channel type and code
+
+  #### MSI Sources Management
+
+  - `search-msi-sources` tool: Find Sources by SearchCriteria
+  - `get-msi-source-by-code` tool: Get Source data by given code
+  - `create-msi-source` tool: Save Source data
+  - `update-msi-source` tool: Save Source data
+
+  #### MSI Stock-Source Links Management
+
+  - `search-msi-stock-source-links` tool: Find StockSourceLink list by given SearchCriteria
+  - `create-msi-stock-source-links` tool: Save StockSourceLink list data
+  - `delete-msi-stock-source-links` tool: Remove StockSourceLink list
+
+  #### MSI Source Selection
+
+  - `get-msi-source-selection-algorithms` tool: Get list of available source selection algorithms
+  - `run-msi-source-selection-algorithm` tool: Get source selection algorithm result
+
+  #### Single Stock System Management
+
+  - `get-single-stock-item` tool: Get stock information for a specific product by SKU (single stock system)
+  - `update-single-stock-item` tool: Update stock item information (quantity, status, etc.) for a product (single stock system)
+  - `get-single-low-stock-items` tool: Get products with low inventory quantity below specified threshold (single stock system)
+  - `get-single-stock-status` tool: Get stock status information for a specific product by SKU (single stock system)
+
+- **Advanced Pricing Management**: Comprehensive pricing tools for bulk operations
+
+  - `set-base-prices` tool: Set base prices for multiple products efficiently
+  - `get-base-prices` tool: Retrieve base prices for multiple products
+  - `set-special-prices` tool: Set special prices with date ranges for multiple products
+  - `delete-special-prices` tool: Delete special prices for multiple products
+  - `get-special-prices` tool: Retrieve special prices for multiple products
+  - `set-tier-prices` tool: Set tier prices for quantity-based discounts on multiple products
+  - `replace-tier-prices` tool: Replace all existing tier prices with new ones for multiple products
+  - `delete-tier-prices` tool: Delete specific tier prices for multiple products
+  - `get-tier-prices` tool: Retrieve tier prices for multiple products
+  - `set-costs` tool: Set cost values for multiple products
+  - `delete-costs` tool: Delete cost values for multiple products
+  - `get-costs` tool: Retrieve cost values for multiple products
+
 ## [0.0.3] - 2025-01-27
 
 ### Added
