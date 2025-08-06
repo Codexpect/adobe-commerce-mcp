@@ -115,7 +115,7 @@ export function parseToolResponse(responseText: string): {
   return { meta, data };
 } 
 
-export function extractContextContent(responseText: string): string | null {
+export function extractContextContent(responseText: string): string {
   const contextMatch = responseText.match(/<context>\s*([\s\S]*?)\s*<\/context>/);
-  return contextMatch ? contextMatch[1].trim() : null;
+  return contextMatch ? contextMatch[1].trim() : "";
 } 
