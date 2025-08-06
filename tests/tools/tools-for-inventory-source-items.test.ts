@@ -1,6 +1,7 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
-import { registerSourceItemTools } from "../../src/tools/tools-for-inventory-source-items";
+import { registerInventorySourceItemTools } from "../../src/tools/tools-for-inventory-source-items";
+import { registerInventoryStockSourceLinkTools } from "../../src/tools/tools-for-inventory-stock-source-links";
 import { registerProductTools } from "../../src/tools/tools-for-products";
 import { createMockMcpServer, extractContextContent, extractToolResponseText, MockMcpServer, parseToolResponse } from "../utils/mock-mcp-server";
 import { InventoryFixtures } from "./fixtures/inventory-fixtures";
@@ -30,7 +31,8 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
     // Register all necessary tools
     registerProductTools(mockServer.server, client);
-    registerSourceItemTools(mockServer.server, client);
+    registerInventorySourceItemTools(mockServer.server, client);
+    registerInventoryStockSourceLinkTools(mockServer.server, client);
 
     // Initialize fixtures
     inventoryFixtures = new InventoryFixtures(client);
@@ -86,6 +88,11 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       expect(toolNames).toContain("search-source-items");
       expect(toolNames).toContain("create-source-item");
       expect(toolNames).toContain("delete-source-item");
+      expect(toolNames).toContain("are-products-salable-msi");
+      expect(toolNames).toContain("are-products-salable-for-requested-qty-msi");
+      expect(toolNames).toContain("is-product-salable-msi");
+      expect(toolNames).toContain("is-product-salable-for-requested-qty-msi");
+      expect(toolNames).toContain("get-product-salable-quantity-msi");
     });
 
     test("should register search source items tool with correct configuration", () => {
@@ -108,6 +115,283 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       expect(tool!.definition.title).toBe("Delete Source Item");
       expect(tool!.definition.annotations?.readOnlyHint).toBe(false);
     });
+
+    test("should register MSI salability tools with correct configuration", () => {
+      const msiTools = [
+        "are-products-salable-msi",
+        "are-products-salable-for-requested-qty-msi",
+        "is-product-salable-msi",
+        "is-product-salable-for-requested-qty-msi",
+        "get-product-salable-quantity-msi",
+      ];
+
+      for (const toolName of msiTools) {
+        const tool = mockServer.registeredTools.get(toolName);
+        expect(tool).toBeDefined();
+        expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
+      }
+    });
+  });
+
+  describe("MSI (Multi-Source Inventory) Functionality", () => {
+    test("should check product salability with source items", async () => {
+      inventoryFixtures.setCurrentTest("msi_salability_with_source_items");
+      productFixtures.setCurrentTest("msi_salability_with_source_items");
+      console.log("🧪 Testing MSI salability with source items...");
+
+      // Step 1: Create stock, source and product
+      const stock = await inventoryFixtures.createStockFixture("msi_salability_stock");
+      const source = await inventoryFixtures.createSourceFixture("msi_salability_source", {
+        name: "MSI Salability Test Source",
+        enabled: true,
+        country_id: "US",
+        description: "Source for MSI salability testing",
+      });
+
+      const product = await productFixtures.createFixture("msi_salability_product", {
+        name: "MSI Salability Test Product",
+        price: 29.99,
+        type_id: "simple",
+        status: 1,
+        visibility: 4,
+        weight: 0.5,
+        custom_attributes: [
+          { attribute_code: "description", value: "A product for MSI salability testing" },
+          { attribute_code: "short_description", value: "MSI salability test product" },
+        ],
+      });
+
+      console.log(`📦 Created stock: ${stock.stock_id}`);
+      console.log(`🏪 Created source: ${source.source_code}`);
+      console.log(`📦 Created product: ${product.sku}`);
+
+      // Step 2: Link source to stock
+      const createLinkResult = await mockServer.callTool("create-stock-source-links", {
+        links: [
+          {
+            stock_id: stock.stock_id!,
+            source_code: source.source_code!,
+            priority: 1,
+          },
+        ],
+      });
+
+      const createLinkResponseText = extractToolResponseText(createLinkResult);
+      const createLinkParsed = parseToolResponse(createLinkResponseText);
+      expect(createLinkParsed.data).toBeDefined();
+
+      console.log(`🔗 Linked source to stock`);
+
+      // Step 3: Create source item for the product
+      const createSourceItemResult = await mockServer.callTool("create-source-item", {
+        sku: product.sku,
+        source_code: source.source_code,
+        quantity: 100,
+        status: 1,
+      });
+
+      const createResponseText = extractToolResponseText(createSourceItemResult);
+      const createParsed = parseToolResponse(createResponseText);
+      expect(createParsed.data).toEqual(["true"]); // Should return true for successful creation
+
+      // Track for cleanup
+      createdSourceItems.push({
+        sku: product.sku,
+        source_code: source.source_code!,
+      });
+
+      console.log(`📦 Created source item for MSI testing`);
+
+      // Step 4: Check if product is salable (MSI)
+      const isSalableResult = await mockServer.callTool("is-product-salable-msi", {
+        sku: product.sku,
+        stockId: stock.stock_id!, // Use the created stock
+      });
+
+      const isSalableResponseText = extractToolResponseText(isSalableResult);
+      const isSalableParsed = parseToolResponse(isSalableResponseText);
+      expect(isSalableParsed.data).toBeDefined();
+      expect(isSalableParsed.data.length).toBeGreaterThan(0);
+
+      const isSalable = JSON.parse(isSalableParsed.data[0]);
+      expect(isSalable).toBe(true);
+
+      // Verify context message for salability check
+      const isSalableContextMessage = extractContextContent(isSalableResponseText);
+      expect(isSalableContextMessage).toContain("is salable in stock");
+
+      console.log(`🔍 Product salability check (MSI): ${isSalable}`);
+
+      // Step 5: Check if product is salable for requested quantity (MSI)
+      const isSalableForQtyResult = await mockServer.callTool("is-product-salable-for-requested-qty-msi", {
+        sku: product.sku,
+        stockId: stock.stock_id!, // Use the created stock
+        requestedQty: 5,
+      });
+
+      const isSalableForQtyResponseText = extractToolResponseText(isSalableForQtyResult);
+      const isSalableForQtyParsed = parseToolResponse(isSalableForQtyResponseText);
+      expect(isSalableForQtyParsed.data).toBeDefined();
+      expect(isSalableForQtyParsed.data.length).toBeGreaterThan(0);
+
+      const salabilityForQtyData = JSON.parse(isSalableForQtyParsed.data[0]);
+      expect(salabilityForQtyData).toBeDefined();
+      expect(salabilityForQtyData).toHaveProperty('salable');
+      expect(salabilityForQtyData.salable).toBe(true);
+
+      console.log(`🔍 Product salability for quantity check (MSI): ${salabilityForQtyData.salable}`);
+
+      // Step 6: Get product salable quantity (MSI)
+      const getSalableQtyResult = await mockServer.callTool("get-product-salable-quantity-msi", {
+        sku: product.sku,
+        stockId: stock.stock_id!, // Use the created stock
+      });
+
+      const getSalableQtyResponseText = extractToolResponseText(getSalableQtyResult);
+      const getSalableQtyParsed = parseToolResponse(getSalableQtyResponseText);
+      expect(getSalableQtyParsed.data).toBeDefined();
+      expect(getSalableQtyParsed.data.length).toBeGreaterThan(0);
+
+      const salableQty = JSON.parse(getSalableQtyParsed.data[0]);
+      expect(salableQty).toBeDefined();
+      expect(typeof salableQty).toBe('number');
+      expect(salableQty).toBe(100);
+
+      // Verify context message for salable quantity
+      const getSalableQtyContextMessage = extractContextContent(getSalableQtyResponseText);
+      expect(getSalableQtyContextMessage).toContain("The salable quantity for product");
+
+      console.log(`📊 Product salable quantity (MSI): ${salableQty}`);
+      console.log("✅ MSI salability test completed successfully!");
+    }, 45000);
+
+    test("should check multiple products salability with source items", async () => {
+      inventoryFixtures.setCurrentTest("msi_multiple_products_salability");
+      productFixtures.setCurrentTest("msi_multiple_products_salability");
+      console.log("🧪 Testing multiple products MSI salability...");
+
+      // Step 1: Create stock, source and multiple products
+      const stock = await inventoryFixtures.createStockFixture("msi_multi_salability_stock");
+      const source = await inventoryFixtures.createSourceFixture("msi_multi_salability_source", {
+        name: "MSI Multi Salability Test Source",
+        enabled: true,
+        country_id: "US",
+        description: "Source for MSI multi salability testing",
+      });
+
+      console.log(`📦 Created stock: ${stock.stock_id}`);
+      console.log(`🏪 Created source: ${source.source_code}`);
+
+      // Step 2: Link source to stock
+      const createLinkResult = await mockServer.callTool("create-stock-source-links", {
+        links: [
+          {
+            stock_id: stock.stock_id!,
+            source_code: source.source_code!,
+            priority: 1,
+          },
+        ],
+      });
+
+      const createLinkResponseText = extractToolResponseText(createLinkResult);
+      const createLinkParsed = parseToolResponse(createLinkResponseText);
+      expect(createLinkParsed.data).toBeDefined();
+
+      console.log(`🔗 Linked source to stock`);
+
+      const productSkus: string[] = [];
+      for (let i = 1; i <= 3; i++) {
+        const product = await productFixtures.createFixture(`msi_multi_salability_product_${i}`, {
+          name: `MSI Multi Salability Test Product ${i}`,
+          price: 29.99 + i,
+          type_id: "simple",
+          status: 1,
+          visibility: 4,
+          weight: 0.5,
+          custom_attributes: [
+            { attribute_code: "description", value: `A product ${i} for MSI multi salability testing` },
+            { attribute_code: "short_description", value: `MSI multi salability test product ${i}` },
+          ],
+        });
+
+        productSkus.push(product.sku);
+        console.log(`📦 Created test product ${i}: ${product.sku}`);
+
+        // Create source item for each product
+        const createSourceItemResult = await mockServer.callTool("create-source-item", {
+          sku: product.sku,
+          source_code: source.source_code,
+          quantity: 50 + i * 10,
+          status: 1,
+        });
+
+        const createResponseText = extractToolResponseText(createSourceItemResult);
+        const createParsed = parseToolResponse(createResponseText);
+        expect(createParsed.data).toEqual(["true"]);
+
+        // Track for cleanup
+        createdSourceItems.push({
+          sku: product.sku,
+          source_code: source.source_code!,
+        });
+      }
+
+      console.log(`📦 Created products: ${productSkus.join(", ")}`);
+
+      // Step 3: Check if multiple products are salable (MSI)
+      const areProductsSalableResult = await mockServer.callTool("are-products-salable-msi", {
+        skus: productSkus,
+        stockId: stock.stock_id!, // Use the created stock
+      });
+
+      const areSalableResponseText = extractToolResponseText(areProductsSalableResult);
+      const areSalableParsed = parseToolResponse(areSalableResponseText);
+      expect(areSalableParsed.data).toBeDefined();
+      expect(areSalableParsed.data.length).toBeGreaterThan(0);
+
+      const areSalableData = areSalableParsed.data.map((item) => JSON.parse(item));
+      expect(areSalableData).toBeDefined();
+      expect(Array.isArray(areSalableData)).toBe(true);
+      
+      areSalableData.forEach((result, index) => {
+        expect(result).toHaveProperty('sku');
+        expect(result).toHaveProperty('salable');
+        expect(typeof result.salable).toBe('boolean');
+        expect(result.sku).toBe(productSkus[index]);
+      });
+
+      console.log(`🔍 Multiple products salability check (MSI): ${areSalableData.length} results`);
+
+      // Step 3: Check if multiple products are salable for requested quantities (MSI)
+      const skuRequests = productSkus.map((sku, index) => ({
+        sku: sku,
+        qty: 5 + index,
+      }));
+
+      const areProductsSalableForQtyResult = await mockServer.callTool("are-products-salable-for-requested-qty-msi", {
+        skuRequests: skuRequests,
+        stockId: stock.stock_id!, // Use the created stock
+      });
+
+      const areSalableForQtyResponseText = extractToolResponseText(areProductsSalableForQtyResult);
+      const areSalableForQtyParsed = parseToolResponse(areSalableForQtyResponseText);
+      expect(areSalableForQtyParsed.data).toBeDefined();
+      expect(areSalableForQtyParsed.data.length).toBeGreaterThan(0);
+
+      const areSalableForQtyData = areSalableForQtyParsed.data.map((item) => JSON.parse(item));
+      expect(areSalableForQtyData).toBeDefined();
+      expect(Array.isArray(areSalableForQtyData)).toBe(true);
+      
+      areSalableForQtyData.forEach((result, index) => {
+        expect(result).toHaveProperty('sku');
+        expect(result).toHaveProperty('salable');
+        expect(typeof result.salable).toBe('boolean');
+        expect(result.sku).toBe(productSkus[index]);
+      });
+
+      console.log(`🔍 Multiple products salability for quantity check (MSI): ${areSalableForQtyData.length} results`);
+      console.log("✅ Multiple products MSI salability test completed successfully!");
+    }, 60000);
   });
 
   describe("Source Item Main Flow", () => {
@@ -164,37 +448,31 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 4: Search for the source item to verify it was created
       const searchSourceItemsResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-                {
-                  field: "source_code",
-                  value: source.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+          {
+            field: "source_code",
+            value: source.source_code,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchResponseText = extractToolResponseText(searchSourceItemsResult);
       const searchParsed = parseToolResponse(searchResponseText);
+
       expect(searchParsed.data).toBeDefined();
+      expect(searchParsed.data.length).toBe(1);
 
       // Verify the source item exists in the search results
       const sourceItems = searchParsed.data.map((item) => JSON.parse(item));
       expect(sourceItems.length).toBeGreaterThan(0);
 
-      const foundSourceItem = sourceItems.find(
-        (item) => item.sku === product.sku && item.source_code === source.source_code
-      );
+      const foundSourceItem = sourceItems.find((item) => item.sku === product.sku && item.source_code === source.source_code);
       expect(foundSourceItem).toBeDefined();
       expect(foundSourceItem.quantity).toBe(100);
       expect(foundSourceItem.status).toBe(1);
@@ -265,28 +543,19 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       expect(create2Parsed.data).toEqual(["true"]); // Should return true for successful creation
 
       // Track the source items for cleanup
-      createdSourceItems.push(
-        { sku: product.sku, source_code: source1.source_code! },
-        { sku: product.sku, source_code: source2.source_code! }
-      );
+      createdSourceItems.push({ sku: product.sku, source_code: source1.source_code! }, { sku: product.sku, source_code: source2.source_code! });
 
       console.log(`📦 Created source items for ${product.sku} at both sources`);
 
       // Step 4: Search for all source items for this product
       const searchSourceItemsResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchResponseText = extractToolResponseText(searchSourceItemsResult);
@@ -355,24 +624,18 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 3: Verify the source item exists
       const searchBeforeResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-                {
-                  field: "source_code",
-                  value: source.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+          {
+            field: "source_code",
+            value: source.source_code,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchBeforeResponseText = extractToolResponseText(searchBeforeResult);
@@ -380,9 +643,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       const sourceItemsBefore = searchBeforeParsed.data.map((item) => JSON.parse(item));
       expect(sourceItemsBefore.length).toBeGreaterThan(0);
 
-      const sourceItemBefore = sourceItemsBefore.find(
-        (item) => item.sku === product.sku && item.source_code === source.source_code
-      );
+      const sourceItemBefore = sourceItemsBefore.find((item) => item.sku === product.sku && item.source_code === source.source_code);
       expect(sourceItemBefore).toBeDefined();
       expect(sourceItemBefore.quantity).toBe(200);
       console.log(`✅ Verified source item exists before deletion`);
@@ -405,24 +666,18 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 5: Verify the source item no longer exists
       const searchAfterResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-                {
-                  field: "source_code",
-                  value: source.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+          {
+            field: "source_code",
+            value: source.source_code,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchAfterResponseText = extractToolResponseText(searchAfterResult);
@@ -430,9 +685,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       const sourceItemsAfter = searchAfterParsed.data.map((item) => JSON.parse(item));
 
       // The source item should no longer exist
-      const sourceItemAfter = sourceItemsAfter.find(
-        (item) => item.sku === product.sku && item.source_code === source.source_code
-      );
+      const sourceItemAfter = sourceItemsAfter.find((item) => item.sku === product.sku && item.source_code === source.source_code);
       expect(sourceItemAfter).toBeUndefined();
 
       console.log(`✅ Successfully verified source item deletion`);
@@ -446,10 +699,8 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Test basic search without filters
       const searchResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          page: 1,
-          pageSize: 10,
-        },
+        page: 1,
+        pageSize: 10,
       });
 
       const searchResponseText = extractToolResponseText(searchResult);
@@ -542,19 +793,13 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 3: Search by SKU
       const searchBySkuResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product1.sku,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product1.sku,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchBySkuResponseText = extractToolResponseText(searchBySkuResult);
@@ -568,19 +813,13 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 4: Search by source code
       const searchBySourceResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "source_code",
-                  value: source1.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "source_code",
+            value: source1.source_code,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchBySourceResponseText = extractToolResponseText(searchBySourceResult);
@@ -594,21 +833,15 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 5: Search with pagination
       const searchWithPaginationResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          page: 1,
-          pageSize: 1,
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "source_code",
-                  value: source1.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        page: 1,
+        pageSize: 1,
+        filters: [
+          {
+            field: "source_code",
+            value: source1.source_code,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchWithPaginationResponseText = extractToolResponseText(searchWithPaginationResult);
@@ -619,7 +852,9 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       expect(paginationResults.length).toBeLessThanOrEqual(1); // Should respect pageSize
 
       console.log(`✅ Successfully tested search with pagination`);
-      console.log(`📋 Search results summary: SKU search=${skuResults.length}, Source search=${sourceResults.length}, Pagination=${paginationResults.length}`);
+      console.log(
+        `📋 Search results summary: SKU search=${skuResults.length}, Source search=${sourceResults.length}, Pagination=${paginationResults.length}`
+      );
     }, 60000);
 
     test("should handle search with no results gracefully", async () => {
@@ -627,19 +862,13 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Search for non-existent source items
       const searchNoResultsResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: "non-existent-product-sku",
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: "non-existent-product-sku",
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchResponseText = extractToolResponseText(searchNoResultsResult);
@@ -704,33 +933,25 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 3: Verify the source item was created with correct status
       const searchResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-                {
-                  field: "source_code",
-                  value: source.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+          {
+            field: "source_code",
+            value: source.source_code,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchResponseText = extractToolResponseText(searchResult);
       const searchParsed = parseToolResponse(searchResponseText);
       const sourceItems = searchParsed.data.map((item) => JSON.parse(item));
 
-      const foundSourceItem = sourceItems.find(
-        (item) => item.sku === product.sku && item.source_code === source.source_code
-      );
+      const foundSourceItem = sourceItems.find((item) => item.sku === product.sku && item.source_code === source.source_code);
       expect(foundSourceItem).toBeDefined();
       expect(foundSourceItem.status).toBe(1);
       expect(foundSourceItem.quantity).toBe(100);
@@ -804,24 +1025,18 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 3: Verify the source item exists before deletion
       const searchBeforeResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-                {
-                  field: "source_code",
-                  value: source.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+          {
+            field: "source_code",
+            value: source.source_code,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchBeforeResponseText = extractToolResponseText(searchBeforeResult);
@@ -849,24 +1064,13 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 5: Verify the source item no longer exists
       const searchAfterResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-                {
-                  field: "source_code",
-                  value: source.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchAfterResponseText = extractToolResponseText(searchAfterResult);
@@ -874,9 +1078,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       const sourceItemsAfter = searchAfterParsed.data.map((item) => JSON.parse(item));
 
       // The source item should no longer exist
-      const sourceItemAfter = sourceItemsAfter.find(
-        (item) => item.sku === product.sku && item.source_code === source.source_code
-      );
+      const sourceItemAfter = sourceItemsAfter.find((item) => item.sku === product.sku && item.source_code === source.source_code);
       expect(sourceItemAfter).toBeUndefined();
 
       console.log(`✅ Successfully verified source item deletion`);
@@ -951,33 +1153,20 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 3: Verify the source item was created with zero quantity
       const searchResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-                {
-                  field: "source_code",
-                  value: source.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchResponseText = extractToolResponseText(searchResult);
       const searchParsed = parseToolResponse(searchResponseText);
       const sourceItems = searchParsed.data.map((item) => JSON.parse(item));
 
-      const foundSourceItem = sourceItems.find(
-        (item) => item.sku === product.sku && item.source_code === source.source_code
-      );
+      const foundSourceItem = sourceItems.find((item) => item.sku === product.sku && item.source_code === source.source_code);
       expect(foundSourceItem).toBeDefined();
       expect(foundSourceItem.quantity).toBe(0);
 
@@ -1037,33 +1226,25 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 3: Verify the source item was created with correct quantity
       const searchResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: product.sku,
-                  conditionType: "eq",
-                },
-                {
-                  field: "source_code",
-                  value: source.source_code,
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: product.sku,
+            conditionType: "eq",
+          },
+          {
+            field: "source_code",
+            value: source.source_code,
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchResponseText = extractToolResponseText(searchResult);
       const searchParsed = parseToolResponse(searchResponseText);
       const sourceItems = searchParsed.data.map((item) => JSON.parse(item));
 
-      const foundSourceItem = sourceItems.find(
-        (item) => item.sku === product.sku && item.source_code === source.source_code
-      );
+      const foundSourceItem = sourceItems.find((item) => item.sku === product.sku && item.source_code === source.source_code);
       expect(foundSourceItem).toBeDefined();
       expect(foundSourceItem.quantity).toBe(largeQuantity);
 
@@ -1134,25 +1315,19 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Test search source items context message
       const searchSourceItemsResult = await mockServer.callTool("search-source-items", {
-        searchCriteria: {
-          filterGroups: [
-            {
-              filters: [
-                {
-                  field: "sku",
-                  value: "test-sku",
-                  conditionType: "eq",
-                },
-              ],
-            },
-          ],
-        },
+        filters: [
+          {
+            field: "sku",
+            value: "test-sku",
+            conditionType: "eq",
+          },
+        ],
       });
 
       const searchContext = extractContextContent(extractToolResponseText(searchSourceItemsResult));
-      expect(searchContext).toContain("Source Items");
+      expect(searchContext).toEqual("");
 
       console.log(`✅ Search source items context message is appropriate`);
     }, 30000);
   });
-}); 
+});

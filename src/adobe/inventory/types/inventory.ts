@@ -66,8 +66,7 @@ export interface StockItemCollection {
  * Product Salable Result interface
  */
 export interface ProductSalableResult {
-  sku?: string;
-  is_salable?: boolean;
+  salable: boolean;
   errors?: ProductSalabilityError[];
   extension_attributes?: ProductSalableResultExtensionAttributes;
 }
@@ -101,7 +100,7 @@ export interface ProductSalabilityErrorExtensionAttributes {
 export interface IsProductSalableResult {
   sku?: string;
   stock_id?: number;
-  is_salable?: boolean;
+  salable?: boolean;
   extension_attributes?: IsProductSalableResultExtensionAttributes;
 }
 
@@ -116,8 +115,8 @@ export interface IsProductSalableResultExtensionAttributes {
  * Is Product Salable For Requested Qty Result interface
  */
 export interface IsProductSalableForRequestedQtyResult {
-  sku?: string;
-  is_salable?: boolean;
+  sku: string;
+  salable: boolean;
   errors?: ProductSalabilityError[];
   extension_attributes?: IsProductSalableForRequestedQtyResultExtensionAttributes;
 }
@@ -127,15 +126,6 @@ export interface IsProductSalableForRequestedQtyResult {
  */
 export interface IsProductSalableForRequestedQtyResultExtensionAttributes {
   [key: string]: unknown;
-}
-
-/**
- * Product Salable Quantity Result interface
- */
-export interface ProductSalableQuantityResult {
-  sku?: string;
-  stock_id?: number;
-  salable_quantity?: number;
 }
 
 /**
@@ -288,7 +278,7 @@ export interface SourceSelectionAlgorithmExtensionAttributes {
  * Inventory Request interface for source selection
  */
 export interface InventoryRequest {
-  stock_id?: number;
+  stockId?: number;
   items?: ItemRequest[];
   extension_attributes?: InventoryRequestExtensionAttributes;
 }

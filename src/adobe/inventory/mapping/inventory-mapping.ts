@@ -10,14 +10,6 @@ import {
 } from "../schemas";
 import { InventoryRequest, Source, Stock, StockItem, StockSourceLink } from "../types/inventory";
 
-/**
- * Mapping functions for inventory input transformations
- */
-
-/**
- * Maps update stock item input to API payload
- * Transforms user-friendly input into Adobe Commerce API format
- */
 export function mapUpdateStockItemInputToApiPayload(input: UpdateStockItemInput): StockItem {
   const {
     qty,
@@ -82,10 +74,6 @@ export function mapUpdateStockItemInputToApiPayload(input: UpdateStockItemInput)
   return Object.fromEntries(Object.entries(stockItem).filter(([, value]) => value !== undefined)) as StockItem;
 }
 
-/**
- * Maps create stock input to API payload
- * Transforms user-friendly input into Adobe Commerce API format
- */
 export function mapCreateStockInputToApiPayload(input: CreateStockInput): Stock {
   const { name, sales_channels } = input;
 
@@ -103,10 +91,6 @@ export function mapCreateStockInputToApiPayload(input: CreateStockInput): Stock 
   return Object.fromEntries(Object.entries(stock).filter(([, value]) => value !== undefined)) as Stock;
 }
 
-/**
- * Maps update stock input to API payload
- * Transforms user-friendly input into Adobe Commerce API format
- */
 export function mapUpdateStockInputToApiPayload(input: UpdateStockInput): Partial<Stock> {
   const { name, sales_channels } = input;
   const stock: Partial<Stock> = {};
@@ -124,10 +108,6 @@ export function mapUpdateStockInputToApiPayload(input: UpdateStockInput): Partia
   return stock;
 }
 
-/**
- * Maps create source input to API payload
- * Transforms user-friendly input into Adobe Commerce API format
- */
 export function mapCreateSourceInputToApiPayload(input: CreateSourceInput): Source {
   const {
     source_code,
@@ -176,10 +156,6 @@ export function mapCreateSourceInputToApiPayload(input: CreateSourceInput): Sour
   return Object.fromEntries(Object.entries(source).filter(([, value]) => value !== undefined)) as Source;
 }
 
-/**
- * Maps update source input to API payload
- * Transforms user-friendly input into Adobe Commerce API format
- */
 export function mapUpdateSourceInputToApiPayload(input: UpdateSourceInput): Partial<Source> {
   const source: Partial<Source> = {};
 
@@ -205,10 +181,6 @@ export function mapUpdateSourceInputToApiPayload(input: UpdateSourceInput): Part
   return source;
 }
 
-/**
- * Maps create stock-source links input to API payload
- * Transforms user-friendly input into Adobe Commerce API format
- */
 export function mapCreateStockSourceLinksInputToApiPayload(input: CreateStockSourceLinksInput): StockSourceLink[] {
   const { links } = input;
 
@@ -221,10 +193,6 @@ export function mapCreateStockSourceLinksInputToApiPayload(input: CreateStockSou
   return stockSourceLinks;
 }
 
-/**
- * Maps delete stock-source links input to API payload
- * Transforms user-friendly input into Adobe Commerce API format
- */
 export function mapDeleteStockSourceLinksInputToApiPayload(input: DeleteStockSourceLinksInput): StockSourceLink[] {
   const { links } = input;
 
@@ -237,10 +205,6 @@ export function mapDeleteStockSourceLinksInputToApiPayload(input: DeleteStockSou
   return stockSourceLinks;
 }
 
-/**
- * Maps source selection algorithm input to API payload
- * Transforms user-friendly input into Adobe Commerce API format
- */
 export function mapSourceSelectionAlgorithmInputToApiPayload(input: SourceSelectionAlgorithmInput): {
   inventoryRequest: InventoryRequest;
   algorithmCode: string;
@@ -248,7 +212,7 @@ export function mapSourceSelectionAlgorithmInputToApiPayload(input: SourceSelect
   const { inventory_request, algorithm_code } = input;
 
   const inventoryRequest: InventoryRequest = {
-    stock_id: inventory_request.stock_id,
+    stockId: inventory_request.stock_id,
     items: inventory_request.items.map((item) => ({
       sku: item.sku,
       qty: item.qty,

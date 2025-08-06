@@ -273,15 +273,13 @@ export class InventoryFixtures {
     console.log(`🔗 Creating stock-source link fixture: ${linkKey}`);
 
     try {
-      const createResult = await createStockSourceLinks(this.client, {
-        links: [
-          {
-            stock_id: stockId,
-            source_code: sourceCode,
-            priority: priority,
-          },
-        ],
-      });
+      const createResult = await createStockSourceLinks(this.client, [
+        {
+          stock_id: stockId,
+          source_code: sourceCode,
+          priority: priority,
+        },
+      ]);
 
       if (!createResult.success) {
         throw new Error(`Failed to create stock-source link: ${createResult.error}`);
@@ -385,9 +383,7 @@ export class InventoryFixtures {
       console.log("🔗 Cleaning up stock-source links...");
       for (const [linkKey, link] of this.createdStockSourceLinks) {
         try {
-          await deleteStockSourceLinks(this.client, {
-            links: [link],
-          });
+          await deleteStockSourceLinks(this.client, [link]);
           console.log(`✅ Deleted stock-source link: ${linkKey}`);
         } catch (error) {
           console.log(`⚠️ Error deleting stock-source link ${linkKey}:`, error);

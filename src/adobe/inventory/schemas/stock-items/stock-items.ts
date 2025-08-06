@@ -1,26 +1,15 @@
 import { z } from "zod";
 import { productSkuSchema } from "../../../core/validation-schemas";
-import {
-  itemIdSchema,
-  quantitySchema,
-  backordersSchema,
-  scopeIdSchema,
-  inventoryPageSizeSchema,
-  currentPageSchema,
-} from "../common/validation-schemas";
+import { backordersSchema, currentPageSchema, inventoryPageSizeSchema, itemIdSchema, quantitySchema } from "../common/validation-schemas";
 
 /**
  * Schema for getting stock item by product SKU
  *
  * Required fields:
  * - productSku: Product SKU to get stock information for
- *
- * Optional fields:
- * - scopeId: Store scope ID (defaults to global scope)
  */
 export const getStockItemInputSchema = {
   productSku: productSkuSchema,
-  scopeId: scopeIdSchema.optional(),
 };
 
 /**
@@ -81,7 +70,6 @@ export const updateStockItemInputSchema = {
  * Schema for getting low stock items
  *
  * Required fields:
- * - scopeId: Store scope ID
  * - qty: Quantity threshold for low stock
  *
  * Optional fields:
@@ -89,7 +77,6 @@ export const updateStockItemInputSchema = {
  * - pageSize: Number of items per page
  */
 export const getLowStockItemsInputSchema = {
-  scopeId: scopeIdSchema,
   qty: quantitySchema,
   currentPage: currentPageSchema.optional(),
   pageSize: inventoryPageSizeSchema.optional(),

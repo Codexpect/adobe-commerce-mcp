@@ -17,9 +17,9 @@ export async function runSourceSelectionAlgorithm(
   client: AdobeCommerceClient,
   request: { inventoryRequest: InventoryRequest; algorithmCode: string }
 ): Promise<ApiResponse<SourceSelectionResult>> {
-  console.log("🔍 Running source selection algorithm", JSON.stringify(request, null, 2));
   const endpoint = `/inventory/source-selection-algorithm-result`;
   try {
+    console.log("🔍 Running source selection algorithm", JSON.stringify(request));
     const data = await client.post(endpoint, request);
     return apiSuccessResponse<SourceSelectionResult>(endpoint, data as SourceSelectionResult);
   } catch (error) {

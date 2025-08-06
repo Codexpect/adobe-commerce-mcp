@@ -1,5 +1,6 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
+import { registerInventorySourceItemTools } from "../../src/tools/tools-for-inventory-source-items";
 import { registerInventorySourceSelectionTools } from "../../src/tools/tools-for-inventory-source-selection";
 import { registerProductTools } from "../../src/tools/tools-for-products";
 import { createMockMcpServer, extractToolResponseText, MockMcpServer, parseToolResponse } from "../utils/mock-mcp-server";
@@ -25,9 +26,10 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
     client = AdobeCommerceClient.create(params);
     mockServer = createMockMcpServer();
 
-    // Register source selection tools and product tools (needed for creating test products)
+    // Register source selection tools, product tools, and source item tools (needed for creating test products and source items)
     registerInventorySourceSelectionTools(mockServer.server, client);
     registerProductTools(mockServer.server, client);
+    registerInventorySourceItemTools(mockServer.server, client);
 
     // Initialize fixtures
     inventoryFixtures = new InventoryFixtures(client);
@@ -39,7 +41,7 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
 
   afterEach(async () => {
     // Clean up fixtures
-    // await inventoryFixtures.cleanupCurrentTest();
+    await inventoryFixtures.cleanupCurrentTest();
   });
 
   describe("Source Selection Tools", () => {
@@ -65,14 +67,16 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
       inventoryFixtures.setCurrentTest("source_selection");
       console.log("🧪 Testing source selection...");
 
-      // Step 1: Create test stock and source
+      // Step 1: Create test stock and multiple sources
       const stock = await inventoryFixtures.createStockFixture("selection_test_stock");
-      const source = await inventoryFixtures.createSourceFixture("selection_test_source");
+      const source1 = await inventoryFixtures.createSourceFixture("selection_test_source_1");
+      const source2 = await inventoryFixtures.createSourceFixture("selection_test_source_2");
 
-      console.log(`📦 Created test stock: ${stock.stock_id}, source: ${source.source_code}`);
+      console.log(`📦 Created test stock: ${stock.stock_id}, sources: ${source1.source_code}, ${source2.source_code}`);
 
-      // Step 2: Create stock-source link
-      await inventoryFixtures.createStockSourceLinkFixture(stock.stock_id!, source.source_code!, 1);
+      // Step 2: Create stock-source links with different priorities
+      await inventoryFixtures.createStockSourceLinkFixture(stock.stock_id!, source1.source_code!, 1);
+      await inventoryFixtures.createStockSourceLinkFixture(stock.stock_id!, source2.source_code!, 2);
 
       // Step 3: Create a test product
       const productSku = "selection_test_" + inventoryFixtures.getCurrentTestUniqueId();
@@ -97,14 +101,39 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
 
       console.log(`📦 Created test product: ${productSku}`);
 
-      // Step 4: Perform source selection
+      // Step 4: Create source items for the product at both sources
+      const createSourceItem1Result = await mockServer.callTool("create-source-item", {
+        sku: productSku,
+        source_code: source1.source_code!,
+        quantity: 30,
+        status: 1,
+      });
+
+      const createSourceItem2Result = await mockServer.callTool("create-source-item", {
+        sku: productSku,
+        source_code: source2.source_code!,
+        quantity: 20,
+        status: 1,
+      });
+
+      const createSourceItem1ResponseText = extractToolResponseText(createSourceItem1Result);
+      const createSourceItem1Parsed = parseToolResponse(createSourceItem1ResponseText);
+      expect(createSourceItem1Parsed.data).toBeDefined();
+
+      const createSourceItem2ResponseText = extractToolResponseText(createSourceItem2Result);
+      const createSourceItem2Parsed = parseToolResponse(createSourceItem2ResponseText);
+      expect(createSourceItem2Parsed.data).toBeDefined();
+
+      console.log(`📦 Created source items for product: ${productSku} at sources: ${source1.source_code} (30 qty), ${source2.source_code} (20 qty)`);
+
+      // Step 5: Perform source selection with quantity that requires multiple sources
       const sourceSelectionResult = await mockServer.callTool("run-source-selection-algorithm", {
         inventory_request: {
           stock_id: stock.stock_id!,
           items: [
             {
               sku: productSku,
-              qty: 5,
+              qty: 40, // Request more than available at source1 (30), so it should use both sources
             },
           ],
         },
@@ -114,11 +143,27 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
       const selectionResponseText = extractToolResponseText(sourceSelectionResult);
       const selectionParsed = parseToolResponse(selectionResponseText);
       expect(selectionParsed.data).toBeDefined();
+      expect(selectionParsed.data.length).toBeGreaterThan(0);
 
       const selectionData = JSON.parse(selectionParsed.data[0]);
       expect(selectionData).toBeDefined();
 
+      // Verify that source selection worked correctly with multiple sources
+      expect(selectionData.source_selection_items).toBeDefined();
+      expect(selectionData.source_selection_items.length).toBeGreaterThan(0);
+
+      // Check that we got items from both sources (priority algorithm should use source1 first, then source2)
+      const sourceCodes = selectionData.source_selection_items.map((item: { source_code: string }) => item.source_code);
+      expect(sourceCodes).toContain(source1.source_code);
+      expect(sourceCodes).toContain(source2.source_code);
+
+      // Verify total quantity matches our request
+      const totalQty = selectionData.source_selection_items.reduce((sum: number, item: { qty_to_deduct: number }) => sum + item.qty_to_deduct, 0);
+      expect(totalQty).toBe(40);
+
       console.log(`🔍 Source selection completed: ${selectionData.source_selection_items?.length || 0} items selected`);
+      console.log(`📊 Selected sources: ${sourceCodes.join(", ")}`);
+      console.log(`📊 Total quantity: ${totalQty}`);
       console.log("✅ Source selection test completed successfully!");
     }, 60000);
   });
