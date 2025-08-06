@@ -140,6 +140,65 @@ All registered MCP tools are organized by resource type below:
 | get-store-groups  | Get all store groups in Adobe Commerce.                           |
 | get-websites      | Get all websites in Adobe Commerce.                               |
 
+### Inventory Management (MSI - Multi-Source Inventory)
+
+#### MSI Source Items
+
+| Tool ID                                    | Description                                                           |
+| ------------------------------------------ | --------------------------------------------------------------------- |
+| search-msi-source-items                    | Search for source items with flexible filters and pagination.         |
+| create-msi-source-item                     | Create a new source item with product SKU, source code, and quantity. |
+| delete-msi-source-item                     | Delete a source item by SKU and source code.                          |
+| are-products-salable-msi                   | Check if multiple products are salable for given SKUs and stock ID.   |
+| are-products-salable-for-requested-qty-msi | Check if products are salable for specific requested quantities.      |
+| is-product-salable-msi                     | Check if a specific product is salable for a given stock.             |
+| is-product-salable-for-requested-qty-msi   | Check if a product is salable for a specific requested quantity.      |
+| get-product-salable-quantity-msi           | Get the salable quantity for a specific product and stock.            |
+
+#### MSI Stocks
+
+| Tool ID             | Description                                             |
+| ------------------- | ------------------------------------------------------- |
+| search-msi-stocks   | Search for stocks with flexible filters and pagination. |
+| get-msi-stock-by-id | Get stock data by given stockId.                        |
+| create-msi-stock    | Save Stock data.                                        |
+| update-msi-stock    | Save Stock data.                                        |
+| delete-msi-stock    | Delete the Stock data by stockId.                       |
+| resolve-msi-stock   | Resolve Stock by Sales Channel type and code.           |
+
+#### MSI Sources
+
+| Tool ID                | Description                     |
+| ---------------------- | ------------------------------- |
+| search-msi-sources     | Find Sources by SearchCriteria. |
+| get-msi-source-by-code | Get Source data by given code.  |
+| create-msi-source      | Save Source data.               |
+| update-msi-source      | Save Source data.               |
+
+#### MSI Stock-Source Links
+
+| Tool ID                       | Description                                        |
+| ----------------------------- | -------------------------------------------------- |
+| search-msi-stock-source-links | Find StockSourceLink list by given SearchCriteria. |
+| create-msi-stock-source-links | Save StockSourceLink list data.                    |
+| delete-msi-stock-source-links | Remove StockSourceLink list.                       |
+
+#### MSI Source Selection
+
+| Tool ID                             | Description                                        |
+| ----------------------------------- | -------------------------------------------------- |
+| get-msi-source-selection-algorithms | Get list of available source selection algorithms. |
+| run-msi-source-selection-algorithm  | Get source selection algorithm result.             |
+
+### Inventory Management (Single Stock System)
+
+| Tool ID                    | Description                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------- |
+| get-single-stock-item      | Get stock information for a specific product by SKU (single stock system).                  |
+| update-single-stock-item   | Update stock item information (quantity, status, etc.) for a product (single stock system). |
+| get-single-low-stock-items | Get products with low inventory quantity below specified threshold (single stock system).   |
+| get-single-stock-status    | Get stock status information for a specific product by SKU (single stock system).           |
+
 Each tool provides a set of MCP-compatible operations for its resource type. For a full list and detailed parameters, see the source files in `src/tools/`.
 
 ## Usage
@@ -191,6 +250,7 @@ adobe-commerce-mcp/
 │   │   ├── categories/         # Category API and types
 │   │   ├── cms/                # CMS blocks and pages API and types
 │   │   ├── customers/          # Customer API and types
+│   │   ├── inventory/          # Inventory API, MSI, and single stock types
 │   │   ├── orders/             # Order API and types
 │   │   ├── products/           # Product API, attributes, sets, and types
 │   │   ├── search-criteria/    # Search criteria schemas and types
@@ -278,6 +338,7 @@ Then configure your test environment variables in `.env.test`.
 TODO
 
 config
+
 - IS MSI enabled?
 - can manage stock?
 - if you update stock of simple, update in stock for config
