@@ -1,6 +1,6 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
-import { registerInventoryStockTools } from "../../src/tools/tools-for-inventory-stocks";
+import { registerInventoryMsiStockTools } from "../../src/tools/tools-for-inventory-msi-stocks";
 import { createMockMcpServer, extractContextContent, extractToolResponseText, MockMcpServer, parseToolResponse } from "../utils/mock-mcp-server";
 import { InventoryFixtures } from "./fixtures/inventory-fixtures";
 
@@ -25,7 +25,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
     mockServer = createMockMcpServer();
 
     // Register stocks tools
-    registerInventoryStockTools(mockServer.server, client);
+    registerInventoryMsiStockTools(mockServer.server, client);
 
     // Initialize fixtures
     inventoryFixtures = new InventoryFixtures(client);
@@ -51,7 +51,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
         sales_channels: [{ type: "website", code: "base" }],
       };
 
-      const createStockResult = await mockServer.callTool("create-stock", stockInput);
+      const createStockResult = await mockServer.callTool("create-msi-stock", stockInput);
 
       const createResponseText = extractToolResponseText(createStockResult);
       const createParsed = parseToolResponse(createResponseText);
@@ -65,7 +65,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log(`🏭 Created stock with ID: ${stockId}`);
 
       // Step 2: Get stock by ID and validate the data matches what was sent
-      const getStockResult = await mockServer.callTool("get-stock-by-id", {
+      const getStockResult = await mockServer.callTool("get-msi-stock-by-id", {
         stock_id: stockId,
       });
 
@@ -97,7 +97,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
         name: "Updated Test Stock " + inventoryFixtures.getCurrentTestUniqueId(),
       };
 
-      const updateStockResult = await mockServer.callTool("update-stock", updateInput);
+      const updateStockResult = await mockServer.callTool("update-msi-stock", updateInput);
 
       const updateResponseText = extractToolResponseText(updateStockResult);
       const updateParsed = parseToolResponse(updateResponseText);
@@ -108,7 +108,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       expect(updateContextMessage).toContain("Stock has been successfully updated");
 
       // Step 4: Get the updated stock and validate the changes
-      const getUpdatedStockResult = await mockServer.callTool("get-stock-by-id", {
+      const getUpdatedStockResult = await mockServer.callTool("get-msi-stock-by-id", {
         stock_id: stockId,
       });
 
@@ -127,7 +127,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log(`🔄 Updated stock: ${stockId}`);
 
       // Step 5: Delete stock
-      const deleteStockResult = await mockServer.callTool("delete-stock", {
+      const deleteStockResult = await mockServer.callTool("delete-msi-stock", {
         stock_id: stockId,
       });
 
@@ -154,7 +154,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log(`📦 Created test stocks: ${stock1.stock_id}, ${stock2.stock_id}`);
 
       // Step 2: Search stocks using the current test filter to find only our fixtures
-      const searchStocksResult = await mockServer.callTool("search-stocks", {
+      const searchStocksResult = await mockServer.callTool("search-msi-stocks", {
         filters: [inventoryFixtures.getCurrentTestStockFilter()],
         pageSize: 10,
       });
@@ -198,7 +198,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log(`📦 Created test stock: ${stock.stock_id}`);
 
       // Step 2: Resolve stock by sales channel
-      const resolveStockResult = await mockServer.callTool("resolve-stock", {
+      const resolveStockResult = await mockServer.callTool("resolve-msi-stock", {
         type: "website",
         code: "base",
       });
@@ -222,7 +222,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log("🧪 Testing non-existent stock handling...");
 
       // Try to get non-existent stock
-      const getNonExistentStockResult = await mockServer.callTool("get-stock-by-id", {
+      const getNonExistentStockResult = await mockServer.callTool("get-msi-stock-by-id", {
         stock_id: 999999,
       });
 
@@ -241,7 +241,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
 
       // Try to search stocks with invalid criteria
       try {
-        await mockServer.callTool("search-stocks", {
+        await mockServer.callTool("search-msi-stocks", {
           page: 0, // Invalid page
           pageSize: 0, // Invalid page size
         });
@@ -262,7 +262,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log("🧪 Testing context messages for successful stock operations...");
 
       // Test stock creation context message
-      const createStockResult = await mockServer.callTool("create-stock", {
+      const createStockResult = await mockServer.callTool("create-msi-stock", {
         name: "Context Test Stock " + inventoryFixtures.getCurrentTestUniqueId(),
       });
 
@@ -279,7 +279,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log("🧪 Testing stock links and extension attributes...");
 
       // Test 1: Create stock without sales channels
-      const createStockWithoutLinksResult = await mockServer.callTool("create-stock", {
+      const createStockWithoutLinksResult = await mockServer.callTool("create-msi-stock", {
         name: "Stock Without Links " + inventoryFixtures.getCurrentTestUniqueId(),
       });
 
@@ -288,7 +288,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       const stockIdWithoutLinks = Number(JSON.parse(createWithoutLinksParsed.data[0]));
 
       // Get the stock and verify it doesn't have extension_attributes
-      const getStockWithoutLinksResult = await mockServer.callTool("get-stock-by-id", {
+      const getStockWithoutLinksResult = await mockServer.callTool("get-msi-stock-by-id", {
         stock_id: stockIdWithoutLinks,
       });
 
@@ -302,7 +302,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log(`📦 Stock without links: ${stockDataWithoutLinks.name}`);
 
       // Test 2: Create stock with sales channels
-      const createStockWithLinksResult = await mockServer.callTool("create-stock", {
+      const createStockWithLinksResult = await mockServer.callTool("create-msi-stock", {
         name: "Stock With Links " + inventoryFixtures.getCurrentTestUniqueId(),
         sales_channels: [{ type: "website", code: "base" }],
       });
@@ -312,7 +312,7 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       const stockIdWithLinks = Number(JSON.parse(createWithLinksParsed.data[0]));
 
       // Get the stock and verify it has extension_attributes with sales_channels
-      const getStockWithLinksResult = await mockServer.callTool("get-stock-by-id", {
+      const getStockWithLinksResult = await mockServer.callTool("get-msi-stock-by-id", {
         stock_id: stockIdWithLinks,
       });
 
@@ -332,8 +332,8 @@ describe("Inventory Stocks Tools - Functional Tests", () => {
       console.log(`🔗 Stock with links: ${stockDataWithLinks.name} has ${stockDataWithLinks.extension_attributes.sales_channels.length} sales channel(s)`);
 
       // Clean up
-      await mockServer.callTool("delete-stock", { stock_id: stockIdWithoutLinks });
-      await mockServer.callTool("delete-stock", { stock_id: stockIdWithLinks });
+      await mockServer.callTool("delete-msi-stock", { stock_id: stockIdWithoutLinks });
+      await mockServer.callTool("delete-msi-stock", { stock_id: stockIdWithLinks });
 
       console.log("✅ Stock links and extension attributes test completed successfully!");
     }, 30000);

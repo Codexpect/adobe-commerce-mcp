@@ -1,7 +1,7 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
-import { registerInventorySourceItemTools } from "../../src/tools/tools-for-inventory-source-items";
-import { registerInventoryStockSourceLinkTools } from "../../src/tools/tools-for-inventory-stock-source-links";
+import { registerInventoryMsiSourceItemTools } from "../../src/tools/tools-for-inventory-msi-source-items";
+import { registerInventoryMsiStockSourceLinkTools } from "../../src/tools/tools-for-inventory-msi-stock-source-links";
 import { registerProductTools } from "../../src/tools/tools-for-products";
 import { createMockMcpServer, extractContextContent, extractToolResponseText, MockMcpServer, parseToolResponse } from "../utils/mock-mcp-server";
 import { InventoryFixtures } from "./fixtures/inventory-fixtures";
@@ -31,8 +31,8 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
     // Register all necessary tools
     registerProductTools(mockServer.server, client);
-    registerInventorySourceItemTools(mockServer.server, client);
-    registerInventoryStockSourceLinkTools(mockServer.server, client);
+    registerInventoryMsiSourceItemTools(mockServer.server, client);
+    registerInventoryMsiStockSourceLinkTools(mockServer.server, client);
 
     // Initialize fixtures
     inventoryFixtures = new InventoryFixtures(client);
@@ -58,7 +58,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
         console.log(`🔍 Cleaning up tracked source item: ${sourceItem.sku} at ${sourceItem.source_code}`);
 
         try {
-          await mockServer.callTool("delete-source-item", {
+          await mockServer.callTool("delete-msi-source-item", {
             sku: sourceItem.sku,
             source_code: sourceItem.source_code,
           });
@@ -85,9 +85,9 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
     test("should register all source item tools", () => {
       const toolNames = Array.from(mockServer.registeredTools.keys());
 
-      expect(toolNames).toContain("search-source-items");
-      expect(toolNames).toContain("create-source-item");
-      expect(toolNames).toContain("delete-source-item");
+      expect(toolNames).toContain("search-msi-source-items");
+      expect(toolNames).toContain("create-msi-source-item");
+      expect(toolNames).toContain("delete-msi-source-item");
       expect(toolNames).toContain("are-products-salable-msi");
       expect(toolNames).toContain("are-products-salable-for-requested-qty-msi");
       expect(toolNames).toContain("is-product-salable-msi");
@@ -96,23 +96,23 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
     });
 
     test("should register search source items tool with correct configuration", () => {
-      const tool = mockServer.registeredTools.get("search-source-items");
+      const tool = mockServer.registeredTools.get("search-msi-source-items");
       expect(tool).toBeDefined();
-      expect(tool!.definition.title).toBe("Search Source Items");
+      expect(tool!.definition.title).toBe("Search Source Items (MSI)");
       expect(tool!.definition.annotations?.readOnlyHint).toBe(true);
     });
 
     test("should register create source item tool with correct configuration", () => {
-      const tool = mockServer.registeredTools.get("create-source-item");
+      const tool = mockServer.registeredTools.get("create-msi-source-item");
       expect(tool).toBeDefined();
-      expect(tool!.definition.title).toBe("Create Source Item");
+      expect(tool!.definition.title).toBe("Create Source Item (MSI)");
       expect(tool!.definition.annotations?.readOnlyHint).toBe(false);
     });
 
     test("should register delete source item tool with correct configuration", () => {
-      const tool = mockServer.registeredTools.get("delete-source-item");
+      const tool = mockServer.registeredTools.get("delete-msi-source-item");
       expect(tool).toBeDefined();
-      expect(tool!.definition.title).toBe("Delete Source Item");
+      expect(tool!.definition.title).toBe("Delete Source Item (MSI)");
       expect(tool!.definition.annotations?.readOnlyHint).toBe(false);
     });
 
@@ -166,7 +166,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created product: ${product.sku}`);
 
       // Step 2: Link source to stock
-      const createLinkResult = await mockServer.callTool("create-stock-source-links", {
+      const createLinkResult = await mockServer.callTool("create-msi-stock-source-links", {
         links: [
           {
             stock_id: stock.stock_id!,
@@ -183,7 +183,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`🔗 Linked source to stock`);
 
       // Step 3: Create source item for the product
-      const createSourceItemResult = await mockServer.callTool("create-source-item", {
+      const createSourceItemResult = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
         quantity: 100,
@@ -236,7 +236,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       const salabilityForQtyData = JSON.parse(isSalableForQtyParsed.data[0]);
       expect(salabilityForQtyData).toBeDefined();
-      expect(salabilityForQtyData).toHaveProperty('salable');
+      expect(salabilityForQtyData).toHaveProperty("salable");
       expect(salabilityForQtyData.salable).toBe(true);
 
       console.log(`🔍 Product salability for quantity check (MSI): ${salabilityForQtyData.salable}`);
@@ -254,7 +254,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       const salableQty = JSON.parse(getSalableQtyParsed.data[0]);
       expect(salableQty).toBeDefined();
-      expect(typeof salableQty).toBe('number');
+      expect(typeof salableQty).toBe("number");
       expect(salableQty).toBe(100);
 
       // Verify context message for salable quantity
@@ -283,7 +283,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`🏪 Created source: ${source.source_code}`);
 
       // Step 2: Link source to stock
-      const createLinkResult = await mockServer.callTool("create-stock-source-links", {
+      const createLinkResult = await mockServer.callTool("create-msi-stock-source-links", {
         links: [
           {
             stock_id: stock.stock_id!,
@@ -318,7 +318,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
         console.log(`📦 Created test product ${i}: ${product.sku}`);
 
         // Create source item for each product
-        const createSourceItemResult = await mockServer.callTool("create-source-item", {
+        const createSourceItemResult = await mockServer.callTool("create-msi-source-item", {
           sku: product.sku,
           source_code: source.source_code,
           quantity: 50 + i * 10,
@@ -352,11 +352,11 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       const areSalableData = areSalableParsed.data.map((item) => JSON.parse(item));
       expect(areSalableData).toBeDefined();
       expect(Array.isArray(areSalableData)).toBe(true);
-      
+
       areSalableData.forEach((result, index) => {
-        expect(result).toHaveProperty('sku');
-        expect(result).toHaveProperty('salable');
-        expect(typeof result.salable).toBe('boolean');
+        expect(result).toHaveProperty("sku");
+        expect(result).toHaveProperty("salable");
+        expect(typeof result.salable).toBe("boolean");
         expect(result.sku).toBe(productSkus[index]);
       });
 
@@ -381,11 +381,11 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       const areSalableForQtyData = areSalableForQtyParsed.data.map((item) => JSON.parse(item));
       expect(areSalableForQtyData).toBeDefined();
       expect(Array.isArray(areSalableForQtyData)).toBe(true);
-      
+
       areSalableForQtyData.forEach((result, index) => {
-        expect(result).toHaveProperty('sku');
-        expect(result).toHaveProperty('salable');
-        expect(typeof result.salable).toBe('boolean');
+        expect(result).toHaveProperty("sku");
+        expect(result).toHaveProperty("salable");
+        expect(typeof result.salable).toBe("boolean");
         expect(result.sku).toBe(productSkus[index]);
       });
 
@@ -427,7 +427,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created product: ${product.sku}`);
 
       // Step 3: Create a source item
-      const createSourceItemResult = await mockServer.callTool("create-source-item", {
+      const createSourceItemResult = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
         quantity: 100,
@@ -447,7 +447,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created source item for ${product.sku} at ${source.source_code}`);
 
       // Step 4: Search for the source item to verify it was created
-      const searchSourceItemsResult = await mockServer.callTool("search-source-items", {
+      const searchSourceItemsResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -520,14 +520,14 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created product: ${product.sku}`);
 
       // Step 3: Create source items for both sources
-      const createSourceItem1Result = await mockServer.callTool("create-source-item", {
+      const createSourceItem1Result = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source1.source_code,
         quantity: 50,
         status: 1,
       });
 
-      const createSourceItem2Result = await mockServer.callTool("create-source-item", {
+      const createSourceItem2Result = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source2.source_code,
         quantity: 75,
@@ -548,7 +548,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created source items for ${product.sku} at both sources`);
 
       // Step 4: Search for all source items for this product
-      const searchSourceItemsResult = await mockServer.callTool("search-source-items", {
+      const searchSourceItemsResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -609,7 +609,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created product: ${product.sku}`);
 
       // Step 2: Create a source item
-      const createSourceItemResult = await mockServer.callTool("create-source-item", {
+      const createSourceItemResult = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
         quantity: 200,
@@ -623,7 +623,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created source item for ${product.sku} at ${source.source_code}`);
 
       // Step 3: Verify the source item exists
-      const searchBeforeResult = await mockServer.callTool("search-source-items", {
+      const searchBeforeResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -649,7 +649,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`✅ Verified source item exists before deletion`);
 
       // Step 4: Delete the source item
-      const deleteSourceItemResult = await mockServer.callTool("delete-source-item", {
+      const deleteSourceItemResult = await mockServer.callTool("delete-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
       });
@@ -665,7 +665,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`🗑️ Successfully deleted source item`);
 
       // Step 5: Verify the source item no longer exists
-      const searchAfterResult = await mockServer.callTool("search-source-items", {
+      const searchAfterResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -698,7 +698,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log("🧪 Testing basic search source items functionality...");
 
       // Test basic search without filters
-      const searchResult = await mockServer.callTool("search-source-items", {
+      const searchResult = await mockServer.callTool("search-msi-source-items", {
         page: 1,
         pageSize: 10,
       });
@@ -761,21 +761,21 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created products: ${product1.sku}, ${product2.sku}`);
 
       // Step 2: Create source items
-      await mockServer.callTool("create-source-item", {
+      await mockServer.callTool("create-msi-source-item", {
         sku: product1.sku,
         source_code: source1.source_code,
         quantity: 100,
         status: 1,
       });
 
-      await mockServer.callTool("create-source-item", {
+      await mockServer.callTool("create-msi-source-item", {
         sku: product1.sku,
         source_code: source2.source_code,
         quantity: 150,
         status: 1,
       });
 
-      await mockServer.callTool("create-source-item", {
+      await mockServer.callTool("create-msi-source-item", {
         sku: product2.sku,
         source_code: source1.source_code,
         quantity: 75,
@@ -792,7 +792,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created source items for testing`);
 
       // Step 3: Search by SKU
-      const searchBySkuResult = await mockServer.callTool("search-source-items", {
+      const searchBySkuResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -812,7 +812,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`✅ Successfully searched by SKU, found ${skuResults.length} items`);
 
       // Step 4: Search by source code
-      const searchBySourceResult = await mockServer.callTool("search-source-items", {
+      const searchBySourceResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "source_code",
@@ -832,7 +832,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`✅ Successfully searched by source code, found ${sourceResults.length} items`);
 
       // Step 5: Search with pagination
-      const searchWithPaginationResult = await mockServer.callTool("search-source-items", {
+      const searchWithPaginationResult = await mockServer.callTool("search-msi-source-items", {
         page: 1,
         pageSize: 1,
         filters: [
@@ -861,7 +861,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log("🧪 Testing search with no results...");
 
       // Search for non-existent source items
-      const searchNoResultsResult = await mockServer.callTool("search-source-items", {
+      const searchNoResultsResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -912,7 +912,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created product: ${product.sku}`);
 
       // Step 2: Create source item with enabled status (1)
-      const createEnabledResult = await mockServer.callTool("create-source-item", {
+      const createEnabledResult = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
         quantity: 100,
@@ -932,7 +932,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created enabled source item`);
 
       // Step 3: Verify the source item was created with correct status
-      const searchResult = await mockServer.callTool("search-source-items", {
+      const searchResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -964,7 +964,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log("🧪 Testing source item creation with validation errors...");
 
       // Try to create source item with invalid data (non-existent product)
-      const createInvalidResult = await mockServer.callTool("create-source-item", {
+      const createInvalidResult = await mockServer.callTool("create-msi-source-item", {
         sku: "non-existent-product-sku",
         source_code: "non-existent-source",
         quantity: 100,
@@ -1010,7 +1010,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created product: ${product.sku}`);
 
       // Step 2: Create a source item
-      const createSourceItemResult = await mockServer.callTool("create-source-item", {
+      const createSourceItemResult = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
         quantity: 300,
@@ -1024,7 +1024,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created source item for deletion test`);
 
       // Step 3: Verify the source item exists before deletion
-      const searchBeforeResult = await mockServer.callTool("search-source-items", {
+      const searchBeforeResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -1047,7 +1047,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`✅ Verified source item exists before deletion`);
 
       // Step 4: Delete the source item
-      const deleteSourceItemResult = await mockServer.callTool("delete-source-item", {
+      const deleteSourceItemResult = await mockServer.callTool("delete-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
       });
@@ -1063,7 +1063,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`🗑️ Successfully deleted source item`);
 
       // Step 5: Verify the source item no longer exists
-      const searchAfterResult = await mockServer.callTool("search-source-items", {
+      const searchAfterResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -1088,7 +1088,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log("🧪 Testing deletion of non-existent source item...");
 
       // Try to delete a non-existent source item
-      const deleteNonExistentResult = await mockServer.callTool("delete-source-item", {
+      const deleteNonExistentResult = await mockServer.callTool("delete-msi-source-item", {
         sku: "non-existent-product-sku",
         source_code: "non-existent-source-code",
       });
@@ -1132,7 +1132,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created product: ${product.sku}`);
 
       // Step 2: Create source item with zero quantity
-      const createSourceItemResult = await mockServer.callTool("create-source-item", {
+      const createSourceItemResult = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
         quantity: 0,
@@ -1152,7 +1152,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created source item with zero quantity`);
 
       // Step 3: Verify the source item was created with zero quantity
-      const searchResult = await mockServer.callTool("search-source-items", {
+      const searchResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -1205,7 +1205,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
 
       // Step 2: Create source item with large quantity
       const largeQuantity = 999999;
-      const createSourceItemResult = await mockServer.callTool("create-source-item", {
+      const createSourceItemResult = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
         quantity: largeQuantity,
@@ -1225,7 +1225,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created source item with large quantity: ${largeQuantity}`);
 
       // Step 3: Verify the source item was created with correct quantity
-      const searchResult = await mockServer.callTool("search-source-items", {
+      const searchResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",
@@ -1284,7 +1284,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`📦 Created product: ${product.sku}`);
 
       // Step 2: Test create source item context message
-      const createSourceItemResult = await mockServer.callTool("create-source-item", {
+      const createSourceItemResult = await mockServer.callTool("create-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
         quantity: 100,
@@ -1297,7 +1297,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log(`✅ Create source item context message is appropriate`);
 
       // Step 3: Test delete source item context message
-      const deleteSourceItemResult = await mockServer.callTool("delete-source-item", {
+      const deleteSourceItemResult = await mockServer.callTool("delete-msi-source-item", {
         sku: product.sku,
         source_code: source.source_code,
       });
@@ -1314,7 +1314,7 @@ describe("Inventory Source Items Tools - Functional Tests", () => {
       console.log("🧪 Testing context messages for search operations...");
 
       // Test search source items context message
-      const searchSourceItemsResult = await mockServer.callTool("search-source-items", {
+      const searchSourceItemsResult = await mockServer.callTool("search-msi-source-items", {
         filters: [
           {
             field: "sku",

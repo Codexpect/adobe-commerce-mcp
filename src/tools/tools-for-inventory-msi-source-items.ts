@@ -10,7 +10,7 @@ import {
   getSourceItems,
   isProductSalable,
   isProductSalableForRequestedQty,
-} from "../adobe/inventory/api-inventory-source-items";
+} from "../adobe/inventory/api-inventory-msi-source-items";
 import { mapCreateSourceItemInputToApiPayload } from "../adobe/inventory/mapping/source-item-mapping";
 import {
   areProductsSalableForRequestedQtyInputSchema,
@@ -26,7 +26,7 @@ import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
 import { toolTextResponse } from "./tool-response";
 
-export function registerInventorySourceItemTools(server: McpServer, client: AdobeCommerceClient) {
+export function registerInventoryMsiSourceItemTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchSourceItemsTool(server, client);
   registerCreateSourceItemTool(server, client);
   registerDeleteSourceItemTool(server, client);
@@ -39,9 +39,9 @@ export function registerInventorySourceItemTools(server: McpServer, client: Adob
 
 function registerSearchSourceItemsTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "search-source-items",
+    "search-msi-source-items",
     {
-      title: "Search Source Items",
+      title: "Search Source Items (MSI)",
       description: "Search for source items with flexible filters and pagination",
       inputSchema: searchCriteriaInputSchema,
       annotations: {
@@ -75,9 +75,9 @@ function registerSearchSourceItemsTool(server: McpServer, client: AdobeCommerceC
 
 function registerCreateSourceItemTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "create-source-item",
+    "create-msi-source-item",
     {
-      title: "Create Source Item",
+      title: "Create Source Item (MSI)",
       description: "Create a new source item with product SKU, source code, and quantity",
       inputSchema: createSourceItemInputSchema,
       annotations: {
@@ -114,9 +114,9 @@ function registerCreateSourceItemTool(server: McpServer, client: AdobeCommerceCl
 
 function registerDeleteSourceItemTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "delete-source-item",
+    "delete-msi-source-item",
     {
-      title: "Delete Source Item",
+      title: "Delete Source Item (MSI)",
       description: "Delete a source item by SKU and source code",
       inputSchema: deleteSourceItemInputSchema,
       annotations: {

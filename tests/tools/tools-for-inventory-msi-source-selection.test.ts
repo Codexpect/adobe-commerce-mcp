@@ -1,7 +1,7 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
-import { registerInventorySourceItemTools } from "../../src/tools/tools-for-inventory-source-items";
-import { registerInventorySourceSelectionTools } from "../../src/tools/tools-for-inventory-source-selection";
+import { registerInventoryMsiSourceItemTools } from "../../src/tools/tools-for-inventory-msi-source-items";
+import { registerInventoryMsiSourceSelectionTools } from "../../src/tools/tools-for-inventory-msi-source-selection";
 import { registerProductTools } from "../../src/tools/tools-for-products";
 import { createMockMcpServer, extractToolResponseText, MockMcpServer, parseToolResponse } from "../utils/mock-mcp-server";
 import { InventoryFixtures } from "./fixtures/inventory-fixtures";
@@ -27,9 +27,9 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
     mockServer = createMockMcpServer();
 
     // Register source selection tools, product tools, and source item tools (needed for creating test products and source items)
-    registerInventorySourceSelectionTools(mockServer.server, client);
+    registerInventoryMsiSourceSelectionTools(mockServer.server, client);
     registerProductTools(mockServer.server, client);
-    registerInventorySourceItemTools(mockServer.server, client);
+    registerInventoryMsiSourceItemTools(mockServer.server, client);
 
     // Initialize fixtures
     inventoryFixtures = new InventoryFixtures(client);
@@ -50,7 +50,7 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
       console.log("🧪 Testing source selection algorithms...");
 
       // Step 1: Get source selection algorithms
-      const getAlgorithmsResult = await mockServer.callTool("get-source-selection-algorithms", {});
+      const getAlgorithmsResult = await mockServer.callTool("get-msi-source-selection-algorithms", {});
 
       const getAlgorithmsResponseText = extractToolResponseText(getAlgorithmsResult);
       const getAlgorithmsParsed = parseToolResponse(getAlgorithmsResponseText);
@@ -102,14 +102,14 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
       console.log(`📦 Created test product: ${productSku}`);
 
       // Step 4: Create source items for the product at both sources
-      const createSourceItem1Result = await mockServer.callTool("create-source-item", {
+      const createSourceItem1Result = await mockServer.callTool("create-msi-source-item", {
         sku: productSku,
         source_code: source1.source_code!,
         quantity: 30,
         status: 1,
       });
 
-      const createSourceItem2Result = await mockServer.callTool("create-source-item", {
+      const createSourceItem2Result = await mockServer.callTool("create-msi-source-item", {
         sku: productSku,
         source_code: source2.source_code!,
         quantity: 20,
@@ -127,7 +127,7 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
       console.log(`📦 Created source items for product: ${productSku} at sources: ${source1.source_code} (30 qty), ${source2.source_code} (20 qty)`);
 
       // Step 5: Perform source selection with quantity that requires multiple sources
-      const sourceSelectionResult = await mockServer.callTool("run-source-selection-algorithm", {
+      const sourceSelectionResult = await mockServer.callTool("run-msi-source-selection-algorithm", {
         inventory_request: {
           stock_id: stock.stock_id!,
           items: [
@@ -175,7 +175,7 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
 
       // Try to run source selection with invalid data
       try {
-        await mockServer.callTool("run-source-selection-algorithm", {
+        await mockServer.callTool("run-msi-source-selection-algorithm", {
           inventory_request: {
             stock_id: 999999, // Non-existent stock
             items: [
@@ -204,7 +204,7 @@ describe("Inventory Source Selection Tools - Functional Tests", () => {
       console.log("🧪 Testing context messages for successful source selection operations...");
 
       // Test source selection algorithms context message
-      const getAlgorithmsResult = await mockServer.callTool("get-source-selection-algorithms", {});
+      const getAlgorithmsResult = await mockServer.callTool("get-msi-source-selection-algorithms", {});
 
       const getAlgorithmsResponseText = extractToolResponseText(getAlgorithmsResult);
       const getAlgorithmsParsed = parseToolResponse(getAlgorithmsResponseText);

@@ -1,6 +1,6 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
-import { registerInventoryStockSourceLinkTools } from "../../src/tools/tools-for-inventory-stock-source-links";
+import { registerInventoryMsiStockSourceLinkTools } from "../../src/tools/tools-for-inventory-msi-stock-source-links";
 import { createMockMcpServer, extractContextContent, extractToolResponseText, MockMcpServer, parseToolResponse } from "../utils/mock-mcp-server";
 import { InventoryFixtures } from "./fixtures/inventory-fixtures";
 
@@ -25,7 +25,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
     mockServer = createMockMcpServer();
 
     // Register stock-source links tools
-    registerInventoryStockSourceLinkTools(mockServer.server, client);
+    registerInventoryMsiStockSourceLinkTools(mockServer.server, client);
 
     // Initialize fixtures
     inventoryFixtures = new InventoryFixtures(client);
@@ -52,7 +52,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
       console.log(`📦 Created test stock: ${stock.stock_id}, source: ${source.source_code}`);
 
       // Step 2: Create stock-source link
-      const createLinkResult = await mockServer.callTool("create-stock-source-links", {
+      const createLinkResult = await mockServer.callTool("create-msi-stock-source-links", {
         links: [
           {
             stock_id: stock.stock_id!,
@@ -73,7 +73,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
       console.log(`🔗 Created stock-source link`);
 
       // Step 3: Search stock-source links
-      const searchLinksResult = await mockServer.callTool("search-stock-source-links", {
+      const searchLinksResult = await mockServer.callTool("search-msi-stock-source-links", {
         page: 1,
         pageSize: 10,
       });
@@ -92,7 +92,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
       console.log(`🔍 Found ${linksData.length} stock-source links in search results`);
 
       // Step 4: Delete stock-source link
-      const deleteLinkResult = await mockServer.callTool("delete-stock-source-links", {
+      const deleteLinkResult = await mockServer.callTool("delete-msi-stock-source-links", {
         links: [
           {
             stock_id: stock.stock_id!,
@@ -128,7 +128,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
       console.log(`🏪 Created test sources: ${source1.source_code}, ${source2.source_code}`);
 
       // Step 2: Create multiple stock-source links with different priorities
-      const createLinksResult = await mockServer.callTool("create-stock-source-links", {
+      const createLinksResult = await mockServer.callTool("create-msi-stock-source-links", {
         links: [
           {
             stock_id: stock1.stock_id!,
@@ -164,7 +164,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
       console.log(`🔗 Created multiple stock-source links`);
 
       // Step 3: Search and verify the links
-      const searchLinksResult = await mockServer.callTool("search-stock-source-links", {
+      const searchLinksResult = await mockServer.callTool("search-msi-stock-source-links", {
         page: 1,
         pageSize: 10,
       });
@@ -198,7 +198,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
 
       // Try to create stock-source link with non-existent stock and source
       try {
-        await mockServer.callTool("create-stock-source-links", {
+        await mockServer.callTool("create-msi-stock-source-links", {
           links: [
             {
               stock_id: 999999, // Non-existent stock
@@ -223,7 +223,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
 
       // Try to search stock-source links with invalid criteria
       try {
-        await mockServer.callTool("search-stock-source-links", {
+        await mockServer.callTool("search-msi-stock-source-links", {
           page: 0, // Invalid page
           pageSize: 0, // Invalid page size
         });
@@ -248,7 +248,7 @@ describe("Inventory Stock-Source Links Tools - Functional Tests", () => {
       const source = await inventoryFixtures.createSourceFixture("context_link_source");
 
       // Test stock-source link creation context message
-      const createLinkResult = await mockServer.callTool("create-stock-source-links", {
+      const createLinkResult = await mockServer.callTool("create-msi-stock-source-links", {
         links: [
           {
             stock_id: stock.stock_id!,

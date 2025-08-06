@@ -1,7 +1,7 @@
 import { AdobeCommerceClient } from "../../../src/adobe/adobe-commerce-client";
-import { createSource, getSourceByCode } from "../../../src/adobe/inventory/api-inventory-sources";
-import { createStockSourceLinks, deleteStockSourceLinks } from "../../../src/adobe/inventory/api-inventory-stock-source-links";
-import { createStock, deleteStock, getStockById } from "../../../src/adobe/inventory/api-inventory-stocks";
+import { createSource, getSourceByCode } from "../../../src/adobe/inventory/api-inventory-msi-sources";
+import { createStockSourceLinks, deleteStockSourceLinks } from "../../../src/adobe/inventory/api-inventory-msi-stock-source-links";
+import { createStock, deleteStock, getStockById } from "../../../src/adobe/inventory/api-inventory-msi-stocks";
 import type { Source, Stock, StockSourceLink } from "../../../src/adobe/inventory/types/inventory";
 
 export interface FixtureStockDefinition {

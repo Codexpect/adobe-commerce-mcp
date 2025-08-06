@@ -1,6 +1,6 @@
 import { AdobeCommerceClient } from "../../src/adobe/adobe-commerce-client";
 import { CommerceParams } from "../../src/adobe/types/params";
-import { registerInventorySourceTools } from "../../src/tools/tools-for-inventory-sources";
+import { registerInventoryMsiSourceTools } from "../../src/tools/tools-for-inventory-msi-sources";
 import { createMockMcpServer, extractContextContent, extractToolResponseText, MockMcpServer, parseToolResponse } from "../utils/mock-mcp-server";
 import { InventoryFixtures } from "./fixtures/inventory-fixtures";
 
@@ -25,7 +25,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
     mockServer = createMockMcpServer();
 
     // Register sources tools
-    registerInventorySourceTools(mockServer.server, client);
+    registerInventoryMsiSourceTools(mockServer.server, client);
 
     // Initialize fixtures
     inventoryFixtures = new InventoryFixtures(client);
@@ -64,7 +64,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
         use_default_carrier_config: true,
       };
 
-      const createSourceResult = await mockServer.callTool("create-source", sourceInput);
+      const createSourceResult = await mockServer.callTool("create-msi-source", sourceInput);
 
       const createResponseText = extractToolResponseText(createSourceResult);
       const createParsed = parseToolResponse(createResponseText);
@@ -78,7 +78,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
       console.log(`🏪 Created source: ${sourceCode}`);
 
       // Step 2: Get source by code and validate the data matches what was sent
-      const getSourceResult = await mockServer.callTool("get-source-by-code", {
+      const getSourceResult = await mockServer.callTool("get-msi-source-by-code", {
         source_code: sourceCode,
       });
 
@@ -119,7 +119,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
         postcode: "10001",
       };
 
-      const updateSourceResult = await mockServer.callTool("update-source", updateInput);
+      const updateSourceResult = await mockServer.callTool("update-msi-source", updateInput);
 
       const updateResponseText = extractToolResponseText(updateSourceResult);
       const updateParsed = parseToolResponse(updateResponseText);
@@ -130,7 +130,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
       expect(updateContextMessage).toContain("Source has been successfully updated");
 
       // Step 4: Get the updated source and validate the changes
-      const getUpdatedSourceResult = await mockServer.callTool("get-source-by-code", {
+      const getUpdatedSourceResult = await mockServer.callTool("get-msi-source-by-code", {
         source_code: sourceCode,
       });
 
@@ -190,7 +190,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
       console.log(`🏪 Created test sources: ${source1.source_code}, ${source2.source_code}`);
 
       // Step 2: Search sources using the current test filter to find only our fixtures
-      const searchSourcesResult = await mockServer.callTool("search-sources", {
+      const searchSourcesResult = await mockServer.callTool("search-msi-sources", {
         filters: [inventoryFixtures.getCurrentTestSourceFilter()],
         pageSize: 10,
       });
@@ -245,7 +245,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
         postcode: "10001",
       };
 
-      const minimalSourceResult = await mockServer.callTool("create-source", minimalSourceInput);
+      const minimalSourceResult = await mockServer.callTool("create-msi-source", minimalSourceInput);
 
       const minimalResponseText = extractToolResponseText(minimalSourceResult);
       const minimalParsed = parseToolResponse(minimalResponseText);
@@ -255,7 +255,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
       console.log(`🏪 Created minimal source: ${minimalSourceCode}`);
 
       // Validate minimal source data
-      const getMinimalSourceResult = await mockServer.callTool("get-source-by-code", {
+      const getMinimalSourceResult = await mockServer.callTool("get-msi-source-by-code", {
         source_code: minimalSourceCode,
       });
       const minimalSourceData = JSON.parse(parseToolResponse(extractToolResponseText(getMinimalSourceResult)).data[0]);
@@ -284,7 +284,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
         use_default_carrier_config: false,
       };
 
-      const fullSourceResult = await mockServer.callTool("create-source", fullSourceInput);
+      const fullSourceResult = await mockServer.callTool("create-msi-source", fullSourceInput);
 
       const fullResponseText = extractToolResponseText(fullSourceResult);
       const fullParsed = parseToolResponse(fullResponseText);
@@ -294,7 +294,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
       console.log(`🏪 Created full source: ${fullSourceCode}`);
 
       // Validate full source data
-      const getFullSourceResult = await mockServer.callTool("get-source-by-code", {
+      const getFullSourceResult = await mockServer.callTool("get-msi-source-by-code", {
         source_code: fullSourceCode,
       });
       const fullSourceData = JSON.parse(parseToolResponse(extractToolResponseText(getFullSourceResult)).data[0]);
@@ -326,7 +326,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
         postcode: "10001",
       };
 
-      const disabledSourceResult = await mockServer.callTool("create-source", disabledSourceInput);
+      const disabledSourceResult = await mockServer.callTool("create-msi-source", disabledSourceInput);
 
       const disabledResponseText = extractToolResponseText(disabledSourceResult);
       const disabledParsed = parseToolResponse(disabledResponseText);
@@ -336,7 +336,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
       console.log(`🏪 Created disabled source: ${disabledSourceCode}`);
 
       // Validate disabled source data
-      const getDisabledSourceResult = await mockServer.callTool("get-source-by-code", {
+      const getDisabledSourceResult = await mockServer.callTool("get-msi-source-by-code", {
         source_code: disabledSourceCode,
       });
       const disabledSourceData = JSON.parse(parseToolResponse(extractToolResponseText(getDisabledSourceResult)).data[0]);
@@ -356,7 +356,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
       console.log("🧪 Testing non-existent source handling...");
 
       // Try to get non-existent source
-      const getNonExistentSourceResult = await mockServer.callTool("get-source-by-code", {
+      const getNonExistentSourceResult = await mockServer.callTool("get-msi-source-by-code", {
         source_code: "non-existent-source-code",
       });
 
@@ -375,7 +375,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
 
       // Try to search sources with invalid criteria
       try {
-        await mockServer.callTool("search-sources", {
+        await mockServer.callTool("search-msi-sources", {
           page: -1, // Invalid page
           pageSize: 1000, // Invalid page size
         });
@@ -396,7 +396,7 @@ describe("Inventory Sources Tools - Functional Tests", () => {
       console.log("🧪 Testing context messages for successful source operations...");
 
       // Test source creation context message
-      const createSourceResult = await mockServer.callTool("create-source", {
+      const createSourceResult = await mockServer.callTool("create-msi-source", {
         source_code: "context_test_source_" + inventoryFixtures.getCurrentTestUniqueId(),
         name: "Context Test Source " + inventoryFixtures.getCurrentTestUniqueId(),
         enabled: true,

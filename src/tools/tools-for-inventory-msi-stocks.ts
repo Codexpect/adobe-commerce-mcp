@@ -8,7 +8,7 @@ import {
   updateStock,
   deleteStock,
   resolveStock,
-} from "../adobe/inventory/api-inventory-stocks";
+} from "../adobe/inventory/api-inventory-msi-stocks";
 import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
 import {
@@ -24,7 +24,7 @@ import { toolTextResponse } from "./tool-response";
 /**
  * Register stock management tools
  */
-export function registerInventoryStockTools(server: McpServer, client: AdobeCommerceClient) {
+export function registerInventoryMsiStockTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchStocksTool(server, client);
   registerGetStockByIdTool(server, client);
   registerCreateStockTool(server, client);
@@ -38,9 +38,9 @@ export function registerInventoryStockTools(server: McpServer, client: AdobeComm
  */
 function registerSearchStocksTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "search-stocks",
+    "search-msi-stocks",
     {
-      title: "Search Stocks",
+      title: "Search Stocks (MSI)",
       description: "Search for stocks with flexible filters and pagination",
       inputSchema: searchCriteriaInputSchema,
       annotations: {
@@ -77,9 +77,9 @@ function registerSearchStocksTool(server: McpServer, client: AdobeCommerceClient
  */
 function registerGetStockByIdTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "get-stock-by-id",
+    "get-msi-stock-by-id",
     {
-      title: "Get Stock by ID",
+      title: "Get Stock by ID (MSI)",
       description: "Get stock data by given stockId",
       inputSchema: getStockByIdInputSchema,
       annotations: {
@@ -112,9 +112,9 @@ function registerGetStockByIdTool(server: McpServer, client: AdobeCommerceClient
  */
 function registerCreateStockTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "create-stock",
+    "create-msi-stock",
     {
-      title: "Create Stock",
+      title: "Create Stock (MSI)",
       description: "Save Stock data",
       inputSchema: createStockInputSchema,
       annotations: {
@@ -156,9 +156,9 @@ function registerCreateStockTool(server: McpServer, client: AdobeCommerceClient)
  */
 function registerUpdateStockTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "update-stock",
+    "update-msi-stock",
     {
-      title: "Update Stock",
+      title: "Update Stock (MSI)",
       description: "Save Stock data",
       inputSchema: updateStockInputSchema,
       annotations: {
@@ -200,9 +200,9 @@ function registerUpdateStockTool(server: McpServer, client: AdobeCommerceClient)
  */
 function registerDeleteStockTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "delete-stock",
+    "delete-msi-stock",
     {
-      title: "Delete Stock",
+      title: "Delete Stock (MSI)",
       description: "Delete the Stock data by stockId",
       inputSchema: deleteStockInputSchema,
       annotations: {
@@ -243,9 +243,9 @@ function registerDeleteStockTool(server: McpServer, client: AdobeCommerceClient)
  */
 function registerResolveStockTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "resolve-stock",
+    "resolve-msi-stock",
     {
-      title: "Resolve Stock",
+      title: "Resolve Stock (MSI)",
       description: "Resolve Stock by Sales Channel type and code",
       inputSchema: resolveStockInputSchema,
       annotations: {

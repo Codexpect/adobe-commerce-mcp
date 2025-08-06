@@ -5,7 +5,7 @@ import {
   getStockSourceLinks,
   createStockSourceLinks,
   deleteStockSourceLinks,
-} from "../adobe/inventory/api-inventory-stock-source-links";
+} from "../adobe/inventory/api-inventory-msi-stock-source-links";
 import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
 import {
@@ -18,7 +18,7 @@ import { toolTextResponse } from "./tool-response";
 /**
  * Register stock-source link management tools
  */
-export function registerInventoryStockSourceLinkTools(server: McpServer, client: AdobeCommerceClient) {
+export function registerInventoryMsiStockSourceLinkTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchStockSourceLinksTool(server, client);
   registerCreateStockSourceLinksTool(server, client);
   registerDeleteStockSourceLinksTool(server, client);
@@ -29,9 +29,9 @@ export function registerInventoryStockSourceLinkTools(server: McpServer, client:
  */
 function registerSearchStockSourceLinksTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "search-stock-source-links",
+    "search-msi-stock-source-links",
     {
-      title: "Search Stock-Source Links",
+      title: "Search Stock-Source Links (MSI)",
       description: "Find StockSourceLink list by given SearchCriteria",
       inputSchema: searchCriteriaInputSchema,
       annotations: {
@@ -68,9 +68,9 @@ function registerSearchStockSourceLinksTool(server: McpServer, client: AdobeComm
  */
 function registerCreateStockSourceLinksTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "create-stock-source-links",
+    "create-msi-stock-source-links",
     {
-      title: "Create Stock-Source Links",
+      title: "Create Stock-Source Links (MSI)",
       description: "Save StockSourceLink list data",
       inputSchema: createStockSourceLinksInputSchema,
       annotations: {
@@ -112,9 +112,9 @@ function registerCreateStockSourceLinksTool(server: McpServer, client: AdobeComm
  */
 function registerDeleteStockSourceLinksTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "delete-stock-source-links",
+    "delete-msi-stock-source-links",
     {
-      title: "Delete Stock-Source Links",
+      title: "Delete Stock-Source Links (MSI)",
       description: "Remove StockSourceLink list",
       inputSchema: deleteStockSourceLinksInputSchema,
       annotations: {

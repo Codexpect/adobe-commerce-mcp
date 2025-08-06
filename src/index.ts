@@ -5,7 +5,6 @@ import { registerCategoriesTools } from "./tools/tools-for-categories.js";
 import { registerCmsBlockTools, registerCmsPageTool } from "./tools/tools-for-cms.js";
 import { registerConfigurableProductTools } from "./tools/tools-for-configurable-products.js";
 import { registerCustomerTools } from "./tools/tools-for-customers.js";
-import { registerInventorySourceItemTools } from "./tools/tools-for-inventory-source-items.js";
 import { registerInventoryTools } from "./tools/tools-for-inventory.js";
 import { registerOrderTools } from "./tools/tools-for-orders.js";
 import { registerPricingTools } from "./tools/tools-for-pricing.js";
@@ -37,7 +36,6 @@ async function main() {
   registerPricingTools(server, client);
   registerStoreTools(server, client);
   registerInventoryTools(server, client);
-  registerInventorySourceItemTools(server, client);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

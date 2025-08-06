@@ -4,7 +4,7 @@ import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
 import {
   getSourceSelectionAlgorithms,
   runSourceSelectionAlgorithm,
-} from "../adobe/inventory/api-inventory-source-selection";
+} from "../adobe/inventory/api-inventory-msi-source-selection";
 import {
   sourceSelectionAlgorithmInputSchema,
 } from "../adobe/inventory/schemas";
@@ -14,7 +14,7 @@ import { toolTextResponse } from "./tool-response";
 /**
  * Register source selection tools
  */
-export function registerInventorySourceSelectionTools(server: McpServer, client: AdobeCommerceClient) {
+export function registerInventoryMsiSourceSelectionTools(server: McpServer, client: AdobeCommerceClient) {
   registerGetSourceSelectionAlgorithmsTool(server, client);
   registerRunSourceSelectionAlgorithmTool(server, client);
 }
@@ -24,9 +24,9 @@ export function registerInventorySourceSelectionTools(server: McpServer, client:
  */
 function registerGetSourceSelectionAlgorithmsTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "get-source-selection-algorithms",
+    "get-msi-source-selection-algorithms",
     {
-      title: "Get Source Selection Algorithms",
+      title: "Get Source Selection Algorithms (MSI)",
       description: "Get list of available source selection algorithms",
       inputSchema: {},
       annotations: {
@@ -59,9 +59,9 @@ function registerGetSourceSelectionAlgorithmsTool(server: McpServer, client: Ado
  */
 function registerRunSourceSelectionAlgorithmTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "run-source-selection-algorithm",
+    "run-msi-source-selection-algorithm",
     {
-      title: "Run Source Selection Algorithm",
+      title: "Run Source Selection Algorithm (MSI)",
       description: "Get source selection algorithm result",
       inputSchema: sourceSelectionAlgorithmInputSchema,
       annotations: {

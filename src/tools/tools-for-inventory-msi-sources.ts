@@ -1,14 +1,14 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod";
 import { AdobeCommerceClient } from "../adobe/adobe-commerce-client";
-import { createSource, getSourceByCode, getSources, updateSource } from "../adobe/inventory/api-inventory-sources";
+import { createSource, getSourceByCode, getSources, updateSource } from "../adobe/inventory/api-inventory-msi-sources";
 import { mapCreateSourceInputToApiPayload, mapUpdateSourceInputToApiPayload } from "../adobe/inventory/mapping/inventory-mapping";
 import { createSourceInputSchema, getSourceByCodeInputSchema, updateSourceInputSchema } from "../adobe/inventory/schemas";
 import { buildSearchCriteriaFromInput } from "../adobe/search-criteria/index";
 import { searchCriteriaInputSchema } from "../adobe/search-criteria/schema";
 import { toolTextResponse } from "./tool-response";
 
-export function registerInventorySourceTools(server: McpServer, client: AdobeCommerceClient) {
+export function registerInventoryMsiSourceTools(server: McpServer, client: AdobeCommerceClient) {
   registerSearchSourcesTool(server, client);
   registerGetSourceByCodeTool(server, client);
   registerCreateSourceTool(server, client);
@@ -17,9 +17,9 @@ export function registerInventorySourceTools(server: McpServer, client: AdobeCom
 
 function registerSearchSourcesTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "search-sources",
+    "search-msi-sources",
     {
-      title: "Search Sources",
+      title: "Search Sources (MSI)",
       description: "Find Sources by SearchCriteria",
       inputSchema: searchCriteriaInputSchema,
       annotations: {
@@ -53,9 +53,9 @@ function registerSearchSourcesTool(server: McpServer, client: AdobeCommerceClien
 
 function registerGetSourceByCodeTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "get-source-by-code",
+    "get-msi-source-by-code",
     {
-      title: "Get Source by Code",
+      title: "Get Source by Code (MSI)",
       description: "Get Source data by given code",
       inputSchema: getSourceByCodeInputSchema,
       annotations: {
@@ -85,9 +85,9 @@ function registerGetSourceByCodeTool(server: McpServer, client: AdobeCommerceCli
 
 function registerCreateSourceTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "create-source",
+    "create-msi-source",
     {
-      title: "Create Source",
+      title: "Create Source (MSI)",
       description: "Save Source data",
       inputSchema: createSourceInputSchema,
       annotations: {
@@ -124,9 +124,9 @@ function registerCreateSourceTool(server: McpServer, client: AdobeCommerceClient
 
 function registerUpdateSourceTool(server: McpServer, client: AdobeCommerceClient) {
   server.registerTool(
-    "update-source",
+    "update-msi-source",
     {
-      title: "Update Source",
+      title: "Update Source (MSI)",
       description: "Save Source data",
       inputSchema: updateSourceInputSchema,
       annotations: {
